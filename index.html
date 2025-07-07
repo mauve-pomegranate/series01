@@ -35,7 +35,7 @@
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
         }
         /* Link Styles */
-        .prose-custom a.internal-link { color: #6d28d9; text-decoration: none; font-weight: 600; }
+        .prose-custom a.internal-link { color: #6d28d9; text-decoration: none; font-weight: 600; cursor: pointer; }
         .prose-custom a.internal-link:hover { text-decoration: underline; }
         .prose-custom a.external-link { color: #059669; text-decoration: none; font-weight: 600; }
         .prose-custom a.external-link:hover { text-decoration: underline; }
@@ -46,27 +46,19 @@
         .search-highlight { background-color: #fcd34d; animation: flash 1.5s ease-in-out; }
         @keyframes flash { 0% { background-color: #fcd34d; } 50% { background-color: #fef08a; } 100% { background-color: #fcd34d; } }
 
-        /* Edit Mode Toggle */
-        .toggle-bg:after {
-            content: '';
-            @apply absolute top-0.5 left-0.5 bg-white border border-gray-300 rounded-full h-5 w-5 transition shadow-sm;
-        }
-        input:checked + .toggle-bg:after {
-            transform: translateX(100%);
-            @apply border-white;
-        }
-        input:checked + .toggle-bg {
-            @apply bg-indigo-600;
-        }
-        .view-mode-only { display: block; }
+        /* Edit Mode UI */
         .edit-mode-only { display: none; }
-        body.edit-mode .view-mode-only { display: none; }
         body.edit-mode .edit-mode-only { display: block; }
+        
+        /* Disable pointer events on links in edit mode */
+        body.edit-mode .prose-custom a {
+            pointer-events: none;
+        }
+        
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
-    <!-- Password Protection Overlay -->
     <div id="password-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50">
         <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-sm text-center">
             <h2 class="text-2xl font-bold mb-4 text-gray-700">Enter Access Code</h2>
@@ -77,9 +69,7 @@
         </div>
     </div>
 
-    <!-- Main Content (hidden by default) -->
     <div id="main-content" class="hidden">
-        <!-- Header -->
         <header class="bg-white shadow-md sticky top-0 z-30">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
@@ -90,13 +80,9 @@
                         <h1 class="text-xl font-bold text-gray-800 ml-2">Into the Æther: Story Bible</h1>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <div class="flex items-center space-x-2">
-                            <span class="text-sm font-medium text-gray-700">View Mode</span>
-                            <label for="edit-mode-toggle" class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="edit-mode-toggle" class="sr-only">
-                                <div class="w-11 h-6 bg-gray-200 rounded-full toggle-bg"></div>
-                            </label>
-                            <span class="text-sm font-medium text-gray-700">Edit Mode</span>
+                        <div id="mode-toggle-group" class="flex items-center p-1 bg-gray-200 rounded-full">
+                            <button id="view-mode-btn" class="px-3 py-1 text-sm font-medium rounded-full transition-colors">View</button>
+                            <button id="edit-mode-btn" class="px-3 py-1 text-sm font-medium rounded-full transition-colors">Edit</button>
                         </div>
                         <div class="relative w-64">
                             <input type="search" id="search-input" class="w-full pl-10 pr-4 py-2 border rounded-full text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Search bible...">
@@ -113,25 +99,19 @@
             </div>
         </header>
 
-        <!-- Main Layout -->
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="lg:grid lg:grid-cols-12 lg:gap-8">
-                <!-- Navigation Sidebar -->
                 <nav class="lg:col-span-3 mb-8 lg:mb-0">
                     <div id="navigation-container" class="sticky top-24">
-                        <!-- Navigation links will be dynamically inserted here -->
-                    </div>
+                        </div>
                 </nav>
 
-                <!-- Content Area -->
                 <main id="content-area" class="lg:col-span-9">
-                    <!-- Content sections will be dynamically inserted here -->
-                </main>
+                    </main>
             </div>
         </div>
     </div>
 
-    <!-- Add Link Modal -->
     <div id="add-link-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-40 hidden">
         <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
             <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Add a Link</h3>
@@ -291,7 +271,7 @@
                             <li><strong>Book 3 (Faith and Finality - As Sakura):</strong> Mother to <a href="#/search/Mizuki / Hisoka" class="internal-link">Mizuki/Hisoka</a>. Possesses deep Ætheric knowledge and plays a role in guiding the group against <a href="#/search/Mushoku" class="internal-link">Mushoku</a>.</li>
                         </ul>
                     `,
-                    realWorldEquivalent: `<p>The concept of a Tulpa originates from Tibetan mysticism. The idea of an artificially created being gaining sentience is a common theme in science fiction, notably in stories like <a href="https://en.wikipedia.org/wiki/Frankenstein" class="external-link" target="_blank" rel="noopener noreferrer">Frankenstein</a> or the Replicants in <a href="https://en.wikipedia.org/wiki/Blade_Runner" class="external-link" target="_blank" rel="noopener noreferrer">Blade Runner</a>.</p>`
+                    realWorldEquivalent: `<p>The concept of a Tulpa originates from Tibetan Buddhist mysticism. The idea of an artificially created being gaining sentience is a common theme in science fiction, notably in stories like <a href="https://en.wikipedia.org/wiki/Frankenstein" class="external-link" target="_blank" rel="noopener noreferrer">Frankenstein</a> or the Replicants in <a href="https://en.wikipedia.org/wiki/Blade_Runner" class="external-link" target="_blank" rel="noopener noreferrer">Blade Runner</a>.</p>`
                 },
                 {
                     title: "Fredrik Sørensen",
@@ -579,10 +559,11 @@
         const cancelLinkButton = document.getElementById('cancel-link-button');
         const insertLinkButton = document.getElementById('insert-link-button');
         const linkTypeSelect = document.getElementById('link-type');
-        const editModeToggle = document.getElementById('edit-mode-toggle');
+        const viewModeBtn = document.getElementById('view-mode-btn');
+        const editModeBtn = document.getElementById('edit-mode-btn');
         const bodyEl = document.body;
         
-        const PASSWORD = "storywriter123"; // You can change this!
+        const PASSWORD = "415semple"; // You can change this!
         let currentSelection = null; // To store cursor position for link insertion
 
         // --- DATA PERSISTENCE ---
@@ -611,7 +592,7 @@
                 passwordOverlay.classList.add('hidden');
                 mainContent.classList.remove('hidden');
                 loadData();
-                renderApp();
+                setMode(false); // Start in view mode by default
             } else {
                 passwordOverlay.classList.remove('hidden');
                 mainContent.classList.add('hidden');
@@ -645,11 +626,22 @@
         });
 
         // --- VIEW/EDIT MODE LOGIC ---
-        editModeToggle.addEventListener('change', () => {
-            isEditMode = editModeToggle.checked;
+        function setMode(edit) {
+            isEditMode = edit;
             bodyEl.classList.toggle('edit-mode', isEditMode);
-            renderApp(); // Re-render the entire content area to apply/remove contenteditable
-        });
+            
+            if (isEditMode) {
+                editModeBtn.classList.add('bg-white', 'text-indigo-600', 'shadow');
+                viewModeBtn.classList.remove('bg-white', 'text-indigo-600', 'shadow');
+            } else {
+                viewModeBtn.classList.add('bg-white', 'text-indigo-600', 'shadow');
+                editModeBtn.classList.remove('bg-white', 'text-indigo-600', 'shadow');
+            }
+            renderApp();
+        }
+        
+        viewModeBtn.addEventListener('click', () => setMode(false));
+        editModeBtn.addEventListener('click', () => setMode(true));
 
 
         // --- RENDER LOGIC ---
@@ -758,6 +750,7 @@
             contentArea.addEventListener('blur', (e) => {
                 if (isEditMode && e.target.matches('.editable')) {
                     const card = e.target.closest('.card');
+                    if (!card) return;
                     const category = card.dataset.category;
                     const section = card.dataset.section;
                     const index = card.dataset.index;
@@ -795,23 +788,64 @@
                     const href = internalLink.getAttribute('href'); 
                     const searchTerm = decodeURIComponent(href.replace('#/search/', ''));
                     searchInput.value = searchTerm;
-                    performSearch();
-                    searchResultsContainer.classList.add('hidden');
+                    executeSearchAndDisplay(searchTerm);
                 }
             }
         });
 
 
         // --- SEARCH LOGIC ---
-        searchInput.addEventListener('input', performSearch);
-        searchInput.addEventListener('focus', performSearch);
+        function executeSearchAndDisplay(query) {
+            const lowerCaseQuery = query.toLowerCase().trim();
+            let firstMatchCard = null;
+
+            const cards = document.querySelectorAll('.card');
+            for (const card of cards) {
+                const titleEl = card.querySelector('[data-field="title"]');
+                if (!titleEl) continue;
+
+                const title = titleEl.textContent.toLowerCase();
+                
+                if (title === lowerCaseQuery) {
+                    firstMatchCard = card;
+                    break; 
+                }
+            }
+            
+            if (!firstMatchCard && cards.length > 0) {
+                 for (const card of cards) {
+                    const title = card.querySelector('[data-field="title"]').textContent.toLowerCase();
+                    const content = card.querySelector('[data-field="content"]').textContent.toLowerCase();
+                    const realWorld = card.querySelector('[data-field="realWorldEquivalent"]')?.textContent.toLowerCase() || '';
+
+                    if (title.includes(lowerCaseQuery) || content.includes(lowerCaseQuery) || realWorld.includes(lowerCaseQuery)) {
+                        firstMatchCard = card;
+                        break;
+                    }
+                }
+            }
+
+            if (firstMatchCard) {
+                clearSearchHighlights();
+                firstMatchCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstMatchCard.classList.add('search-highlight');
+                highlightTextInNode(firstMatchCard, lowerCaseQuery);
+
+                setTimeout(() => {
+                    firstMatchCard.classList.remove('search-highlight');
+                }, 2000);
+            }
+        }
+        
+        searchInput.addEventListener('input', populateSearchDropdown);
+        searchInput.addEventListener('focus', populateSearchDropdown);
         document.addEventListener('click', (e) => {
-            if (!searchResultsContainer.contains(e.target) && e.target !== searchInput) {
+            if (e.target.id !== 'search-input' && !searchResultsContainer.contains(e.target)) {
                 searchResultsContainer.classList.add('hidden');
             }
         });
 
-        function performSearch() {
+        function populateSearchDropdown() {
             const query = searchInput.value.toLowerCase().trim();
             searchResultsContainer.innerHTML = '';
 
@@ -821,43 +855,24 @@
                 return;
             }
 
-            const results = [];
-            document.querySelectorAll('.card').forEach(card => {
-                const titleEl = card.querySelector('[data-field="title"]');
-                if (!titleEl) return;
-
-                const title = titleEl.textContent.toLowerCase();
-                const content = card.querySelector('[data-field="content"]').textContent.toLowerCase();
-                const realWorld = card.querySelector('[data-field="realWorldEquivalent"]')?.textContent.toLowerCase() || '';
-                
-                if (title.includes(query) || content.includes(query) || realWorld.includes(query)) {
-                    results.push({
-                        title: titleEl.textContent,
-                        card: card
-                    });
+            const results = new Set();
+            document.querySelectorAll('.card [data-field="title"]').forEach(titleEl => {
+                const title = titleEl.textContent;
+                if (title.toLowerCase().includes(query)) {
+                    results.add(title);
                 }
             });
 
-            if (results.length > 0) {
+            if (results.size > 0) {
                 searchResultsContainer.classList.remove('hidden');
-                results.forEach(result => {
+                results.forEach(title => {
                     const resultDiv = document.createElement('div');
                     resultDiv.className = 'p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200';
-                    resultDiv.textContent = result.title;
+                    resultDiv.textContent = title;
                     resultDiv.addEventListener('click', () => {
-                        clearSearchHighlights();
-                        
-                        result.card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        
-                        result.card.classList.add('search-highlight');
-                        highlightTextInNode(result.card, query);
-
-                        setTimeout(() => {
-                            result.card.classList.remove('search-highlight');
-                        }, 2000);
-                        
+                        searchInput.value = title;
+                        executeSearchAndDisplay(title);
                         searchResultsContainer.classList.add('hidden');
-                        searchInput.value = result.title;
                     });
                     searchResultsContainer.appendChild(resultDiv);
                 });
@@ -904,7 +919,9 @@
                     if (lastIndex < text.length) {
                         fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
                     }
-                    textNode.parentNode.replaceChild(fragment, textNode);
+                    if (textNode.parentNode) {
+                        textNode.parentNode.replaceChild(fragment, textNode);
+                    }
                 }
             });
         }
