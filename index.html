@@ -59,6 +59,7 @@
 </head>
 <body class="bg-gray-100 text-gray-800">
 
+    <!-- Password Protection Overlay -->
     <div id="password-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50">
         <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-sm text-center">
             <h2 class="text-2xl font-bold mb-4 text-gray-700">Enter Access Code</h2>
@@ -69,7 +70,9 @@
         </div>
     </div>
 
+    <!-- Main Content (hidden by default) -->
     <div id="main-content" class="hidden">
+        <!-- Header -->
         <header class="bg-white shadow-md sticky top-0 z-30">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
@@ -99,19 +102,25 @@
             </div>
         </header>
 
+        <!-- Main Layout -->
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+                <!-- Navigation Sidebar -->
                 <nav class="lg:col-span-3 mb-8 lg:mb-0">
                     <div id="navigation-container" class="sticky top-24">
-                        </div>
+                        <!-- Navigation links will be dynamically inserted here -->
+                    </div>
                 </nav>
 
+                <!-- Content Area -->
                 <main id="content-area" class="lg:col-span-9">
-                    </main>
+                    <!-- Content sections will be dynamically inserted here -->
+                </main>
             </div>
         </div>
     </div>
 
+    <!-- Add Link Modal -->
     <div id="add-link-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-40 hidden">
         <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
             <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Add a Link</h3>
@@ -142,37 +151,14 @@
     // --- DATA STORE ---
     let storyBibleData = {
         "Series Overview": {
-            "Series Overview": [
+            "The Foxfire Cycle": [
                 {
                     title: "Series Logline",
-                    content: `<p>Across fractured realities and hidden worlds, a diverse group of individuals-an American expatriate, a half-kitsune investigator, a hardened operative, and resilient survivors of a broken America-must unravel ancient prophecies, confront corporate conspiracies, and battle cosmic entities to prevent the annihilation of all existence, forcing them to question the nature of identity, sacrifice, and the threads that bind family and fate.</p>`
+                    content: `<p>In a reality secretly trapped in a repeating cosmic cycle, a group of individuals—an American expatriate whose soul is fractured across worlds, a half-kitsune investigator haunted by her heritage, and a resilient survivor from a broken America—discover that their struggles against corporate conspiracies and ancient entities are echoes of past failures. They must harness their unique, cycle-breaking experiences to confront a tragic antagonist who seeks to "save" all existence by ending it, and in doing so, find a way to achieve a true, final reality.</p>`
                 },
                 {
-                    title: "Working Titles (By Book)",
-                    content: `<ul><li>Book 1: Fate and Foxfire</li><li>Book 2: Family and Folklore</li><li>Book 3: Faith and Finality</li></ul>`
-                },
-                {
-                    title: "Core Themes (Across the Saga)",
-                    content: `<ul>
-                        <li>Identity & Duality (Human/Supernatural, Self/Other, Fractured Selves)</li>
-                        <li>Family & Connection (Blood, Found, & Metaphysical)</li>
-                        <li>The Balance (Mundane/Metaphysical, Order/Chaos, Nature/Technology)</li>
-                        <li>Sacrifice & Redemption</li>
-                        <li>Knowledge, Power, & Responsibility</li>
-                        <li>Survival & Resilience</li>
-                        <li>Faith & The Unseen</li>
-                        <li>The Nature of Reality, Time, and Consciousness</li>
-                        <li>Corporate Greed vs. Ancient Wisdom/Nature</li>
-                        <li>Impermanence & The Cycle of Existence (Samsara, Anatta)</li>
-                    </ul>`
-                },
-                {
-                    title: "Primary Genre",
-                    content: `<p>Urban Fantasy / Speculative Fiction</p><p><strong>Secondary Elements:</strong> Conspiracy Thriller, Post-Apocalyptic (Book 2), Mythic Fiction, Cosmic Horror (hints).</p>`
-                },
-                {
-                    title: "Target Audience",
-                    content: `<p>Older Young Adult to Adult, interested in complex plots, intricate world-building, Japanese & American folklore, blend of magic/science, and character-driven stories with strong emotional cores.</p>`
+                    title: "Core Premise",
+                    content: `<p>The events of the trilogy are part of a time loop. The universe is stuck, repeating a series of catastrophic events involving the convergence of realms and the entity known as the <a href="#/search/The Kirin" class="internal-link">Kirin</a>. The true, hidden antagonist is <a href="#/search/Mushoku" class="internal-link">Mushoku</a>, a being who has become aware of this loop and, believing there is no escape, seeks to bring about "<a href="#/search/Sunyata (The Void)" class="internal-link">Sunyata</a>" (the void) as a merciful end to all existence's eternal suffering. The protagonists' journey is not just to stop the villains of their cycle, but to generate a novel outcome that finally breaks the loop.</p>`
                 }
             ]
         },
@@ -258,37 +244,19 @@
                         </ul>
                     `,
                     realWorldEquivalent: `<p>Represents the archetypal off-grid hacker from cyberpunk literature, like the console cowboys in William Gibson's <a href="https://en.wikipedia.org/wiki/Neuromancer" class="external-link" target="_blank" rel="noopener noreferrer">Neuromancer</a>, who operate outside the system and trade in the valuable currency of information.</p>`
-                },
-                {
-                    title: "Yume Minamoto / Sakura",
-                    content: `
-                        <p><strong>Physical Description:</strong> Japanese woman, mid-late 20's, 5'1", Slender frame, Brilliant green (emerald) eyes, Black hair with Bob haircut.</p>
-                        <p><strong>Overview:</strong> Yume is a sophisticated thought form (<a href="#/search/Project Sakura" class="internal-link">Project Sakura</a> by <a href="#/search/Mobex Corporation" class="internal-link">Mobex</a>), created from Ætheric energy and "pieces" of the original Sakura (<a href="#/search/Mizuki / Hisoka" class="internal-link">Mizuki's</a> mother). Initially trapped in a liminal Ætheric space, she merges with the original Sakura's essence during the <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a> climax, becoming the more complete, powerful, and wise being known as Sakura.</p>
-                        <p><strong>Key Traits:</strong> (As Yume) Ethereal, trapped, communicates with <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> in dreams. (As Sakura) Wise, powerful, maternal, deeply connected to the <a href="#/search/The Æther" class="internal-link">Æther</a>.</p>
-                        <p><strong>Book Arcs:</strong></p>
-                        <ul>
-                            <li><strong>Book 1 (Fate and Foxfire):</strong> The initial missing person. Disappears from <a href="#/search/Watanabe Park" class="internal-link">Watanabe Park</a>. Trapped in the <a href="#/search/The Æther" class="internal-link">Æther</a>, she merges with Sakura's essence during the climax, facilitating the disruption of <a href="#/search/Project Tsunagari" class="internal-link">Project Tsunagari</a>.</li>
-                            <li><strong>Book 3 (Faith and Finality - As Sakura):</strong> Mother to <a href="#/search/Mizuki / Hisoka" class="internal-link">Mizuki/Hisoka</a>. Possesses deep Ætheric knowledge and plays a role in guiding the group against <a href="#/search/Mushoku" class="internal-link">Mushoku</a>.</li>
-                        </ul>
-                    `,
-                    realWorldEquivalent: `<p>The concept of a Tulpa originates from Tibetan Buddhist mysticism. The idea of an artificially created being gaining sentience is a common theme in science fiction, notably in stories like <a href="https://en.wikipedia.org/wiki/Frankenstein" class="external-link" target="_blank" rel="noopener noreferrer">Frankenstein</a> or the Replicants in <a href="https://en.wikipedia.org/wiki/Blade_Runner" class="external-link" target="_blank" rel="noopener noreferrer">Blade Runner</a>.</p>`
-                },
-                {
-                    title: "Fredrik Sørensen",
-                    content: `
-                        <p><strong>Overview:</strong> A brilliant but morally compromised Danish scientist, one of the three main heads of research on <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a> for the <a href="#/search/Mobex Corporation" class="internal-link">Mobex</a>/<a href="#/search/Kagami Tenko Corporation" class="internal-link">Kagami Tenko</a>/<a href="#/search/Yako Syndicate" class="internal-link">Yako</a> conglomerate.</p>
-                        <p><strong>Key Traits:</strong> Brilliant scientist, morally compromised, self-preservationist. Deep knowledge of <a href="#/search/Ley Lines" class="internal-link">ley lines</a>, particle accelerators, and Ætheric experiments. "Blue team" lead for "other side" efforts.</p>
-                        <p><strong>Motivations:</strong> Intellectual arrogance, obsession with his research, and an all-consuming fear of his former employers. His primary driver is self-preservation above all else.</p>
-                        <p><strong>Book Arcs:</strong></p>
-                        <ul>
-                            <li><strong>Book 1 (Fate and Foxfire - Mentioned):</strong> Involved in Ikanajima research. Presumed dead after the incident.</li>
-                            <li><strong>Book 2 (Family and Folklore):</strong> Revealed to have fled to the <a href="#/search/New American Republic (NAR)" class="internal-link">NAR</a>. Possesses critical knowledge about the Appalachian facility. Forms an uneasy alliance with <a href="#/search/Carly Shepard" class="internal-link">Carly</a> and <a href="#/search/Shikako ('Onryō')" class="internal-link">Shikako</a>. Killed by Shikako.</li>
-                        </ul>
-                    `,
-                    realWorldEquivalent: `<p>Embodies the archetype of the amoral scientist, a common figure in thrillers and sci-fi, who pursues knowledge without regard for ethical boundaries, similar to Dr. Henry Wu in <a href="https://en.wikipedia.org/wiki/Jurassic_Park_(franchise)" class="external-link" target="_blank" rel="noopener noreferrer">Jurassic Park</a>.</p>`
                 }
             ],
             "Key Antagonists": [
+                {
+                    title: "Mushoku",
+                    content: `
+                        <p><strong>Overview:</strong> The primary antagonist of Book 3. A human or partial human with immense power.</p>
+                        <p><strong>Key Traits:</strong> Extremely powerful, philosophical, and tragic. His power may stem from his unique perception of reality.</p>
+                        <p><strong>Motivations (Deeper):</strong> Mushoku's motivation is not nihilism, but a twisted form of mercy. He perceives reality as an endless, meaningless time loop—a cosmic prison of repeating suffering. Having experienced countless iterations of events, he has concluded that the only true escape, the only salvation for all beings, is to end the cycle permanently through <a href="#/search/Sunyata (The Void)" class="internal-link">Sunyata</a> (the void). He sees his catastrophic actions as the ultimate act of compassion, releasing everyone from a prison only he can see.</p>
+                        <p><strong>Book Arc (Book 3):</strong> He is the final, hidden antagonist of the cycle. His actions are aimed at gathering the power needed to unmake existence. The protagonists must not only stop him but confront the horrifying possibility that his perception of reality might be right. Defeating him requires breaking the cycle itself, proving that a new outcome is possible.</p>
+                    `,
+                    realWorldEquivalent: `<p>His philosophy draws from the Buddhist concept of <a href="https://en.wikipedia.org/wiki/%C5%9A%C5%ABnyat%C4%81" class="external-link" target="_blank" rel="noopener noreferrer">Śūnyatā (Emptiness)</a>, but twisted into a destructive, nihilistic goal. He becomes a tragic "savior" figure, similar to characters who believe in annihilation for a perceived greater good, but with the added horror of being trapped in a time loop like the protagonist of the film <a href="https://en.wikipedia.org/wiki/Groundhog_Day_(film)" class="external-link" target="_blank" rel="noopener noreferrer">Groundhog Day</a>, but on a cosmic scale.</p>`
+                },
                 {
                     title: "Commander Colt",
                     content: `
@@ -298,16 +266,6 @@
                         <p><strong>Book Arc (Book 1):</strong> Oversees Ikanajima operations. Coerces <a href="#/search/Professor Shin'en Tajima" class="internal-link">Professor Tajima</a>. During the climax, he attempts to harness the nexus energy and is seemingly empowered/consumed by it before the facility's destruction. His fate is ambiguous, but he is presumed to have survived in some transformed state.</p>
                     `,
                     realWorldEquivalent: `<p>His struggle as a Zainichi individual in Japan reflects real-world social and political issues regarding ethnicity and citizenship in the country. See <a href="https://en.wikipedia.org/wiki/Koreans_in_Japan" class="external-link" target="_blank" rel="noopener noreferrer">Koreans in Japan on Wikipedia</a>.</p>`
-                },
-                {
-                    title: "Mushoku",
-                    content: `
-                        <p><strong>Overview:</strong> The primary antagonist of Book 3. A human or partial human with immense power.</p>
-                        <p><strong>Key Traits:</strong> Extremely powerful, with philosophical/nihilistic motivations. Linked to "Mushoku the fourth color" from Book 2 research data.</p>
-                        <p><strong>Motivations (Speculative):</strong> Not motivated by personal gain, but by a desire to bring about "<a href="#/search/Sunyata (The Void)" class="internal-link">Sunyata</a>" (emptiness/the void) for all existence. This could stem from misguided altruism (seeing existence as suffering), a cosmic horror revelation, corruption by void energy, or being a philosophical extremist.</p>
-                        <p><strong>Book Arc (Book 3):</strong> Seeks cosmic annihilation/reset, making him a universal threat to all other factions.</p>
-                    `,
-                    realWorldEquivalent: `<p>His philosophy draws from the Buddhist concept of <a href="https://en.wikipedia.org/wiki/%C5%9A%C5%ABnyat%C4%81" class="external-link" target="_blank" rel="noopener noreferrer">Śūnyatā (Emptiness)</a>, but twisted into a destructive, nihilistic goal, similar to villains like Thanos who believe in annihilation for a perceived greater good.</p>`
                 },
                 {
                     title: "Yako Syndicate",
@@ -323,27 +281,23 @@
             "Mentors, Guides, & Other Significant Figures": [
                 {
                     title: "Ichiro Kobayashi",
-                    content: `<p><strong>Overview:</strong> A very old man, possibly not human, who appears as an elderly fortune teller. He gives <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Yume</a> her special <a href="#/search/Ichiro Kobayashi's Special Tarot Deck" class="internal-link">tarot deck</a> in <a href="#/search/Watanabe Park" class="internal-link">Watanabe Park</a>. He later appears to <a href="#/search/Mizuki / Hisoka" class="internal-link">Mizuki/Hisoka</a> in the <a href="#/search/The Æther" class="internal-link">Æther</a> to guide her through the "Trials of the Kitsune," fulfilling a promise made to her mother, <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Sakura</a>.</p>`
+                    content: `<p><strong>Overview:</strong> A very old man, possibly not human, who appears as an elderly fortune teller. He gives <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Yume</a> her special <a href="#/search/Ichiro Kobayashi's Special Tarot Deck" class="internal-link">tarot deck</a> in <a href="#/search/Watanabe Park" class="internal-link">Watanabe Park</a>. He may be a being who exists partially outside the time loop, attempting to nudge events toward a new outcome.</p>`
                 },
                 {
                     title: "Mr. Whispers",
-                    content: `<p><strong>Overview:</strong> A talking white Persian cat with blue eyes and a golden hue who commands the "Kitty Coalition" (synchronized tabby cats). He acts as an enigmatic guide to <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a>, providing cryptic advice and deep knowledge of the <a href="#/search/The Æther" class="internal-link">Æther</a>, <a href="#/search/Kitsune (Fox Spirits)" class="internal-link">kitsune</a>, and non-linear time. He appears to Bowie in the <a href="#/search/Kozyrev Mirror" class="internal-link">Kozyrev Mirror</a>.</p>`
+                    content: `<p><strong>Overview:</strong> A talking white Persian cat with blue eyes and a golden hue who commands the "Kitty Coalition". He acts as an enigmatic guide to <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a>, providing cryptic advice. His knowledge may stem from retaining memories of past cycles.</p>`
                 },
                 {
                     title: "Professor Shin'en Tajima",
-                    content: `<p><strong>Overview:</strong> A Japanese scientist in his mid-late 60s, expert on <a href="#/search/Ley Lines" class="internal-link">ley lines</a> and interspatial junctions. He developed the <a href="#/search/Aringold Circuit Routers (ARCs)" class="internal-link">Aringold Circuit Routers (ARCs)</a>. Initially a dedicated, perhaps naive, scientist, he is coerced by <a href="#/search/Commander Colt" class="internal-link">Commander Colt</a> into working on <a href="#/search/Project Tsunagari" class="internal-link">Project Tsunagari</a>. His conscience awakens, and he chooses redemption by sacrificing himself to disrupt the project during the <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a> climax.</p>`
+                    content: `<p><strong>Overview:</strong> A Japanese scientist in his mid-late 60s, expert on <a href="#/search/Ley Lines" class="internal-link">ley lines</a>. He developed the <a href="#/search/Aringold Circuit Routers (ARCs)" class="internal-link">ARCs</a>. Coerced by <a href="#/search/Commander Colt" class="internal-link">Colt</a>, his conscience awakens, and he chooses redemption by sacrificing himself to disrupt <a href="#/search/Project Tsunagari" class="internal-link">Project Tsunagari</a>, a heroic act that repeats in the cycle.</p>`
                 },
                 {
                     title: "The Harbinger",
-                    content: `<p><strong>Overview:</strong> A robed, kitsune-masked figure encountered by <a href="#/search/Kurai" class="internal-link">Kurai</a> in the <a href="#/search/The Æther" class="internal-link">Æther</a>. The Harbinger warns of <a href="#/search/The Kirin" class="internal-link">The Kirin</a> and the <a href="#/search/Project Tsunagari" class="internal-link">Convergence</a>. It is linked to the <a href="#/search/Celestial Council (Kitsune)" class="internal-link">Celestial Council</a> and may be an avatar of Inari.</p>`
+                    content: `<p><strong>Overview:</strong> A robed, kitsune-masked figure encountered by <a href="#/search/Kurai" class="internal-link">Kurai</a> in the <a href="#/search/The Æther" class="internal-link">Æther</a>. The Harbinger warns of <a href="#/search/The Kirin" class="internal-link">The Kirin</a> and the <a href="#/search/Project Tsunagari" class="internal-link">Convergence</a>, possibly trying to influence the current cycle based on knowledge of past ones.</p>`
                 },
                 {
                     title: "Kurai & Takuma",
-                    content: `<p><strong>Overview:</strong> Journalists/Investigators for the <a href="#/search/Kogitsune Kai" class="internal-link">Kogitsune Kai</a>. <a href="#/search/Kurai" class="internal-link">Kurai</a> develops Ætheric sensitivity and has visions of the <a href="#/search/The Æther" class="internal-link">Æther</a> and <a href="#/search/The Harbinger" class="internal-link">The Harbinger</a>. Takuma is her grounded, supportive partner. As "K," Kurai sends the epilogue message to <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> at the end of Book 1.</p>`
-                },
-                {
-                    title: "Zed",
-                    content: `<p><strong>Overview:</strong> The proprietor of Zed's Erstwhile Antiques. He is more than just a shopkeeper, possessing genuine esoteric knowledge. He sells <a href="#/search/Mizuki / Hisoka" class="internal-link">Mizuki</a> her worn tarot deck and gifts <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> the <a href="#/search/Agate 'Key' Necklace" class="internal-link">agate "key" necklace</a>. His motivations are unclear.</p>`
+                    content: `<p><strong>Overview:</strong> Journalists for the <a href="#/search/Kogitsune Kai" class="internal-link">Kogitsune Kai</a>. <a href="#/search/Kurai" class="internal-link">Kurai</a>'s Ætheric sensitivity may allow her to perceive echoes or bleed-through from previous iterations of the time loop, explaining her visions. As "K," she sends the epilogue message to <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a>, a key step in altering the cycle.</p>`
                 }
             ]
         },
@@ -366,24 +320,9 @@
                 {
                     title: "Ikanajima Island",
                     content: `
-                        <p>A remote island in the Pacific, formerly a religious site, bought by shell companies. It is the site of the <a href="#/search/Yako Syndicate" class="internal-link">Yako Syndicate</a>/<a href="#/search/Kagami Tenko Corporation" class="internal-link">Kagami Tenko</a>'s <a href="#/search/Project Tsunagari" class="internal-link">Project Tsunagari</a>. It is a powerful <a href="#/search/Ley Lines" class="internal-link">ley line</a> nexus and houses the <a href="#/search/Kozyrev Mirror" class="internal-link">Kozyrev Mirror</a>, <a href="#/search/Aringold Circuit Routers (ARCs)" class="internal-link">ARC routers</a>, and a nexus crystal. The island is hollow and anchored to the ocean floor, with an underground facility containing labs, holding cells, and underwater caverns with ancient ruins and <a href="#/search/Denki-Ōunagi" class="internal-link">Denki-Ōunagi</a>.</p>
+                        <p>A remote island in the Pacific, formerly a religious site, bought by shell companies. It is the site of the <a href="#/search/Yako Syndicate" class="internal-link">Yako Syndicate</a>/<a href="#/search/Kagami Tenko Corporation" class="internal-link">Kagami Tenko</a>'s <a href="#/search/Project Tsunagari" class="internal-link">Project Tsunagari</a>. It is a powerful <a href="#/search/Ley Lines" class="internal-link">ley line</a> nexus and houses the <a href="#/search/Kozyrev Mirror" class="internal-link">Kozyrev Mirror</a>, <a href="#/search/Aringold Circuit Routers (ARCs)" class="internal-link">ARC routers</a>, and a nexus crystal. It is the site of <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie's</a> fracturing, the key anomaly that alters the time loop.</p>
                     `,
                     realWorldEquivalent: `<p>The concept of a mysterious, technologically advanced, and dangerous island is a classic trope, seen in works like <a href="https://en.wikipedia.org/wiki/The_Island_of_Doctor_Moreau" class="external-link" target="_blank" rel="noopener noreferrer">The Island of Doctor Moreau</a>, Michael Crichton's Jurassic Park, or the TV series <a href="https://en.wikipedia.org/wiki/Lost_(TV_series)" class="external-link" target="_blank" rel="noopener noreferrer">Lost</a>.</p>`
-                },
-                {
-                    title: "New American Republic (NAR)",
-                    content: `
-                        <p>The fractured, post-war remnants of the USA. It is characterized by feudal city-states, a barter economy, resource scarcity, and Ætheric "scarring" from past metaphysical events, especially in the Appalachian Mountains. The NAR is home to <a href="#/search/Carly Shepard" class="internal-link">Carly Shepard</a>, <a href="#/search/Aoi" class="internal-link">Aoi</a>, and various <a href="#/search/Cryptids (NAR)" class="internal-link">cryptids</a>. It contains a particle accelerator facility that is a sister site to the research on <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a>.</p>
-                    `,
-                    realWorldEquivalent: `<p>Draws inspiration from post-apocalyptic settings like those in the <a href="https://en.wikipedia.org/wiki/Fallout_(series)" class="external-link" target="_blank" rel="noopener noreferrer">Fallout</a> video game series or the novel <a href="https://en.wikipedia.org/wiki/A_Canticle_for_Leibowitz" class="external-link" target="_blank" rel="noopener noreferrer">A Canticle for Leibowitz</a>, which explore themes of societal collapse, technological regression, and the rise of new, fragmented societies.</p>`
-                },
-                {
-                    title: "Watanabe Park",
-                    content: `<p>A key location in Tokyo and a powerful <a href="#/search/Ley Lines" class="internal-link">ley line</a> nexus. It is the site of <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Yume's</a> disappearance and <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie's</a> initial investigation. A fountain in the park hides an entrance to underground tunnels that lead to a portal to the <a href="#/search/The Æther" class="internal-link">Æther</a>.</p>`
-                },
-                {
-                    title: "Love Hotel (Room 413)",
-                    content: `<p>A kitsch hotel near Lake Ashi. Room 413 is a site of reality bleed, appearing on a non-existent fourth floor. It contains an altar with ritual artifacts, including the <a href="#/search/Scrying Mirror" class="internal-link">scrying mirror</a>, which are crucial to Bowie's investigation.</p>`
                 }
             ],
             "Supernatural Beings & Entities": [
@@ -407,135 +346,52 @@
                         <p>Beings created from concentrated thought, belief, and Ætheric energy, capable of physical manifestation. Corporate entities like <a href="#/search/Mobex Corporation" class="internal-link">Mobex</a> attempt to create and control them through projects like <a href="#/search/Project Sakura" class="internal-link">Project Sakura</a> (which created <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Yume Minamoto / Sakura</a>) and the ultimate goal of controlling <a href="#/search/The Kirin" class="internal-link">The Kirin</a>, the "ultimate Egregore."</p>
                     `,
                     realWorldEquivalent: `<p>The concept of a Tulpa originates from Tibetan Buddhist mysticism. The idea of an Egregore, a being created by collective thought, is a key concept in Western esotericism, particularly within movements like <a href="https://en.wikipedia.org/wiki/Hermetic_Order_of_the_Golden_Dawn" class="external-link" target="_blank" rel="noopener noreferrer">The Hermetic Order of the Golden Dawn</a>.</p>`
-                },
+                }
+            ],
+            "Deeper Lore & Mythology": [
                 {
                     title: "The Kirin",
-                    content: `<p>The "ultimate Egregore." A conscious, symbiotic weapon of immense power, capable of reshaping reality when bonded with a compatible host. It requires vast Ætheric energy to manifest. The <a href="#/search/Yako Syndicate" class="internal-link">Yako Syndicate's</a> primary goal is to control it.</p>`,
+                    content: `<p>The "ultimate Egregore." A conscious, symbiotic weapon of immense power, capable of reshaping reality when bonded with a compatible host. It requires vast Ætheric energy to manifest. The <a href="#/search/Yako Syndicate" class="internal-link">Yako Syndicate's</a> primary goal is to control it, a central event in the repeating time loop.</p>`,
                     realWorldEquivalent: `<p>Based on the mythological <a href="https://en.wikipedia.org/wiki/Qilin" class="external-link" target="_blank" rel="noopener noreferrer">Qilin (or Kirin in Japanese)</a> from East Asian cultures, a chimerical beast said to appear with the arrival or passing of a sage or illustrious ruler. Here, its benevolent nature is twisted into the concept of a reality-bending weapon.</p>`
                 },
                 {
-                    title: "Cryptids (NAR)",
-                    content: `
-                        <p>Creatures from American folklore whose appearance and behavior in the <a href="#/search/New American Republic (NAR)" class="internal-link">NAR</a> are linked to Ætheric leakage and reality instability from the Appalachian particle accelerator.</p>
-                        <ul>
-                            <li><strong>Squonk:</strong> Cries before dissolving into tears.</li>
-                            <li><strong>Thunderbird:</strong> Massive birds that can manifest as pure Ætheric energy, often heralding significant events.</li>
-                            <li><strong>"Geists":</strong> A local term for minor paranormal phenomena.</li>
-                        </ul>
-                    `,
-                    realWorldEquivalent: `<p>These creatures are drawn from real-world American folklore and cryptozoology. The <a href="https://en.wikipedia.org/wiki/Squonk" class="external-link" target="_blank" rel="noopener noreferrer">Squonk</a> is from Pennsylvanian folklore, while the <a href="https://en.wikipedia.org/wiki/Thunderbird_(mythology)" class="external-link" target="_blank" rel="noopener noreferrer">Thunderbird</a> is a legendary creature in the history and culture of certain North American indigenous peoples.</p>`
-                },
-                {
-                    title: "Kappa (Taro)",
-                    content: `<p>Freshwater spirits from Japanese folklore. <a href="#/search/Taro" class="internal-link">Taro</a> is a Kappa encountered by <a href="#/search/Shikako ('Onryō')" class="internal-link">Shikako</a> in the sewer system of the <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a> facility. He aids her escape after she shows him kindness by refilling the water-filled dish on his head.</p>`
-                },
-                {
-                    title: "Denki-Ōunagi",
-                    content: `<p>Colossal electric eels, over 8 meters long with bioluminescent neon blue skin. They are highly dangerous and inhabit the underwater caverns of <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a>.</p>`
-                }
-            ],
-            "Magic, Metaphysics & Fringe Science": [
-                {
-                    title: "Kitsune Magic",
-                    content: `
-                        <ul>
-                            <li><strong><a href="#/search/Foxfire" class="internal-link">Foxfire</a>:</strong> The signature ability of <a href="#/search/Kitsune (Fox Spirits)" class="internal-link">kitsune</a>. Controlled, heatless flames, typically blue-green, used for attack, defense, and neutralizing/manipulating Ætheric energy.</li>
-                            <li><strong>Phasing:</strong> The innate ability to traverse between realities and the <a href="#/search/The Æther" class="internal-link">Æther</a>.</li>
-                            <li><strong>Shapeshifting:</strong> A traditional kitsune ability.</li>
-                            <li><strong>Memory Alteration:</strong> An advanced skill, as demonstrated by <a href="#/search/Mizuki / Hisoka" class="internal-link">Hisoka</a> when she wipes <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie's</a> memory.</li>
-                        </ul>
-                    `
-                },
-                {
-                    title: "Ritual Magic",
-                    content: `<p>Humans can access the <a href="#/search/The Æther" class="internal-link">Æther</a> through complex rituals that require clear intention, an energy source, symbolic artifacts, and proper grounding/anchoring to prevent being lost. <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> attempts this using the painter's journal and Inari sutras.</p>`
-                },
-                {
-                    title: "Folk Magic (NAR)",
-                    content: `<p>Localized traditions for warding and healing, likely an intuitive understanding of how to interact with ambient Ætheric energies. <a href="#/search/Carly Shepard" class="internal-link">Carly</a> learns these methods, such as creating hex signs and using specific plant bundles, from the "Forest Witch" in the Appalachians.</p>`
-                },
-                {
-                    title: "Kozyrev Mirror",
-                    content: `<p>A device based on fringe theories of non-linear time. Built from large, polished aluminum sheets in concentric spirals, it interacts with <a href="#/search/Ley Lines" class="internal-link">ley lines</a> and can allow viewing or travel between dimensions. It is highly disorienting and dangerous, capable of fracturing reality, as it did to <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> on <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a>.</p>`,
-                    realWorldEquivalent: `<p>Based on the real-world (though highly controversial and pseudoscientific) theories of Russian astrophysicist <a href="https://en.wikipedia.org/wiki/Nikolai_Aleksandrovich_Kozyrev" class="external-link" target="_blank" rel="noopener noreferrer">Nikolai Kozyrev</a>, who proposed that time was a form of energy that could be manipulated.</p>`
-                },
-                {
-                    title: "Project Tsunagari",
-                    content: `<p>The <a href="#/search/Kagami Tenko Corporation" class="internal-link">Kagami Tenko</a>/<a href="#/search/Yako Syndicate" class="internal-link">Yako Syndicate</a> initiative to merge realities. This "Convergence" is intended to facilitate the manifestation and control of <a href="#/search/The Kirin" class="internal-link">The Kirin</a>.</p>`
-                },
-                {
-                    title: "PROTOCOL Network",
-                    content: `<p>Phased Resonance Optimized Transmission Of Cryptographic Operational Language. An advanced, self-replicating AI network technology created by <a href="#/search/Mobex Corporation" class="internal-link">Mobex</a>. Its "Phased Resonance" capability allows it to transmit data through unconventional means, making it effective even in Æther-saturated or jammed environments. It is a key tool for the hacker <a href="#/search/Aoi" class="internal-link">Aoi</a>.</p>`
+                    title: "Sunyata (The Void)",
+                    content: `<p>The goal of the antagonist <a href="#/search/Mushoku" class="internal-link">Mushoku</a>. From his perspective, it is not an act of destruction, but a merciful release from the eternal, repeating prison of existence he perceives as a time loop. It represents the ultimate end to the cycle, an alternative to the endless suffering of repetition.</p>`
                 }
             ],
             "Factions & Organizations": [
                 {
                     title: "Zenko Order",
-                    content: `<p>A faction of generally benevolent <a href="#/search/Kitsune (Fox Spirits)" class="internal-link">kitsune</a> dedicated to maintaining cosmic balance and upholding ancient vows. They operate covertly, often through front organizations like Kiban Myobu, and employ skilled operatives like <a href="#/search/Shikako ('Onryō')" class="internal-link">Shikako ('Onryō')</a>. They are the primary opposition to the <a href="#/search/Yako Syndicate" class="internal-link">Yako Syndicate</a> and are governed by the <a href="#/search/Celestial Council (Kitsune)" class="internal-link">Celestial Council</a>.</p>`,
+                    content: `<p>A faction of generally benevolent <a href="#/search/Kitsune (Fox Spirits)" class="internal-link">kitsune</a> dedicated to maintaining cosmic balance. Within the context of the time loop, their goal is to guide events toward a stable, less destructive conclusion, often by using operatives like <a href="#/search/Shikako ('Onryō')" class="internal-link">Shikako</a> to "clean up" recurring loose ends.</p>`,
                     realWorldEquivalent: `<p>Secret societies dedicated to protecting the world from supernatural threats are a staple of urban fantasy. Examples include the Watchers' Council from <a href="https://en.wikipedia.org/wiki/Buffy_the_Vampire_Slayer" class="external-link" target="_blank" rel="noopener noreferrer">Buffy the Vampire Slayer</a> or the Jedi Order from Star Wars, which follows a strict code to maintain balance in the Force.</p>`
-                },
-                {
-                    title: "Celestial Council (Kitsune)",
-                    content: `<p>The governing body of the <a href="#/search/Zenko Order" class="internal-link">Zenko</a> <a href="#/search/Kitsune (Fox Spirits)" class="internal-link">kitsune</a>, concerned with cosmic balance. Key members include Inari-no-Kami, Chiyo, Hiroshi, and <a href="#/search/Genseki" class="internal-link">Genseki</a>. They are bound by ancient vows that limit their direct intervention in mundane affairs, leading them to deploy operatives or use immense power as a last resort, such as the stasis bubble over <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a>.</p>`
                 },
                 {
                     title: "Mobex Corporation",
                     content: `<p>A multinational corporation that serves as a parent company or partner to <a href="#/search/Kagami Tenko Corporation" class="internal-link">Kagami Tenko</a>. It drives much of the unethical metaphysical R&D, including <a href="#/search/Project Sakura" class="internal-link">Project Sakura</a> and the development of the <a href="#/search/PROTOCOL Network" class="internal-link">PROTOCOL network</a>. It is heavily influenced by the <a href="#/search/Yako Syndicate" class="internal-link">Yako Syndicate</a>.</p>`
-                },
-                {
-                    title: "Nogitsune Union",
-                    content: `<p>A radical hacker collective that adopts the name of the chaotic <a href="#/search/Kitsune (Fox Spirits)" class="internal-link">Nogitsune</a>. They aim to disrupt and expose corrupt elites. <a href="#/search/Aoi" class="internal-link">Aoi</a> has contacts within the Union, and one of their members, <a href="#/search/Liv" class="internal-link">Liv</a>, rescues <a href="#/search/Shikako ('Onryō')" class="internal-link">Shikako</a> in Book 1.</p>`
-                },
-                {
-                    title: "Kogitsune Kai",
-                    content: `<p>An organization of journalists and investigators, including <a href="#/search/Kurai" class="internal-link">Kurai</a> and Takuma, dedicated to uncovering conspiracies and hidden events. They operate more in the realm of citizen journalism and truth-seeking.</p>`
                 }
             ]
         },
         "Plot Synopses": {
-            "Book Synopses": [
+            "The Foxfire Cycle": [
                 {
-                    title: "Book 1: Fate and Foxfire",
-                    content: `<p>The core conflict revolves around <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Yume Minamoto's</a> disappearance, which pulls expatriate <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Alex 'Bowie' Shepard</a> and half-kitsune <a href="#/search/Mizuki / Hisoka" class="internal-link">Mizuki</a> into a conspiracy by the <a href="#/search/Yako Syndicate" class="internal-link">Yako Syndicate</a> to awaken the reality-bending <a href="#/search/The Kirin" class="internal-link">Kirin</a> via <a href="#/search/Project Tsunagari" class="internal-link">Project Tsunagari</a> on <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a>. The climax involves the destruction of the facility, the fracturing of Bowie, the awakening of Hisoka, and the transformation of Yume into <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Sakura</a>.</p>`
+                    title: "Book 1: Fate and Foxfire - The Anomaly",
+                    content: `<p>This is the beginning of the current iteration of the loop. A seemingly straightforward investigation spirals into a world of corporate conspiracy and supernatural forces. However, this cycle is different. A key event—the fracturing of <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Alex 'Bowie' Shepard</a> during the <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a> incident—introduces a critical anomaly, a new variable that has never existed in previous iterations of the cycle. This splitting of his soul is the one thing that has never happened before, fundamentally altering the loop.</p>`
                 },
                 {
-                    title: "Book 2: Family and Folklore",
-                    content: `<p><a href="#/search/Carly Shepard" class="internal-link">Carly Shepard</a> searches for her missing brother in the <a href="#/search/New American Republic (NAR)" class="internal-link">New American Republic (NAR)</a>. Her investigation leads her to a hidden Appalachian research facility, a sister site to Ikanajima. She forms an uneasy alliance with <a href="#/search/Shikako ('Onryō')" class="internal-link">Shikako</a> and the fugitive scientist <a href="#/search/Fredrik Sørensen" class="internal-link">Fredrik Sørensen</a>. The story culminates in the discovery and sacrifice of the "NAR-Bowie" version of her brother.</p>`
+                    title: "Book 2: Family and Folklore - The Consequence",
+                    content: `<p>This book explores the direct consequences of the anomaly. The focus shifts to the <a href="#/search/New American Republic (NAR)" class="internal-link">NAR</a>, where the "other" Bowie has become a key to a parallel conspiracy. <a href="#/search/Carly Shepard" class="internal-link">Carly Shepard's</a> quest is the cycle's new, unpredictable element in motion. The awakened NAR-Bowie makes a conscious, heroic sacrifice to save her—an act of pure will from an anomalous being that sends a shockwave through the metaphysical structure of the loop.</p>`
                 },
                 {
-                    title: "Book 3: Faith and Finality",
-                    content: `<p>Carly travels to Japan to find the "other" Bowie. The reunited group must confront a new nihilistic antagonist, <a href="#/search/Mushoku" class="internal-link">Mushoku</a>, who seeks to bring "<a href="#/search/Sunyata (The Void)" class="internal-link">Sunyata</a>" (the void) to all realities. The climax requires Bowie to become whole again by re-merging with his other half's essence on <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a>, embracing his fractured past to face the new threat.</p>`
+                    title: "Book 3: Faith and Finality - The Breaking of the Wheel",
+                    content: `<p>This is the final loop. Armed with the unprecedented knowledge of Bowie's dual nature, the protagonists are positioned to end the cycle. They must confront <a href="#/search/Mushoku" class="internal-link">Mushoku</a>, the loop's tragic prisoner, and challenge his perception of reality. The key is making Bowie whole again through a metaphysical re-merging on <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a>. The final confrontation is not just about overpowering Mushoku, but about proving his perception of a deterministic loop is wrong, and that a true "finality" other than annihilation is possible.</p>`
                 }
             ]
         },
-        "Appendices": {
-            "Key Concepts & Terms": [
+        "Themes & Craft": {
+            "Moral Ambiguity & Ethical Dilemmas": [
                 {
-                    title: "Sunyata (The Void)",
-                    content: `<p>The goal of the antagonist <a href="#/search/Mushoku" class="internal-link">Mushoku</a> in Book 3. It represents emptiness, nothingness, and a cosmic reset or total annihilation. It is a philosophical counterpoint to the <a href="#/search/Yako Syndicate" class="internal-link">Yako's</a> desire for power and the <a href="#/search/Zenko Order" class="internal-link">Zenko's</a> desire for balance.</p>`
-                },
-                {
-                    title: "Foxfire",
-                    content: `<p>The signature ability of <a href="#/search/Kitsune (Fox Spirits)" class="internal-link">kitsune</a> and kitsune-kin like <a href="#/search/Mizuki / Hisoka" class="internal-link">Hisoka</a>. It manifests as controlled, heatless flames, typically blue-green, which can be used for attack, defense, or to manipulate Ætheric energies. Hisoka learns to summon it during her training with <a href="#/search/Genseki" class="internal-link">Genseki</a>.</p>`
-                }
-            ],
-            "Key Artifacts & Technology": [
-                 {
-                    title: "Ichiro Kobayashi's Special Tarot Deck",
-                    content: `<p>One of only 33 decks "gifted by the source." These are not simple cards but powerful metaphysical tools used for divination and as anchors for interdimensional rituals. The Hierophant card is particularly potent for bridging realities. It is given to <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Yume</a>, and becomes a key object in <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie's</a> attempts to save her.</p>`,
-                    realWorldEquivalent: `<p>The idea of a magical, limited-edition set of items echoes artifacts in many fantasy stories. The use of Tarot for magic and divination is a cornerstone of modern occultism and is prominently featured in series like <a href="https://en.wikipedia.org/wiki/JoJo%27s_Bizarre_Adventure:_Stardust_Crusaders" class="external-link" target="_blank" rel="noopener noreferrer">JoJo's Bizarre Adventure: Stardust Crusaders</a>.</p>`
-                },
-                {
-                    title: "Scrying Mirror",
-                    content: `<p>An artifact found in Room 413 of the <a href="#/search/Love Hotel (Room 413)" class="internal-link">Love Hotel</a>. It allows viewing into the <a href="#/search/The Æther" class="internal-link">Æther</a> or other realities, but as <a href="#/search/Mizuki / Hisoka" class="internal-link">Mizuki</a> warns, "Don't trust everything you can see in this."</p>`
-                },
-                {
-                    title: "Agate 'Key' Necklace",
-                    content: `<p>A grounding artifact gifted to <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> by <a href="#/search/Zed" class="internal-link">Zed</a>. It reacts to Ætheric energy by heating up or pulsing and acts as an Ætheric "tuning fork," guiding the wearer to where they need to be. It shatters on <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a>, protecting Bowie from extreme strain.</p>`
-                },
-                {
-                    title: "Aringold Circuit Routers (ARCs)",
-                    content: `<p>Devices designed by <a href="#/search/Professor Shin'en Tajima" class="internal-link">Professor Tajima</a> to stabilize <a href="#/search/Ley Lines" class="internal-link">ley line</a> energy. They were co-opted by the <a href="#/search/Yako Syndicate" class="internal-link">Yako Syndicate</a> on <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a> to fuel <a href="#/search/Project Tsunagari" class="internal-link">Project Tsunagari</a> by amplifying and channeling energy into the nexus crystal.</p>`
+                    title: "The Tragedy of Mushoku",
+                    content: `<p>The central ethical dilemma of the series revolves around <a href="#/search/Mushoku" class="internal-link">Mushoku</a>. Is it ethical to stop a being who is, in his own mind, acting out of mercy to end what he perceives as infinite suffering for all beings? His motivation forces the protagonists to question the very nature of their reality and whether their struggle for free will is meaningful if it's part of an endless, painful cycle. This reframes the final conflict from a simple battle of good vs. evil into a profound philosophical debate.</p>`
                 }
             ]
         }
@@ -563,8 +419,8 @@
         const editModeBtn = document.getElementById('edit-mode-btn');
         const bodyEl = document.body;
         
-        const PASSWORD = "415semple"; // You can change this!
-        let currentSelection = null; // To store cursor position for link insertion
+        const PASSWORD = "415semple"; // Password updated
+        let currentSelection = null;
 
         // --- DATA PERSISTENCE ---
         function saveData() {
@@ -592,7 +448,7 @@
                 passwordOverlay.classList.add('hidden');
                 mainContent.classList.remove('hidden');
                 loadData();
-                setMode(false); // Start in view mode by default
+                setMode(false);
             } else {
                 passwordOverlay.classList.remove('hidden');
                 mainContent.classList.add('hidden');
@@ -653,7 +509,7 @@
 
         function renderNavigation() {
             const navContainer = document.getElementById('navigation-container');
-            navContainer.innerHTML = ''; // Clear existing nav
+            navContainer.innerHTML = '';
             Object.keys(storyBibleData).forEach(category => {
                 const categoryTitle = document.createElement('h2');
                 categoryTitle.className = 'text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3';
