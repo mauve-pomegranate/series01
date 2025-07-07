@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- This Content Security Policy allows loading styles and scripts from trusted sources -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;">
     <title>Into the Æther: Story Bible</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -784,14 +782,17 @@
                 });
             });
 
-            document.querySelectorAll('a.internal-link').forEach(link => {
-                link.addEventListener('click', e => {
+            // Use event delegation for internal links for robustness
+            document.getElementById('content-area').addEventListener('click', e => {
+                if (e.target && e.target.matches('a.internal-link')) {
                     e.preventDefault();
-                    const searchTerm = decodeURIComponent(new URL(link.href).hash.replace('#/search/', ''));
+                    // Use getAttribute for robustness
+                    const href = e.target.getAttribute('href'); 
+                    const searchTerm = decodeURIComponent(href.replace('#/search/', ''));
                     searchInput.value = searchTerm;
                     performSearch();
                     searchResultsContainer.classList.add('hidden');
-                });
+                }
             });
         }
 
