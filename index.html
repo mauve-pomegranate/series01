@@ -12,7 +12,7 @@
         /* Custom Styles */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* Light gray background */
+            background-color: #f3f4f6;
         }
         .prose-custom {
             font-family: 'Lora', serif;
@@ -30,47 +30,38 @@
         .card:hover {
             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
-        [contenteditable]:focus {
-            outline: 2px solid #4f46e5; /* Indigo focus ring */
+        .editable[contenteditable="true"]:focus {
+            outline: 2px solid #4f46e5;
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
         }
-        /* Custom Link Styles */
-        .prose-custom a.internal-link {
-            color: #6d28d9; /* Purple */
-            text-decoration: none;
-            font-weight: 600;
+        /* Link Styles */
+        .prose-custom a.internal-link { color: #6d28d9; text-decoration: none; font-weight: 600; }
+        .prose-custom a.internal-link:hover { text-decoration: underline; }
+        .prose-custom a.external-link { color: #059669; text-decoration: none; font-weight: 600; }
+        .prose-custom a.external-link:hover { text-decoration: underline; }
+        .prose-custom a.external-link::after { content: ' ↗'; display: inline-block; font-size: 0.8em; vertical-align: super; }
+        
+        /* Search Highlight */
+        .highlight { background-color: #fef08a; border-radius: 0.25rem; padding: 0 2px; }
+        .search-highlight { background-color: #fcd34d; animation: flash 1.5s ease-in-out; }
+        @keyframes flash { 0% { background-color: #fcd34d; } 50% { background-color: #fef08a; } 100% { background-color: #fcd34d; } }
+
+        /* Edit Mode Toggle */
+        .toggle-bg:after {
+            content: '';
+            @apply absolute top-0.5 left-0.5 bg-white border border-gray-300 rounded-full h-5 w-5 transition shadow-sm;
         }
-        .prose-custom a.internal-link:hover {
-            text-decoration: underline;
+        input:checked + .toggle-bg:after {
+            transform: translateX(100%);
+            @apply border-white;
         }
-        .prose-custom a.external-link {
-            color: #059669; /* Green */
-            text-decoration: none;
-            font-weight: 600;
+        input:checked + .toggle-bg {
+            @apply bg-indigo-600;
         }
-        .prose-custom a.external-link:hover {
-            text-decoration: underline;
-        }
-        .prose-custom a.external-link::after {
-            content: ' ↗';
-            display: inline-block;
-            font-size: 0.8em;
-            vertical-align: super;
-        }
-        .highlight {
-            background-color: #fef08a; /* Yellow highlight */
-            border-radius: 0.25rem;
-            padding: 0 2px;
-        }
-        .search-highlight {
-            background-color: #fcd34d; /* Amber highlight for search */
-            animation: flash 1.5s ease-in-out;
-        }
-        @keyframes flash {
-            0% { background-color: #fcd34d; }
-            50% { background-color: #fef08a; }
-            100% { background-color: #fcd34d; }
-        }
+        .view-mode-only { display: block; }
+        .edit-mode-only { display: none; }
+        body.edit-mode .view-mode-only { display: none; }
+        body.edit-mode .edit-mode-only { display: block; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -99,6 +90,14 @@
                         <h1 class="text-xl font-bold text-gray-800 ml-2">Into the Æther: Story Bible</h1>
                     </div>
                     <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm font-medium text-gray-700">View Mode</span>
+                            <label for="edit-mode-toggle" class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="edit-mode-toggle" class="sr-only">
+                                <div class="w-11 h-6 bg-gray-200 rounded-full toggle-bg"></div>
+                            </label>
+                            <span class="text-sm font-medium text-gray-700">Edit Mode</span>
+                        </div>
                         <div class="relative w-64">
                             <input type="search" id="search-input" class="w-full pl-10 pr-4 py-2 border rounded-full text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Search bible...">
                             <div class="absolute top-0 left-0 mt-2 ml-3">
@@ -161,8 +160,6 @@
 
     <script>
     // --- DATA STORE ---
-    // This is where all the content for your story bible lives.
-    // It's structured as a JavaScript object. You can edit, add, or remove content here.
     let storyBibleData = {
         "Series Overview": {
             "Series Overview": [
@@ -566,6 +563,10 @@
 
     // --- APPLICATION LOGIC ---
     document.addEventListener('DOMContentLoaded', () => {
+        // --- GLOBAL STATE ---
+        let isEditMode = false;
+
+        // --- DOM ELEMENT REFERENCES ---
         const passwordOverlay = document.getElementById('password-overlay');
         const passwordInput = document.getElementById('password-input');
         const submitPasswordBtn = document.getElementById('submit-password');
@@ -578,6 +579,8 @@
         const cancelLinkButton = document.getElementById('cancel-link-button');
         const insertLinkButton = document.getElementById('insert-link-button');
         const linkTypeSelect = document.getElementById('link-type');
+        const editModeToggle = document.getElementById('edit-mode-toggle');
+        const bodyEl = document.body;
         
         const PASSWORD = "storywriter123"; // You can change this!
         let currentSelection = null; // To store cursor position for link insertion
@@ -598,7 +601,6 @@
                     storyBibleData = JSON.parse(savedData);
                 } catch (e) {
                     console.error("Could not parse saved data:", e);
-                    // Keep default data if parsing fails
                 }
             }
         }
@@ -641,6 +643,14 @@
             sessionStorage.removeItem('storyBibleAuthenticated_Aether');
             location.reload();
         });
+
+        // --- VIEW/EDIT MODE LOGIC ---
+        editModeToggle.addEventListener('change', () => {
+            isEditMode = editModeToggle.checked;
+            bodyEl.classList.toggle('edit-mode', isEditMode);
+            renderApp(); // Re-render the entire content area to apply/remove contenteditable
+        });
+
 
         // --- RENDER LOGIC ---
         function renderApp() {
@@ -701,7 +711,7 @@
 
                     const addButton = document.createElement('button');
                     addButton.textContent = `+ Add New Entry to ${sectionKey}`;
-                    addButton.className = 'mt-6 bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-600 transition add-entry-btn';
+                    addButton.className = 'mt-6 bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-600 transition add-entry-btn edit-mode-only';
                     addButton.dataset.category = category;
                     addButton.dataset.section = sectionKey;
                     section.appendChild(addButton);
@@ -723,17 +733,17 @@
                 realWorldHtml = `
                     <div class="mt-4 pt-4 border-t border-gray-200">
                         <h4 class="text-sm font-semibold text-gray-600 mb-2">Real-World Equivalents & Inspirations</h4>
-                        <div class="prose-custom text-sm text-gray-700 editable" contenteditable="true" data-field="realWorldEquivalent">${entryData.realWorldEquivalent}</div>
+                        <div class="prose-custom text-sm text-gray-700 editable" contenteditable="${isEditMode}" data-field="realWorldEquivalent">${entryData.realWorldEquivalent}</div>
                     </div>
                 `;
             }
 
             card.innerHTML = `
                 <div class="flex justify-between items-start">
-                    <h3 class="text-xl font-bold text-gray-800 mb-3 editable" contenteditable="true" data-field="title">${entryData.title}</h3>
-                    <button class="add-link-btn text-sm text-indigo-600 hover:text-indigo-800 font-semibold">Add Links</button>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3 editable" contenteditable="${isEditMode}" data-field="title">${entryData.title}</h3>
+                    <button class="add-link-btn text-sm text-indigo-600 hover:text-indigo-800 font-semibold edit-mode-only">Add Links</button>
                 </div>
-                <div class="prose-custom max-w-none text-gray-700 editable" contenteditable="true" data-field="content">
+                <div class="prose-custom max-w-none text-gray-700 editable" contenteditable="${isEditMode}" data-field="content">
                     ${entryData.content}
                 </div>
                 ${realWorldHtml}
@@ -743,11 +753,10 @@
 
         // --- EVENT LISTENERS ---
         function attachEventListeners() {
-            // Use event delegation on a static parent for robust event handling
             const contentArea = document.getElementById('content-area');
 
             contentArea.addEventListener('blur', (e) => {
-                if (e.target.matches('.editable')) {
+                if (isEditMode && e.target.matches('.editable')) {
                     const card = e.target.closest('.card');
                     const category = card.dataset.category;
                     const section = card.dataset.section;
@@ -756,24 +765,21 @@
                     storyBibleData[category][section][index][field] = e.target.innerHTML;
                     saveData();
                 }
-            }, true); // Use capture phase to ensure this runs
+            }, true);
 
             contentArea.addEventListener('click', (e) => {
-                if (e.target.matches('.add-entry-btn')) {
+                if (isEditMode && e.target.matches('.add-entry-btn')) {
                     const category = e.target.dataset.category;
                     const section = e.target.dataset.section;
-                    const newEntry = {
-                        title: "New Title",
-                        content: "<p>New content goes here.</p>"
-                    };
-                    if (storyBibleData[category][section][0] && storyBibleData[category][section][0].realWorldEquivalent !== undefined) {
+                    const newEntry = { title: "New Title", content: "<p>New content goes here.</p>" };
+                    if (storyBibleData[category][section][0]?.realWorldEquivalent !== undefined) {
                         newEntry.realWorldEquivalent = "<p>Real-world equivalent notes.</p>";
                     }
                     storyBibleData[category][section].push(newEntry);
                     saveData();
                     renderApp();
-                } else if (e.target.matches('.add-link-btn')) {
-                     const editableContent = e.target.closest('.card').querySelector('[data-field="content"]');
+                } else if (isEditMode && e.target.matches('.add-link-btn')) {
+                    const editableContent = e.target.closest('.card').querySelector('[data-field="content"]');
                     saveSelection(editableContent);
                     addLinkModal.classList.remove('hidden');
                     document.getElementById('link-text').focus();
@@ -781,16 +787,17 @@
             });
         }
         
-        // Attach a single, persistent listener to the document for internal links
         document.addEventListener('click', e => {
-            const internalLink = e.target.closest('a.internal-link');
-            if (internalLink) {
-                e.preventDefault();
-                const href = internalLink.getAttribute('href'); 
-                const searchTerm = decodeURIComponent(href.replace('#/search/', ''));
-                searchInput.value = searchTerm;
-                performSearch();
-                searchResultsContainer.classList.add('hidden');
+            if (!isEditMode) {
+                const internalLink = e.target.closest('a.internal-link');
+                if (internalLink) {
+                    e.preventDefault();
+                    const href = internalLink.getAttribute('href'); 
+                    const searchTerm = decodeURIComponent(href.replace('#/search/', ''));
+                    searchInput.value = searchTerm;
+                    performSearch();
+                    searchResultsContainer.classList.add('hidden');
+                }
             }
         });
 
@@ -842,7 +849,6 @@
                         
                         result.card.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         
-                        // Highlight the card and the search term
                         result.card.classList.add('search-highlight');
                         highlightTextInNode(result.card, query);
 
@@ -863,7 +869,7 @@
         function clearSearchHighlights() {
             document.querySelectorAll('.highlight').forEach(el => {
                 if (el.parentNode) {
-                    el.outerHTML = el.innerHTML; // Unwrap the highlight
+                    el.outerHTML = el.innerHTML;
                 }
             });
         }
@@ -943,15 +949,13 @@
                  document.execCommand('insertHTML', false, linkHtml + '&nbsp;');
             }
 
-            // Manually trigger save after insertion
             if (currentSelection && currentSelection.focusNode) {
                 const editable = currentSelection.focusNode.parentElement.closest('.editable');
                 if (editable) {
-                    editable.dispatchEvent(new Event('blur', { bubbles: true })); // Trigger the save
+                    editable.dispatchEvent(new Event('blur', { bubbles: true }));
                 }
             }
 
-            // Reset and hide modal
             document.getElementById('link-text').value = '';
             document.getElementById('link-target').value = '';
             addLinkModal.classList.add('hidden');
