@@ -743,8 +743,11 @@
 
         // --- EVENT LISTENERS ---
         function attachEventListeners() {
-            document.querySelectorAll('.editable').forEach(el => {
-                el.addEventListener('blur', (e) => { // Use blur to save when user clicks away
+            // Use event delegation on a static parent for robust event handling
+            const contentArea = document.getElementById('content-area');
+
+            contentArea.addEventListener('blur', (e) => {
+                if (e.target.matches('.editable')) {
                     const card = e.target.closest('.card');
                     const category = card.dataset.category;
                     const section = card.dataset.section;
@@ -752,11 +755,11 @@
                     const field = e.target.dataset.field;
                     storyBibleData[category][section][index][field] = e.target.innerHTML;
                     saveData();
-                });
-            });
+                }
+            }, true); // Use capture phase to ensure this runs
 
-            document.querySelectorAll('.add-entry-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
+            contentArea.addEventListener('click', (e) => {
+                if (e.target.matches('.add-entry-btn')) {
                     const category = e.target.dataset.category;
                     const section = e.target.dataset.section;
                     const newEntry = {
@@ -769,32 +772,28 @@
                     storyBibleData[category][section].push(newEntry);
                     saveData();
                     renderApp();
-                });
-            });
-            
-            // Link Management Listeners
-            document.querySelectorAll('.add-link-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const editableContent = e.target.closest('.card').querySelector('[data-field="content"]');
+                } else if (e.target.matches('.add-link-btn')) {
+                     const editableContent = e.target.closest('.card').querySelector('[data-field="content"]');
                     saveSelection(editableContent);
                     addLinkModal.classList.remove('hidden');
                     document.getElementById('link-text').focus();
-                });
-            });
-
-            // Use event delegation for internal links for robustness
-            document.getElementById('content-area').addEventListener('click', e => {
-                if (e.target && e.target.matches('a.internal-link')) {
-                    e.preventDefault();
-                    // Use getAttribute for robustness
-                    const href = e.target.getAttribute('href'); 
-                    const searchTerm = decodeURIComponent(href.replace('#/search/', ''));
-                    searchInput.value = searchTerm;
-                    performSearch();
-                    searchResultsContainer.classList.add('hidden');
                 }
             });
         }
+        
+        // Attach a single, persistent listener to the document for internal links
+        document.addEventListener('click', e => {
+            const internalLink = e.target.closest('a.internal-link');
+            if (internalLink) {
+                e.preventDefault();
+                const href = internalLink.getAttribute('href'); 
+                const searchTerm = decodeURIComponent(href.replace('#/search/', ''));
+                searchInput.value = searchTerm;
+                performSearch();
+                searchResultsContainer.classList.add('hidden');
+            }
+        });
+
 
         // --- SEARCH LOGIC ---
         searchInput.addEventListener('input', performSearch);
@@ -948,9 +947,7 @@
             if (currentSelection && currentSelection.focusNode) {
                 const editable = currentSelection.focusNode.parentElement.closest('.editable');
                 if (editable) {
-                    editable.dispatchEvent(new Event('blur')); // Trigger the save
-                    // Re-render to attach new listeners
-                    renderApp();
+                    editable.dispatchEvent(new Event('blur', { bubbles: true })); // Trigger the save
                 }
             }
 
