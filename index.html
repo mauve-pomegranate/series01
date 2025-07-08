@@ -47,20 +47,39 @@
         @keyframes flash { 0% { background-color: #fcd34d; } 50% { background-color: #fef08a; } 100% { background-color: #fcd34d; } }
 
         /* Edit Mode UI */
-        .edit-mode-only { display: none; }
+        .edit-mode-only, .full-access-only { display: none; }
         body.edit-mode .edit-mode-only { display: block; }
+        body.full-access .full-access-only { display: flex; }
         
         /* Disable pointer events on links in edit mode */
         body.edit-mode .prose-custom a {
             pointer-events: none;
         }
         
+        /* Login Animation */
+        #password-overlay::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: conic-gradient(from 90deg at 50% 50%, #6366f1, #a855f7, #ec4899, #f59e0b, #84cc16, #10b981, #06b6d4, #3b82f6, #6366f1);
+            filter: blur(80px) saturate(2);
+            opacity: 0;
+            transition: opacity 2s ease-out;
+            z-index: -1;
+        }
+        #password-overlay.dissolve::after {
+            opacity: 1;
+        }
+        #password-overlay.dissolve > div {
+            transition: opacity 0.5s ease-in;
+            opacity: 0;
+        }
+
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
-    <!-- Password Protection Overlay -->
-    <div id="password-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50">
+    <div id="password-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50 transition-opacity duration-500">
         <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-sm text-center">
             <h2 class="text-2xl font-bold mb-4 text-gray-700">Enter Access Code</h2>
             <p class="text-gray-600 mb-6">This story bible is protected.</p>
@@ -70,9 +89,7 @@
         </div>
     </div>
 
-    <!-- Main Content (hidden by default) -->
     <div id="main-content" class="hidden">
-        <!-- Header -->
         <header class="bg-white shadow-md sticky top-0 z-30">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
@@ -83,7 +100,7 @@
                         <h1 class="text-xl font-bold text-gray-800 ml-2">Into the Æther: Story Bible</h1>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <div id="mode-toggle-group" class="flex items-center p-1 bg-gray-200 rounded-full">
+                        <div id="mode-toggle-group" class="flex items-center p-1 bg-gray-200 rounded-full full-access-only">
                             <button id="view-mode-btn" class="px-3 py-1 text-sm font-medium rounded-full transition-colors">View</button>
                             <button id="edit-mode-btn" class="px-3 py-1 text-sm font-medium rounded-full transition-colors">Edit</button>
                         </div>
@@ -96,32 +113,26 @@
                             </div>
                             <div id="search-results-container" class="absolute mt-1 w-full bg-white rounded-md shadow-lg z-20 hidden max-h-80 overflow-y-auto"></div>
                         </div>
-                        <button id="export-button" class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition edit-mode-only">Export for GitHub</button>
+                        <button id="export-button" class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition edit-mode-only full-access-only">Export for GitHub</button>
                         <button id="logout-button" class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-600 transition">Logout</button>
                     </div>
                 </div>
             </div>
         </header>
 
-        <!-- Main Layout -->
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="lg:grid lg:grid-cols-12 lg:gap-8">
-                <!-- Navigation Sidebar -->
                 <nav class="lg:col-span-3 mb-8 lg:mb-0">
                     <div id="navigation-container" class="sticky top-24">
-                        <!-- Navigation links will be dynamically inserted here -->
-                    </div>
+                        </div>
                 </nav>
 
-                <!-- Content Area -->
                 <main id="content-area" class="lg:col-span-9">
-                    <!-- Content sections will be dynamically inserted here -->
-                </main>
+                    </main>
             </div>
         </div>
     </div>
 
-    <!-- Add Link Modal -->
     <div id="add-link-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-40 hidden">
         <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
             <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Add a Link</h3>
@@ -147,7 +158,6 @@
         </div>
     </div>
     
-    <!-- Export Modal -->
     <div id="export-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-40 hidden">
         <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl">
             <h3 class="text-lg font-medium leading-6 text-gray-900 mb-2">Export Data for GitHub</h3>
@@ -474,9 +484,16 @@
         const linkTypeSelect = document.getElementById('link-type');
         const viewModeBtn = document.getElementById('view-mode-btn');
         const editModeBtn = document.getElementById('edit-mode-btn');
+        const exportButton = document.getElementById('export-button');
+        const exportModal = document.getElementById('export-modal');
+        const closeExportButton = document.getElementById('close-export-button');
+        const copyExportButton = document.getElementById('copy-export-button');
         const bodyEl = document.body;
         
-        const PASSWORD = "415semple"; // Password updated
+        const PASSWORDS = {
+            full: "03311985",
+            view: "415semple"
+        };
         let currentSelection = null;
 
         // --- DATA PERSISTENCE ---
@@ -501,30 +518,45 @@
 
         // --- AUTHENTICATION ---
         function checkAuth() {
-            if (sessionStorage.getItem('storyBibleAuthenticated_Aether') === 'true') {
+            const accessLevel = sessionStorage.getItem('storyBibleAccessLevel');
+            if (accessLevel) {
                 passwordOverlay.classList.add('hidden');
                 mainContent.classList.remove('hidden');
+                bodyEl.classList.toggle('full-access', accessLevel === 'full');
                 loadData();
-                setMode(false);
+                setMode(false); // Default to view mode on load
             } else {
                 passwordOverlay.classList.remove('hidden');
                 mainContent.classList.add('hidden');
             }
         }
+        
+        function handleLogin() {
+            const enteredPassword = passwordInput.value;
+            let accessLevel = null;
 
-        submitPasswordBtn.addEventListener('click', () => {
-            if (passwordInput.value === PASSWORD) {
-                sessionStorage.setItem('storyBibleAuthenticated_Aether', 'true');
-                checkAuth();
+            if (enteredPassword === PASSWORDS.full) {
+                accessLevel = 'full';
+            } else if (enteredPassword === PASSWORDS.view) {
+                accessLevel = 'view';
+            }
+
+            if (accessLevel) {
+                sessionStorage.setItem('storyBibleAccessLevel', accessLevel);
+                passwordOverlay.classList.add('dissolve');
+                passwordOverlay.addEventListener('transitionend', () => {
+                     checkAuth();
+                }, { once: true });
             } else {
                 passwordError.classList.remove('hidden');
                 passwordInput.classList.add('border-red-500');
             }
-        });
+        }
 
+        submitPasswordBtn.addEventListener('click', handleLogin);
         passwordInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                submitPasswordBtn.click();
+                handleLogin();
             }
         });
         
@@ -534,7 +566,7 @@
         });
 
         logoutButton.addEventListener('click', () => {
-            sessionStorage.removeItem('storyBibleAuthenticated_Aether');
+            sessionStorage.removeItem('storyBibleAccessLevel');
             location.reload();
         });
 
@@ -698,6 +730,27 @@
                 }
             });
         }
+        
+        // --- EXPORT LOGIC ---
+        exportButton.addEventListener('click', () => {
+            const dataString = `let storyBibleData = ${JSON.stringify(storyBibleData, null, 4)};`;
+            document.getElementById('export-textarea').value = dataString;
+            exportModal.classList.remove('hidden');
+        });
+
+        closeExportButton.addEventListener('click', () => {
+            exportModal.classList.add('hidden');
+        });
+        
+        copyExportButton.addEventListener('click', () => {
+            const textarea = document.getElementById('export-textarea');
+            textarea.select();
+            document.execCommand('copy');
+            copyExportButton.textContent = 'Copied!';
+            setTimeout(() => {
+                 copyExportButton.textContent = 'Copy to Clipboard';
+            }, 2000);
+        });
 
         // --- SEARCH LOGIC ---
         function executeSearchAndDisplay(query) {
