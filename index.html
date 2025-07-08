@@ -1,1000 +1,231 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Into the Æther: Story Bible</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <style>
-        /* Custom Styles */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-        }
-        .prose-custom {
-            font-family: 'Lora', serif;
-        }
-        .prose-custom h1, .prose-custom h2, .prose-custom h3, .prose-custom h4, .prose-custom h5 {
-            font-family: 'Inter', sans-serif;
-            font-weight: 700;
-        }
-        .card {
-            background-color: #ffffff;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            transition: box-shadow 0.3s ease-in-out;
-        }
-        .card:hover {
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-        }
-        .editable[contenteditable="true"]:focus {
-            outline: 2px solid #4f46e5;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-        }
-        /* Link Styles */
-        .prose-custom a.internal-link { color: #6d28d9; text-decoration: none; font-weight: 600; cursor: pointer; }
-        .prose-custom a.internal-link:hover { text-decoration: underline; }
-        .prose-custom a.external-link { color: #059669; text-decoration: none; font-weight: 600; }
-        .prose-custom a.external-link:hover { text-decoration: underline; }
-        .prose-custom a.external-link::after { content: ' ↗'; display: inline-block; font-size: 0.8em; vertical-align: super; }
-        
-        /* Search Highlight */
-        .highlight { background-color: #fef08a; border-radius: 0.25rem; padding: 0 2px; }
-        .search-highlight { background-color: #fcd34d; animation: flash 1.5s ease-in-out; }
-        @keyframes flash { 0% { background-color: #fcd34d; } 50% { background-color: #fef08a; } 100% { background-color: #fcd34d; } }
-
-        /* Edit Mode UI */
-        #mode-toggle-group, #export-button { display: none; }
-        body.full-access #mode-toggle-group { display: flex; }
-        body.edit-mode.full-access #export-button { display: block; }
-        
-        .add-entry-btn, .add-link-btn { display: none; }
-        body.edit-mode .add-entry-btn, body.edit-mode .add-link-btn { display: block; }
-        
-        body.edit-mode .prose-custom a { pointer-events: none; }
-        
-        /* Login Animation */
-        #password-overlay.dissolving { opacity: 0; transition: opacity 1.5s ease-out; }
-        #password-overlay.dissolving::after {
-            content: ''; position: absolute; inset: 0;
-            background: conic-gradient(from 90deg at 50% 50%, #6366f1, #a855f7, #ec4899, #f59e0b, #84cc16, #10b981, #06b6d4, #3b82f6, #6366f1);
-            filter: blur(80px) saturate(2); opacity: 1; transition: opacity 1s ease-out; z-index: 1;
-        }
-        #password-overlay.dissolving > div { transition: opacity 0.5s ease-in; opacity: 0; }
-
-        /* Collapsible Sections */
-        summary {
-            cursor: pointer;
-            list-style: none; /* Remove default marker */
-            display: flex;
-            align-items: center;
-            font-weight: 600;
-        }
-        summary::-webkit-details-marker { display: none; }
-        summary::before {
-            content: '+';
-            margin-right: 0.5rem;
-            font-size: 1.25em;
-            line-height: 1;
-            transition: transform 0.2s;
-        }
-        details[open] > summary::before {
-            transform: rotate(45deg);
-        }
-    </style>
-</head>
-<body class="bg-gray-100 text-gray-800">
-
-    <!-- Password Protection Overlay -->
-    <div id="password-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50">
-        <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-sm text-center">
-            <h2 class="text-2xl font-bold mb-4 text-gray-700">Enter Access Code</h2>
-            <p class="text-gray-600 mb-6">This story bible is protected.</p>
-            <input type="password" id="password-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Password">
-            <button id="submit-password" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors">Unlock</button>
-            <p id="password-error" class="text-red-500 mt-4 text-sm hidden">Incorrect password. Please try again.</p>
-        </div>
-    </div>
-
-    <!-- Main Content (hidden by default) -->
-    <div id="main-content" class="hidden">
-        <!-- Header -->
-        <header class="bg-white shadow-md sticky top-0 z-30">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between h-16">
-                    <div class="flex items-center">
-                        <svg class="h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18"/>
-                        </svg>
-                        <h1 class="text-xl font-bold text-gray-800 ml-2">Into the Æther: Story Bible</h1>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <div id="mode-toggle-group" class="flex items-center p-1 bg-gray-200 rounded-full full-access-only">
-                            <button id="view-mode-btn" class="px-3 py-1 text-sm font-medium rounded-full transition-colors">View</button>
-                            <button id="edit-mode-btn" class="px-3 py-1 text-sm font-medium rounded-full transition-colors">Edit</button>
-                        </div>
-                        <div class="relative w-64">
-                            <input type="search" id="search-input" class="w-full pl-10 pr-4 py-2 border rounded-full text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Search bible...">
-                            <div class="absolute top-0 left-0 mt-2 ml-3">
-                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </div>
-                            <div id="search-results-container" class="absolute mt-1 w-full bg-white rounded-md shadow-lg z-20 hidden max-h-80 overflow-y-auto"></div>
-                        </div>
-                        <button id="export-button" class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition edit-mode-only full-access-only">Export for GitHub</button>
-                        <button id="logout-button" class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-600 transition">Logout</button>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Main Layout -->
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="lg:grid lg:grid-cols-12 lg:gap-8">
-                <!-- Navigation Sidebar -->
-                <nav class="lg:col-span-3 mb-8 lg:mb-0">
-                    <div id="navigation-container" class="sticky top-24">
-                        <!-- Navigation links will be dynamically inserted here -->
-                    </div>
-                </nav>
-
-                <!-- Content Area -->
-                <main id="content-area" class="lg:col-span-9">
-                    <!-- Content sections will be dynamically inserted here -->
-                </main>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add Link Modal -->
-    <div id="add-link-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-40 hidden">
-        <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
-            <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Add a Link</h3>
-            <div>
-                <label for="link-text" class="block text-sm font-medium text-gray-700">Link Text</label>
-                <input type="text" id="link-text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-            </div>
-            <div class="mt-4">
-                <label for="link-type" class="block text-sm font-medium text-gray-700">Link Type</label>
-                <select id="link-type" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                    <option value="internal">Internal Cross-Reference</option>
-                    <option value="external">External Link (e.g., Wikipedia)</option>
-                </select>
-            </div>
-            <div class="mt-4">
-                <label for="link-target" class="block text-sm font-medium text-gray-700" id="link-target-label">Reference (Entry Name)</label>
-                <input type="text" id="link-target" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., Alex 'Bowie' Shepard">
-            </div>
-            <div class="mt-6 flex justify-end space-x-3">
-                <button id="cancel-link-button" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Cancel</button>
-                <button id="insert-link-button" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Insert Link</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Export Modal -->
-    <div id="export-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-40 hidden">
-        <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl">
-            <h3 class="text-lg font-medium leading-6 text-gray-900 mb-2">Export Data for GitHub</h3>
-            <p class="text-sm text-gray-600 mb-4">Copy the text below and paste it over the `let storyBibleData = { ... };` variable in your `index.html` file on GitHub to save your changes permanently.</p>
-            <textarea id="export-textarea" class="w-full h-64 p-2 border border-gray-300 rounded-md font-mono text-xs"></textarea>
-            <div class="mt-4 flex justify-end space-x-3">
-                 <button id="copy-export-button" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Copy to Clipboard</button>
-                <button id="close-export-button" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Close</button>
-            </div>
-        </div>
-    </div>
-
-
-    <script>
-    // --- DATA STORE ---
-    let storyBibleData = {
-        "Series Overview": {
-            "The Foxfire Cycle": [
-                {
-                    title: "Series Logline",
-                    content: `<p>In a reality secretly trapped in a repeating cosmic cycle, a group of individuals—an American expatriate whose soul is fractured across worlds, a half-kitsune investigator haunted by her heritage, and a resilient survivor from a broken America—discover that their struggles against corporate conspiracies and ancient entities are echoes of past failures. They must harness their unique, cycle-breaking experiences to confront a tragic antagonist who seeks to "save" all existence by ending it, and in doing so, find a way to achieve a true, final reality.</p>`
-                },
-                {
-                    title: "Core Premise",
-                    content: `<p>The events of the trilogy are part of a time loop. The universe is stuck, repeating a series of catastrophic events involving the convergence of realms and the entity known as the <a href="#/search/The Kirin" class="internal-link">Kirin</a>. The true, hidden antagonist is <a href="#/search/Mushoku" class="internal-link">Mushoku</a>, a being who has become aware of this loop and, believing there is no escape, seeks to bring about "<a href="#/search/Sunyata (The Void)" class="internal-link">Sunyata</a>" (the void) as a merciful end to all existence's eternal suffering. The protagonists' journey is not just to stop the villains of their cycle, but to generate a novel outcome that finally breaks the loop.</p>`
-                }
-            ]
-        },
-        "Characters": {
-            "Primary Protagonists & Key Figures": [
-                {
-                    title: "Alex 'Bowie' Shepard",
-                    content: `
-                        <p><strong>Physical Description:</strong> American/Caucasian/White Man, Early 30's, 5'11", Average build, Light brown hair, Hazel eyes. Scar on chest from knife (hence the name "Bowie").</p>
-                        <p><strong>Overview:</strong> An American expatriate in Tokyo, working for a <a href="#/search/Mobex Corporation" class="internal-link">Mobex Corporation</a> shell company to maintain his work visa and avoid returning to the <a href="#/search/New American Republic (NAR)" class="internal-link">New American Republic (NAR)</a> where his sister <a href="#/search/Carly Shepard" class="internal-link">Carly Shepard</a> resides. He becomes entangled in the supernatural mystery surrounding <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Yume Minamoto / Sakura</a>. His journey involves developing Ætheric sensitivity (manifesting as migraines), being guided by cryptic clues from entities like <a href="#/search/Mr. Whispers" class="internal-link">Mr. Whispers</a>, and eventually being "split" into two versions due to the <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a> incident.</p>
-                        <p><strong>Key Traits:</strong> Observant, determined, develops empathy and a strong sense of responsibility. Susceptible to migraines linked to Ætheric sensitivity. Resourceful but often out of his depth in purely magical situations.</p>
-                        <p><strong>Motivations:</strong> Search for belonging, innate justice, visa security, and guilt over leaving his sister. Post-split, his drive is to understand his fractured nature and honor his other half's sacrifice.</p>
-                        <p><strong>Book Arcs:</strong></p>
-                        <ul>
-                            <li><strong><a href="#/search/Book 1: Fate and Foxfire" class="internal-link">Book 1: Fate and Foxfire</a>:</strong> Tasked to find Yume. Follows clues (katakana for "Tulpa"), teams with <a href="#/search/Mizuki / Hisoka" class="internal-link">Mizuki / Hisoka</a>. Attempts a ritual to save Yume from the <a href="#/search/The Æther" class="internal-link">Æther</a>. Enters the <a href="#/search/Kozyrev Mirror" class="internal-link">Kozyrev Mirror</a> on <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a>, leading to his splitting and memory wipe by Mizuki. Receives an encrypted message from "K" (<a href="#/search/Kurai" class="internal-link">Kurai</a>) in the epilogue.</li>
-                            <li><strong><a href="#/search/Book 2: Family and Folklore" class="internal-link">Book 2: Family and Folklore</a> (NAR-Bowie):</strong> A "split" version in the NAR. Found in a stasis pod. Sacrifices himself to save Carly.</li>
-                            <li><strong><a href="#/search/Book 3: Faith and Finality" class="internal-link">Book 3: Faith and Finality</a> (Japan-Bowie):</strong> Original <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a>, memories wiped. Must confront his fractured nature and the new cosmic threat, <a href="#/search/Mushoku" class="internal-link">Mushoku</a>. Potentially re-merges with his other half.</li>
-                        </ul>
-                        <p><strong>Relationships:</strong> <a href="#/search/Mizuki / Hisoka" class="internal-link">Mizuki / Hisoka</a> (complex alliance), <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Yume / Sakura</a> (initial case), <a href="#/search/Carly Shepard" class="internal-link">Carly Shepard</a> (sister), <a href="#/search/Mr. Whispers" class="internal-link">Mr. Whispers</a> (guide), <a href="#/search/Zed" class="internal-link">Zed</a> (antique dealer).</p>
-                    `,
-                    realWorldEquivalent: `<p>His expatriate experience can be compared to the feeling of cultural displacement and search for identity found in the literature of authors like James Baldwin or Ernest Hemingway.</p>`
-                },
-                {
-                    title: "Mizuki / Hisoka",
-                    content: `
-                        <p><strong>Physical Description:</strong> Japanese woman, Late 20's, 5'2", Slender-fit build, Black hair with bangs, Amber colored eyes.</p>
-                        <p><strong>Parentage:</strong> Father is a <a href="#/search/Kitsune (Fox Spirits)" class="internal-link">kitsune</a>, Mother is <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Sakura</a> (a <a href="#/search/Thought Forms (Tulpas/Egregores)" class="internal-link">tulpa</a>).</p>
-                        <p><strong>Overview:</strong> An independent researcher driven by her mother Sakura's vanishing. She is half-kitsune (kitsune-kin), initially unaware of her full heritage, but her powers (phasing, <a href="#/search/Foxfire" class="internal-link">foxfire</a>) awaken during Book 1, leading her to embrace the name Hisoka, her true kitsune name.</p>
-                        <p><strong>Key Traits:</strong> Intelligent, resourceful, initially guarded and pragmatic, becomes immensely powerful. Deeply connected to the <a href="#/search/The Æther" class="internal-link">Æther</a> and kitsune lore.</p>
-                        <p><strong>Motivations:</strong> To understand her dual heritage, honor her mother, and accept the responsibilities of her power. Her initial guardedness stems from a lifetime of hiding her true nature.</p>
-                    `,
-                    realWorldEquivalent: `<p>Her kitsune heritage draws from Japanese folklore, specifically tales of fox spirits who are often depicted as intelligent, powerful, and sometimes deceptive beings. See <a href="https://en.wikipedia.org/wiki/Kitsune" class="external-link" target="_blank" rel="noopener noreferrer">Kitsune on Wikipedia</a>.</p>`
-                },
-                {
-                    title: "Carly Shepard",
-                    content: `
-                        <p><strong>Overview:</strong> Alex's sister living in the <a href="#/search/New American Republic (NAR)" class="internal-link">New American Republic (NAR)</a>. A resourceful tech scavenger who becomes involved in the wider conflict.</p>
-                        <p><strong>Key Traits:</strong> Resilient, practical, skilled scavenger and forager, strong familial loyalty. Learns to adapt to supernatural elements, including local folk magic.</p>
-                        <p><strong>Motivations:</strong> Unbreakable familial love for Alex, immense survivor's guilt after NAR-Bowie's death, and a need to find her own strength and seek justice.</p>
-                        <p><strong>Relationships:</strong> <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Alex 'Bowie' Shepard</a> (brother), <a href="#/search/Aoi" class="internal-link">Aoi</a> (information contact), <a href="#/search/Shikako ('Onryō')" class="internal-link">Shikako</a> (uneasy ally), <a href="#/search/Fredrik Sørensen" class="internal-link">Fredrik Sørensen</a> (temporary, untrustworthy ally).</p>
-                    `,
-                    realWorldEquivalent: `<p>Her skills in scavenging and survival in a collapsed society are reminiscent of characters in post-apocalyptic fiction like Cormac McCarthy's "The Road". Her learning of folk magic connects to traditions like Appalachian folk medicine or Pennsylvania Dutch Pow-wow.</p>`
-                },
-                {
-                    title: "Shikako ('Onryō')",
-                    content: `
-                        <p><strong>Physical Description:</strong> Japanese woman, Early 30's, 5'7", Muscular build, Short cropped hair with silver streaks. Cybernetically enhanced feet and fingers.</p>
-                        <p><strong>Overview:</strong> A highly skilled <a href="#/search/Zenko Order" class="internal-link">Zenko Order</a> operative, working via Kiban Myobu. Possesses cybernetic enhancements. Initially detached and mission-focused, she gradually develops a degree of empathy.</p>
-                        <p><strong>Key Traits:</strong> Highly skilled (infiltration, combat, tech). Professional, detached, loyal to mission parameters (initially).</p>
-                    `,
-                    realWorldEquivalent: `<p>Her character archetype is similar to cybernetically enhanced operatives in cyberpunk fiction, such as Major Motoko Kusanagi from <a href="https://en.wikipedia.org/wiki/Ghost_in_the_Shell" class="external-link" target="_blank" rel="noopener noreferrer">Ghost in the Shell</a>.</p>`
-                },
-                {
-                    title: "Aoi",
-                    content: `
-                        <p><strong>Physical Description:</strong> Late 20's - early 30's, 5'4", Lean build, Bright blue hair, cargo pants, combat boots, hoodie. Always has electronic gadgets and an encrypted data disk around her neck.</p>
-                        <p><strong>Overview:</strong> A highly skilled data wrangler/hacker operating from a fortified bunker in the <a href="#/search/New American Republic (NAR)" class="internal-link">NAR</a>. Initially transactional ("credits are credits"), she develops loyalty to the group, especially after partially manifesting on <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a> via her comms link.</p>
-                        <p><strong>Key Traits:</strong> Highly skilled hacker, resourceful, sarcastic, direct. "Homegrown" (no cybernetic mods).</p>
-                    `,
-                    realWorldEquivalent: `<p>Represents the archetypal off-grid hacker from cyberpunk literature, like the console cowboys in William Gibson's <a href="https://en.wikipedia.org/wiki/Neuromancer" class="external-link" target="_blank" rel="noopener noreferrer">Neuromancer</a>, who operate outside the system and trade in the valuable currency of information.</p>`
-                }
-            ],
-            "Key Antagonists": [
-                {
-                    title: "Mushoku",
-                    content: `
-                        <p><strong>Overview:</strong> The primary antagonist of Book 3. A human or partial human with immense power.</p>
-                        <p><strong>Key Traits:</strong> Extremely powerful, philosophical, and tragic. His power may stem from his unique perception of reality.</p>
-                        <p><strong>Motivations (Deeper):</strong> Mushoku's motivation is not nihilism, but a twisted form of mercy. He perceives reality as an endless, meaningless time loop—a cosmic prison of repeating suffering. Having experienced countless iterations of events, he has concluded that the only true escape, the only salvation for all beings, is to end the cycle permanently through <a href="#/search/Sunyata (The Void)" class="internal-link">Sunyata</a> (the void). He sees his catastrophic actions as the ultimate act of compassion, releasing everyone from a prison only he can see.</p>
-                        <p><strong>Book Arc (Book 3):</strong> He is the final, hidden antagonist of the cycle. His actions are aimed at gathering the power needed to unmake existence. The protagonists must not only stop him but confront the horrifying possibility that his perception of reality might be right. Defeating him requires breaking the cycle itself, proving that a new outcome is possible.</p>
-                    `,
-                    realWorldEquivalent: `<p>His philosophy draws from the Buddhist concept of <a href="https://en.wikipedia.org/wiki/%C5%9A%C5%ABnyat%C4%81" class="external-link" target="_blank" rel="noopener noreferrer">Śūnyatā (Emptiness)</a>, but twisted into a destructive, nihilistic goal. He becomes a tragic "savior" figure, similar to characters who believe in annihilation for a perceived greater good, but with the added horror of being trapped in a time loop like the protagonist of the film <a href="https://en.wikipedia.org/wiki/Groundhog_Day_(film)" class="external-link" target="_blank" rel="noopener noreferrer">Groundhog Day</a>, but on a cosmic scale.</p>`
-                },
-                {
-                    title: "Commander Colt",
-                    content: `
-                        <p><strong>Physical Description:</strong> Imposing man in his late 40s, 6'2", muscular build. Close-cropped salt-and-pepper hair, steely gray eyes, weathered and scarred face. Cybernetically enhanced (damaged left leg).</p>
-                        <p><strong>Background & Motivation:</strong> Born to Korean parents in Japan (Zainichi), he faced discrimination and hit a glass ceiling within the <a href="#/search/Yako Syndicate" class="internal-link">Yako Syndicate</a>. This fueled a ruthless, obsessive drive to gain power by any means. He believes he can control cosmic forces like the <a href="#/search/The Kirin" class="internal-link">Kirin</a>.</p>
-                        <p><strong>Overview:</strong> High-ranking <a href="#/search/Yako Syndicate" class="internal-link">Yako Syndicate</a> operative overseeing <a href="#/search/Project Tsunagari" class="internal-link">Project Tsunagari</a> on <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a>. Ruthless and ambitious.</p>
-                    `,
-                    realWorldEquivalent: `<p>His struggle as a Zainichi individual in Japan reflects real-world social and political issues regarding ethnicity and citizenship in the country. See <a href="https://en.wikipedia.org/wiki/Koreans_in_Japan" class="external-link" target="_blank" rel="noopener noreferrer">Koreans in Japan on Wikipedia</a>.</p>`
-                },
-                {
-                    title: "Yako Syndicate",
-                    content: `<p>The primary antagonistic organization in Book 1, seeking to control <a href="#/search/The Kirin" class="internal-link">The Kirin</a>. A criminal organization with deep roots in the corporate and supernatural worlds, aligned with the malevolent Yako <a href="#/search/Kitsune (Fox Spirits)" class="internal-link">kitsune</a> archetype. They use corporations like <a href="#/search/Mobex Corporation" class="internal-link">Mobex</a> and <a href="#/search/Kagami Tenko Corporation" class="internal-link">Kagami Tenko</a> as fronts.</p>`,
-                    realWorldEquivalent: `<p>This organization blends the concept of the Japanese Yakuza with a supernatural, conspiratorial element, similar to the Vampire Clans in <a href="https://en.wikipedia.org/wiki/Vampire:_The_Masquerade" class="external-link" target="_blank" rel="noopener noreferrer">Vampire: The Masquerade</a> or the shadowy corporations in cyberpunk fiction that operate above the law.</p>`
-                }
-            ],
-            "Mentors, Guides, & Other Significant Figures": [
-                {
-                    title: "Ichiro Kobayashi",
-                    content: `<p><strong>Overview:</strong> A very old man, possibly not human, who appears as an elderly fortune teller. He gives <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Yume</a> her special <a href="#/search/Ichiro Kobayashi's Special Tarot Deck" class="internal-link">tarot deck</a> in <a href="#/search/Watanabe Park" class="internal-link">Watanabe Park</a>. He may be a being who exists partially outside the time loop, attempting to nudge events toward a new outcome.</p>`
-                },
-                {
-                    title: "Mr. Whispers",
-                    content: `<p><strong>Overview:</strong> A talking white Persian cat with blue eyes and a golden hue who commands the "Kitty Coalition". He acts as an enigmatic guide to <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a>, providing cryptic advice. His knowledge may stem from retaining memories of past cycles.</p>`
-                },
-                {
-                    title: "Professor Shin'en Tajima",
-                    content: `<p><strong>Overview:</strong> A Japanese scientist in his mid-late 60s, expert on <a href="#/search/Ley Lines" class="internal-link">ley lines</a>. He developed the <a href="#/search/Aringold Circuit Routers (ARCs)" class="internal-link">ARCs</a>. Coerced by <a href="#/search/Commander Colt" class="internal-link">Colt</a>, his conscience awakens, and he chooses redemption by sacrificing himself to disrupt <a href="#/search/Project Tsunagari" class="internal-link">Project Tsunagari</a>, a heroic act that repeats in the cycle.</p>`
-                },
-                {
-                    title: "Dr. Gordon Kionomiki",
-                    content: `<p><strong>Overview:</strong> A Mobex scientist and colleague of <a href="#/search/Professor Shin'en Tajima" class="internal-link">Professor Tajima</a>. An expert in dimensional theory and occult sciences, he was a lead on <a href="#/search/Project Sakura" class="internal-link">Project Sakura</a>. He attempted to defect with critical information about <a href="#/search/Project Tsunagari" class="internal-link">Project Tsunagari</a> but was assassinated in a Shibuya alley after meeting a contact. His intel was relayed to Tajima via another defector.</p>`
-                },
-                {
-                    title: "The Harbinger",
-                    content: `<p><strong>Overview:</strong> A robed, kitsune-masked figure encountered by <a href="#/search/Kurai" class="internal-link">Kurai</a> in the <a href="#/search/The Æther" class="internal-link">Æther</a>. The Harbinger warns of <a href="#/search/The Kirin" class="internal-link">The Kirin</a> and the <a href="#/search/Project Tsunagari" class="internal-link">Convergence</a>, possibly trying to influence the current cycle based on knowledge of past ones.</p>`
-                },
-                {
-                    title: "Kurai & Takuma",
-                    content: `<p><strong>Overview:</strong> Journalists for the <a href="#/search/Kogitsune Kai" class="internal-link">Kogitsune Kai</a>. <a href="#/search/Kurai" class="internal-link">Kurai</a>'s Ætheric sensitivity may allow her to perceive echoes or bleed-through from previous iterations of the time loop, explaining her visions. As "K," she sends the epilogue message to <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a>, a key step in altering the cycle.</p>`
-                }
-            ],
-            "Minor Characters": [
-                {
-                    title: "The Bird-Watching Lady",
-                    content: `<p>An elderly woman in a red ombré turtleneck whom <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> encounters in <a href="#/search/Watanabe Park" class="internal-link">Watanabe Park</a>. She cryptically discusses the power of names and is the first to confirm seeing <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Yume</a> with the fortune teller, <a href="#/search/Ichiro Kobayashi" class="internal-link">Ichiro Kobayashi</a>.</p>`
-                },
-                {
-                    title: "Akihiko Saito",
-                    content: `<p>A Supply Chain Analyst for <a href="#/search/Mobex Corporation" class="internal-link">Mobex Corporation</a>. He bumps into <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> in the park and also confirms seeing <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Yume</a>. Bowie later uses his name as a ruse to gain access to the Mobex building.</p>`
-                },
-                {
-                    title: "Daisuke Ito",
-                    content: `<p>A young boy playing in a sandbox in <a href="#/search/Watanabe Park" class="internal-link">Watanabe Park</a>. He confirms seeing <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Yume</a> with the "old guy with cards" and points <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> towards the Torii gate, guided by the "Kitty Coalition."</p>`
-                },
-                {
-                    title: "The Vagrant",
-                    content: `<p>A man near the <a href="#/search/The Bookstall" class="internal-link">bookstall</a> who accosts <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a>, shouting, "The eyes of the mirror can see you in this cycle!" This line hints at the story's larger time loop premise.</p>`
-                },
-                {
-                    title: "The Painter's Nephew",
-                    content: `<p>The executor of his aunt's estate. He sells <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> the crucial <a href="#/search/The Painter's Journal & Brass Key" class="internal-link">painter's journal</a>, mentioning her obsession with "kitsune and Æther" and "the hands pull, what the mirror can't show."</p>`
-                },
-                {
-                    title: "Liv",
-                    content: `<p>A member of the <a href="#/search/Nogitsune Union" class="internal-link">Nogitsune Union</a> with a bright pink pompadour. She rescues <a href="#/search/Shikako ('Onryō')" class="internal-link">Shikako</a> from the <a href="#/search/Yako Syndicate" class="internal-link">Yako Syndicate</a> on a motorcycle after her infiltration of <a href="#/search/Kagami Tenko Corporation" class="internal-link">Kagami Tenko</a>.</p>`
-                },
-                {
-                    title: "Orion",
-                    content: `<p>A sniper for the <a href="#/search/Yako Syndicate" class="internal-link">Yako Syndicate</a> who hunts <a href="#/search/Shikako ('Onryō')" class="internal-link">Shikako</a> after her escape, successfully tagging her with a nano tracker.</p>`
-                },
-                {
-                    title: "Taro",
-                    content: `<p>A <a href="#/search/Kappa (Taro)" class="internal-link">Kappa</a> living in the sewer system of the <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a> facility. After <a href="#/search/Shikako ('Onryō')" class="internal-link">Shikako</a> shows him kindness, he befriends her and provides her with scavenged scuba gear to help her escape through the <a href="#/search/Ikanajima Underwater Caverns" class="internal-link">underwater caverns</a>.</p>`
-                },
-                {
-                    title: "Alec & Javier",
-                    content: `<p>Two researchers at <a href="#/search/Mobex Corporation" class="internal-link">Mobex</a> whose overheard conversation provides exposition on the theoretical creation of <a href="#/search/Thought Forms (Tulpas/Egregores)" class="internal-link">tulpas/egregores</a> (Projects Shinengata and Eidolon) and the <a href="#/search/PROTOCOL Network" class="internal-link">PROTOCOL network</a>.</p>`
-                }
-            ]
-        },
-        "Key Locations": {
-            "Otherworldly": [
-                {
-                    title: "The Æther",
-                    content: `
-                        <p><strong>Nature:</strong> A liminal, energetic dimension existing between/underlying realities. It is mutable, responsive to consciousness/intent, and time within it is non-linear. It is the source of immense power.</p>
-                        <p><strong>Manifestations:</strong> Can appear as a white void (Yume's initial prison), a lush forest (sometimes with talking trees), or a kaleidoscope of colors.</p>
-                        <p><strong>Access:</strong> Gained through natural nexuses (<a href="#/search/Ley Lines" class="internal-link">ley line</a> convergences like <a href="#/search/Watanabe Park" class="internal-link">Watanabe Park</a>), innate ability (<a href="#/search/Kitsune (Fox Spirits)" class="internal-link">kitsune</a>), ritual magic, or advanced technology (the <a href="#/search/Kozyrev Mirror" class="internal-link">Kozyrev Mirror</a>).</p>
-                    `,
-                    realWorldEquivalent: `<p>The concept is similar to the Astral Plane in theosophy and occult traditions, or the Fade in the Dragon Age video game series. It also shares traits with the "Upside Down" from <a href="https://en.wikipedia.org/wiki/Stranger_Things" class="external-link" target="_blank" rel="noopener noreferrer">Stranger Things</a>, a parallel dimension that mirrors and affects our own.</p>`
-                }
-            ],
-            "Japan": [
-                {
-                    title: "Ikanajima Island",
-                    content: `
-                        <p>A remote island in the Pacific, formerly a religious site, bought by shell companies. It is the site of the <a href="#/search/Yako Syndicate" class="internal-link">Yako Syndicate</a>/<a href="#/search/Kagami Tenko Corporation" class="internal-link">Kagami Tenko</a>'s <a href="#/search/Project Tsunagari" class="internal-link">Project Tsunagari</a>. It is a powerful <a href="#/search/Ley Lines" class="internal-link">ley line</a> nexus and houses the <a href="#/search/Kozyrev Mirror" class="internal-link">Kozyrev Mirror</a>, <a href="#/search/Aringold Circuit Routers (ARCs)" class="internal-link">ARC routers</a>, and a nexus crystal. It is the site of <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie's</a> fracturing, the key anomaly that alters the time loop.</p>
-                    `,
-                    realWorldEquivalent: `<p>The concept of a mysterious, technologically advanced, and dangerous island is a classic trope, seen in works like <a href="https://en.wikipedia.org/wiki/The_Island_of_Doctor_Moreau" class="external-link" target="_blank" rel="noopener noreferrer">The Island of Doctor Moreau</a>, Michael Crichton's Jurassic Park, or the TV series <a href="https://en.wikipedia.org/wiki/Lost_(TV_series)" class="external-link" target="_blank" rel="noopener noreferrer">Lost</a>.</p>`
-                },
-                {
-                    title: "Watanabe Park",
-                    content: `<p>A key location in Tokyo and a powerful <a href="#/search/Ley Lines" class="internal-link">ley line</a> nexus. It is the site of <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Yume's</a> disappearance and <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie's</a> initial investigation. A fountain in the park hides an entrance to underground tunnels that lead to a portal to the <a href="#/search/The Æther" class="internal-link">Æther</a>.</p>`
-                },
-                {
-                    title: "Love Hotel (Room 413)",
-                    content: `<p>A kitsch hotel near Lake Ashi. Room 413 is a site of reality bleed, appearing on a non-existent fourth floor. It contains an altar with ritual artifacts, including the <a href="#/search/Scrying Mirror" class="internal-link">scrying mirror</a>, which are crucial to Bowie's investigation.</p>`
-                },
-                {
-                    title: "The Bookstall",
-                    content: `<p>A small, outdoor book donation stall where <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a>, guided by the "Kitty Coalition," finds a leather-bound book with the first katakana clue (ル) for "Tulpa."</p>`
-                },
-                {
-                    title: "DRI-WET Izakaya",
-                    content: `<p>A small bar where <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> and <a href="#/search/Mizuki / Hisoka" class="internal-link">Mizuki</a> are drugged by the bartender, Myles. The name was recommended by <a href="#/search/Zed" class="internal-link">Zed</a>.</p>`
-                },
-                {
-                    title: "The Shibuya Dive Bar",
-                    content: `<p>A dimly lit bar in Shibuya where <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> is drugged for a second time. Here, a man in a hat gives him the crucial tip about the <a href="#/search/The Painter's Journal & Brass Key" class="internal-link">painter's journal</a>.</p>`
-                },
-                {
-                    title: "Subway Maintenance Room",
-                    content: `<p>An unmarked room on the Shinjuku Line where <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a>, guided by an internal voice, performs his second, successful ritual to open a portal to the <a href="#/search/The Æther" class="internal-link">Æther</a> and rescue <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Yume</a>.</p>`
-                },
-                {
-                    title: "Ikanajima Underwater Caverns",
-                    content: `<p>A network of caverns beneath the <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a> facility. <a href="#/search/Shikako ('Onryō')" class="internal-link">Shikako</a> escapes through here with the help of <a href="#/search/Taro" class="internal-link">Taro</a>. The caverns contain ancient ruins with murals depicting strange creatures and star systems, as well as the dangerous <a href="#/search/Denki-Ōunagi" class="internal-link">Denki-Ōunagi</a>.</p>`
-                }
-            ],
-            "New American Republic (NAR)": [
-                {
-                    title: "NAR Overview",
-                    content: `
-                        <p>The fractured, post-war remnants of the USA. It is characterized by feudal city-states, a barter economy, resource scarcity, and Ætheric "scarring" from past metaphysical events, especially in the Appalachian Mountains. The NAR is home to <a href="#/search/Carly Shepard" class="internal-link">Carly Shepard</a>, <a href="#/search/Aoi" class="internal-link">Aoi</a>, and various <a href="#/search/Cryptids (NAR)" class="internal-link">cryptids</a>. It contains a particle accelerator facility that is a sister site to the research on <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a>.</p>
-                    `,
-                    realWorldEquivalent: `<p>Draws inspiration from post-apocalyptic settings like those in the <a href="https://en.wikipedia.org/wiki/Fallout_(series)" class="external-link" target="_blank" rel="noopener noreferrer">Fallout</a> video game series or the novel <a href="https://en.wikipedia.org/wiki/A_Canticle_for_Leibowitz" class="external-link" target="_blank" rel="noopener noreferrer">A Canticle for Leibowitz</a>, which explore themes of societal collapse, technological regression, and the rise of new, fragmented societies.</p>`
-                }
-            ]
-        },
-        "Detailed Outline": {
-            "Book 1: Fate and Foxfire": [
-                {
-                    title: "Section: (Not a) Walk in the Park",
-                    content: `<h5>Chapter: A Walk in the Park</h5><p><a href="#/search/Yume Minamoto / Sakura" class="internal-link">Yume Minamoto</a>, feeling something is off in <a href="#/search/Watanabe Park" class="internal-link">Watanabe Park</a>, is drawn to an elderly fortune teller, <a href="#/search/Ichiro Kobayashi" class="internal-link">Ichiro Kobayashi</a>. During a tarot reading, reality dissolves into a white void where she hears cryptic phrases. When the park returns, Kobayashi is gone, leaving behind his rare <a href="#/search/Ichiro Kobayashi's Special Tarot Deck" class="internal-link">tarot deck</a>. That night, she dreams of a talking cherry blossom tree telling her to "return the gift to the source." She returns to the park the next day, finds Kobayashi, and he gifts her the deck permanently before vanishing. Yume then disappears in a stream of colors, finding herself trapped in a white, liminal space—the <a href="#/search/The Æther" class="internal-link">Æther</a>.</p><p>&nbsp;</p><h5>Chapter: Vanishing Melody</h5><p><a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Alex "Bowie" Shepard</a> is tasked by his <a href="#/search/Mobex Corporation" class="internal-link">Mobex</a> shell-company boss to find the missing Yume. His investigation begins in <a href="#/search/Watanabe Park" class="internal-link">Watanabe Park</a>, where he encounters the cryptic <a href="#/search/The Bird-Watching Lady" class="internal-link">Bird-Watching Lady</a> and a salaryman, <a href="#/search/Akihiko Saito" class="internal-link">Akihiko Saito</a>. He is then guided by a trio of synchronized tabby cats toward a Torii gate, where he experiences an Æther-linked migraine.</p><p>&nbsp;</p><h5>Chapter: Shrouded Intuition</h5><p><a href="#/search/Mizuki / Hisoka" class="internal-link">Mizuki</a>, investigating disappearances, contacts the hacker <a href="#/search/Aoi" class="internal-link">Aoi</a> for information. This leads her to a shrine where she finds Yume's name in a guestbook. <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a>, also led there, meets Mizuki, and they form a wary alliance.</p><p>&nbsp;</p><h5>Chapter: Parasite Without a Host</h5><p>The <a href="#/search/Celestial Council (Kitsune)" class="internal-link">Kitsune Celestial Council</a> discusses the threat of Yume, <a href="#/search/The Kirin" class="internal-link">Kirin</a>, and the <a href="#/search/Yako Syndicate" class="internal-link">Yako Syndicate's</a> plans. Inari proposes the stasis bubble over <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a> as a failsafe.</p><p>&nbsp;</p><h5>Chapter: Bronze</h5><p>Journalists <a href="#/search/Kurai" class="internal-link">Kurai</a> and <a href="#/search/Takuma" class="internal-link">Takuma</a> meet at a dive bar to discuss strange energy readings in <a href="#/search/Watanabe Park" class="internal-link">Watanabe Park</a>, linking them to similar reports from the <a href="#/search/New American Republic (NAR)" class="internal-link">NAR</a>.</p><p>&nbsp;</p><h5>Chapter: Moonlight Whiskers and Whispering Alleys</h5><p>The "Kitty Coalition" leads <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> on a trail of clues: a book with 'ル', Yume's discarded bus ticket with 'ト', and a bowl with 'パ'. He deciphers the word "Tulpa" and encounters <a href="#/search/The Vagrant" class="internal-link">The Vagrant</a> who warns him about a "cycle."</p><p>&nbsp;</p><h5>Chapter: A Wish and A Curse & Wishes Without Horse</h5><p>Yume's experience trapped in the <a href="#/search/The Æther" class="internal-link">Æther</a> is detailed. She recalls her tarot reading, sees a vision of <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> sleeping, and explores the dream-forest, solidifying her entrapment.</p><p>&nbsp;</p><h5>Chapter: Veiled Mirage & The Mysterious Mizuki</h5><p><a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> researches "Tulpa," discovers the recurring username "Mizuki," and finds her at the shrine. After a tense conversation, she directs him to the "Cat Lady."</p><p>&nbsp;</p><h5>Chapter: Esoteric Arcana & Lineage Linkage</h5><p><a href="#/search/Mizuki / Hisoka" class="internal-link">Mizuki</a> visits <a href="#/search/Zed" class="internal-link">Zed's</a> antique shop, acquires a worn tarot deck, and uses it to psychically connect with Yume, swapping their Hierophant cards. She reflects on her kitsune heritage.</p><p>&nbsp;</p><h5>Chapter: Reveries and Echoes & Underground Tunnels</h5><p><a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> dreams of the Æther forest. He finds the hidden entrance to the tunnels beneath <a href="#/search/Watanabe Park" class="internal-link">Watanabe Park</a>, discovers a portal, and makes first contact with Yume, who gives him the clue about Room 413.</p><p>&nbsp;</p><h5>Chapter: Concierge, Shadows in the Daylight, & Lantern Lights in the Library</h5><p><a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> and <a href="#/search/Mizuki / Hisoka" class="internal-link">Mizuki</a> investigate the <a href="#/search/Love Hotel (Room 413)" class="internal-link">Love Hotel</a>, retrieving the <a href="#/search/Scrying Mirror" class="internal-link">scrying mirror</a> and the box with the <a href="#/search/The Painter's Journal & Brass Key" class="internal-link">painter's journal</a>. At <a href="#/search/Zed" class="internal-link">Zed's</a>, <a href="#/search/Mr. Whispers" class="internal-link">Mr. Whispers</a> provides instructions for a proper ritual.</p><p>&nbsp;</p><h5>Chapter: Adrift in the Æther, Sailing Solo, & Restoration</h5><p><a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie's</a> first ritual attempt fails. <a href="#/search/Mizuki / Hisoka" class="internal-link">Mizuki</a> leaves him. Guided by an inner voice, <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> finds the <a href="#/search/Subway Maintenance Room" class="internal-link">Subway Maintenance Room</a> and successfully opens a new portal, stepping through to rescue <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Yume</a>.</p>`
-                },
-                {
-                    title: "Section: data.fragments",
-                    content: `<h5>Chapter: Observe and Report & Expansion</h5><p><a href="#/search/Shikako ('Onryō')" class="internal-link">Shikako</a> infiltrates <a href="#/search/Kagami Tenko Corporation" class="internal-link">Kagami Tenko</a>. <a href="#/search/Takuma" class="internal-link">Takuma</a> investigates the break-in from the outside.</p><p>&nbsp;</p><h5>Chapter: Scientific Defection & Ones and Zeroes</h5><p><a href="#/search/Dr. Gordon Kionomiki" class="internal-link">Dr. Gordon Kionomiki</a> learns of "<a href="#/search/Project Tsunagari" class="internal-link">Tsunagari</a>" before being assassinated. <a href="#/search/Aoi" class="internal-link">Aoi</a> hacks <a href="#/search/Mobex Corporation" class="internal-link">Mobex</a> and uncovers <a href="#/search/Project Sakura" class="internal-link">Project Sakura</a>.</p><p>&nbsp;</p><h5>Chapter: Infiltration, Pink, Green, Emergence & Corporate Warfare</h5><p><a href="#/search/Shikako ('Onryō')" class="internal-link">Shikako</a> infiltrates a second Mobex facility. <a href="#/search/Kurai" class="internal-link">Kurai</a>'s visions intensify, and she meets <a href="#/search/The Harbinger" class="internal-link">The Harbinger</a>. <a href="#/search/Aoi" class="internal-link">Aoi</a> uncovers video logs of researchers <a href="#/search/Alec & Javier" class="internal-link">Alec & Javier</a> discussing tulpas and the <a href="#/search/PROTOCOL Network" class="internal-link">PROTOCOL network</a>.</p>`
-                },
-                {
-                    title: "Section: auth.callback(lineage)",
-                    content: `<h5>Chapter: Sørensen, Unknown Caller, Incarceration & Underwater Escape</h5><p>A flashback reveals <a href="#/search/Fredrik Sørensen" class="internal-link">Fredrik Sørensen</a>'s knowledge of <a href="#/search/The Kirin" class="internal-link">The Kirin</a>. In the present, <a href="#/search/Shikako ('Onryō')" class="internal-link">Shikako</a> is captured on <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a>. She befriends the kappa <a href="#/search/Taro" class="internal-link">Taro</a>, who helps her escape through the <a href="#/search/Ikanajima Underwater Caverns" class="internal-link">underwater caverns</a>.</p>`
-                },
-                {
-                    title: "Section: routing_table.update(new_path)",
-                    content: `<h5>Chapter: Beyond the Ordinary, The Psychic and the Neon Lights, Smoke and Mirrors, Wave Goodbye & Connecting the Dots</h5><p>This sequence details <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> and <a href="#/search/Mizuki / Hisoka" class="internal-link">Mizuki's</a> investigation leading them from <a href="#/search/Zed" class="internal-link">Zed's</a> shop to the <a href="#/search/DRI-WET Izakaya" class="internal-link">DRI-WET Izakaya</a> and a surreal jazz club where they are drugged. Afterwards, Mizuki leaves Bowie, giving him the swapped Hierophant card.</p>`
-                },
-                 {
-                    title: "Section: interrupt_request(urgent_action)",
-                    content: `<h5>Chapter: The Lonely Island, Island Arrival, Phasing Out, Stable Powers, Reunion of Sorts, Fractured Reality & Station in Stasis</h5><p>This section covers the convergence on <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a>, including <a href="#/search/Professor Shin'en Tajima" class="internal-link">Professor Tajima's</a> backstory, the arrival of the full team, <a href="#/search/Mizuki / Hisoka" class="internal-link">Mizuki's</a> full transformation into Hisoka, <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie's</a> entry into the <a href="#/search/Kozyrev Mirror" class="internal-link">Kozyrev Mirror</a>, and the deployment of the stasis bubble.</p>`
-                },
-                {
-                    title: "Section: gnostic.sub_routines & Kitsune + [the] Kirin",
-                    content: `<h5>Chapter: Split Persona, Foxfire, Belly of the Beast & Kirin and Kaiju</h5><p>The climax begins. Hisoka accepts her dual nature and uses her <a href="#/search/Foxfire" class="internal-link">foxfire</a> to disable the <a href="#/search/Aringold Circuit Routers (ARCs)" class="internal-link">ARCs</a>. The group is drawn into the nexus chamber to confront an empowered <a href="#/search/Commander Colt" class="internal-link">Commander Colt</a>. <a href="#/search/Aoi" class="internal-link">Aoi</a> discovers that Mizuki and Yume are candidates to be a host for <a href="#/search/The Kirin" class="internal-link">The Kirin</a>.</p>`
-                },
-                {
-                    title: "Section: return -; //EOF",
-                    content: `<h5>Chapter: Darkness, White, Sum of All Parts, Broken in Two & Epilogue</h5><p><a href="#/search/Professor Shin'en Tajima" class="internal-link">Tajima</a> sacrifices himself, causing the nexus to implode and seemingly killing <a href="#/search/Commander Colt" class="internal-link">Colt</a>. This event fractures <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie's</a> soul. <a href="#/search/Kurai" class="internal-link">Kurai</a> channels energy to help anchor <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Yume</a>, who merges with her mother's essence to become <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Sakura</a>. To protect <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> from the fallout, <a href="#/search/Mizuki / Hisoka" class="internal-link">Hisoka</a> erases his memories. Months later, <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> receives an encrypted package from "K" (<a href="#/search/Kurai" class="internal-link">Kurai</a>) containing a video of him with Yume, triggering a migraine and Déjà vu, setting the stage for the next cycle.</p>`
-                }
-            ],
-            "Book 2: Family and Folklore": [
-                {
-                    title: "Book 2: Family and Folklore - The Consequence",
-                    content: `<p>This book explores the direct consequences of the anomaly. The focus shifts to the <a href="#/search/New American Republic (NAR)" class="internal-link">NAR</a>, where the "other" <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> has become a key to a parallel conspiracy. <a href="#/search/Carly Shepard" class="internal-link">Carly Shepard's</a> quest is the cycle's new, unpredictable element in motion. The awakened NAR-Bowie makes a conscious, heroic sacrifice to save her—an act of pure will from an anomalous being that sends a shockwave through the metaphysical structure of the loop.</p>`
-                }
-            ],
-            "Book 3: Faith and Finality": [
-                {
-                    title: "Book 3: Faith and Finality - The Breaking of the Wheel",
-                    content: `<p>This is the final loop. Armed with the unprecedented knowledge of <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie's</a> dual nature, the protagonists are positioned to end the cycle. They must confront <a href="#/search/Mushoku" class="internal-link">Mushoku</a>, the loop's tragic prisoner, and challenge his perception of reality. The key is making <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> whole again through a metaphysical re-merging on <a href="#/search/Ikanajima Island" class="internal-link">Ikanajima Island</a>. The final confrontation is not just about overpowering <a href="#/search/Mushoku" class="internal-link">Mushoku</a>, but about proving his perception of a deterministic loop is wrong, and that a true "finality" other than annihilation is possible.</p>`
-                }
-            ]
-        },
-        "Themes & Craft": {
-            "Core Themes": [
-                {
-                    title: "Core Themes Across the Saga",
-                    content: `<ul>
-                        <li><strong><a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Identity & Duality</a>:</strong> Explores Human/Supernatural divides, the Self vs. Other, and fractured selves. See also: <a href="https://en.wikipedia.org/wiki/Duality_(philosophy)" class="external-link" target="_blank" rel="noopener noreferrer">Duality (philosophy)</a>.</li>
-                        <li><strong><a href="#/search/Carly Shepard" class="internal-link">Family & Connection</a>:</strong> Examines bonds of blood (the Shepards), found family (the protagonist group), & metaphysical ties (<a href="#/search/Mizuki / Hisoka" class="internal-link">Mizuki</a> & <a href="#/search/Yume Minamoto / Sakura" class="internal-link">Sakura</a>). See also: <a href="https://en.wikipedia.org/wiki/Found_family" class="external-link" target="_blank" rel="noopener noreferrer">Found Family</a>.</li>
-                        <li><strong><a href="#/search/Zenko Order" class="internal-link">The Balance</a>:</strong> The conflict between the Mundane/Metaphysical, Order/Chaos, and Nature/Technology. See also: <a href="https://en.wikipedia.org/wiki/Dualism_in_cosmology" class="external-link" target="_blank" rel="noopener noreferrer">Cosmological Dualism</a>.</li>
-                        <li><strong><a href="#/search/Professor Shin'en Tajima" class="internal-link">Sacrifice & Redemption</a>:</strong> Embodied in the actions of characters like <a href="#/search/Professor Shin'en Tajima" class="internal-link">Professor Tajima</a> and NAR-Bowie. See also: <a href="https://en.wikipedia.org/wiki/Redemption_arc" class="external-link" target="_blank" rel="noopener noreferrer">Redemption Arc</a>.</li>
-                        <li><strong>Knowledge, Power, & Responsibility:</strong> A core struggle for all factions, from <a href="#/search/Mobex Corporation" class="internal-link">Mobex</a> to the <a href="#/search/Zenko Order" class="internal-link">Zenko Order</a>. See also: <a href="https://en.wikipedia.org/wiki/Power_(social_and_political)" class="external-link" target="_blank" rel="noopener noreferrer">Power (social and political)</a>.</li>
-                        <li><strong>Survival & Resilience:</strong> Particularly prominent in the <a href="#/search/New American Republic (NAR)" class="internal-link">NAR</a> setting and with characters like <a href="#/search/Carly Shepard" class="internal-link">Carly</a>. See also: <a href="https://en.wikipedia.org/wiki/Psychological_resilience" class="external-link" target="_blank" rel="noopener noreferrer">Psychological Resilience</a>.</li>
-                        <li><strong>Faith & The Unseen:</strong> The protagonists' belief in their reality vs. <a href="#/search/Mushoku" class="internal-link">Mushoku's</a> faith in his perception. See also: <a href="https://en.wikipedia.org/wiki/Faith" class="external-link" target="_blank" rel="noopener noreferrer">Faith</a>.</li>
-                        <li><strong>The Nature of Reality, Time, and Consciousness:</strong> The central metaphysical conflict of the time loop. See also: <a href="https://en.wikipedia.org/wiki/Philosophy_of_time" class="external-link" target="_blank" rel="noopener noreferrer">Philosophy of Time</a>.</li>
-                        <li><strong>Corporate Greed vs. Ancient Wisdom/Nature:</strong> The <a href="#/search/Yako Syndicate" class="internal-link">Yako Syndicate's</a> exploitation of <a href="#/search/Ley Lines" class="internal-link">ley lines</a> vs. the <a href="#/search/Zenko Order" class="internal-link">Zenko Order's</a> desire for balance.</li>
-                        <li><strong>Impermanence & The Cycle of Existence:</strong> The core concept of the time loop and the Buddhist philosophies influencing characters like <a href="#/search/Mushoku" class="internal-link">Mushoku</a>. See also: <a href="https://en.wikipedia.org/wiki/Sa%E1%B9%83s%C4%81ra" class="external-link" target="_blank" rel="noopener noreferrer">Saṃsāra</a>.</li>
-                    </ul>`
-                },
-                {
-                    title: "The Tragedy of Mushoku",
-                    content: `<p>The central ethical dilemma of the series revolves around <a href="#/search/Mushoku" class="internal-link">Mushoku</a>. Is it ethical to stop a being who is, in his own mind, acting out of mercy to end what he perceives as infinite suffering for all beings? His motivation forces the protagonists to question the very nature of their reality and whether their struggle for free will is meaningful if it's part of an endless, painful cycle. This reframes the final conflict from a simple battle of good vs. evil into a profound philosophical debate.</p>`
-                }
-            ]
-        }
-    };
-
-    // --- APPLICATION LOGIC ---
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- GLOBAL STATE ---
-        let isEditMode = false;
-
-        // --- DOM ELEMENT REFERENCES ---
-        const passwordOverlay = document.getElementById('password-overlay');
-        const passwordInput = document.getElementById('password-input');
-        const submitPasswordBtn = document.getElementById('submit-password');
-        const passwordError = document.getElementById('password-error');
-        const mainContent = document.getElementById('main-content');
-        const logoutButton = document.getElementById('logout-button');
-        const searchInput = document.getElementById('search-input');
-        const searchResultsContainer = document.getElementById('search-results-container');
-        const addLinkModal = document.getElementById('add-link-modal');
-        const cancelLinkButton = document.getElementById('cancel-link-button');
-        const insertLinkButton = document.getElementById('insert-link-button');
-        const linkTypeSelect = document.getElementById('link-type');
-        const viewModeBtn = document.getElementById('view-mode-btn');
-        const editModeBtn = document.getElementById('edit-mode-btn');
-        const exportButton = document.getElementById('export-button');
-        const exportModal = document.getElementById('export-modal');
-        const closeExportButton = document.getElementById('close-export-button');
-        const copyExportButton = document.getElementById('copy-export-button');
-        const bodyEl = document.body;
-        
-        const PASSWORDS = {
-            full: "03311985",
-            view: "415semple"
-        };
-        let currentSelection = null;
-
-        // --- DATA PERSISTENCE ---
-        function saveData() {
-            try {
-                localStorage.setItem('storyBibleData_Aether', JSON.stringify(storyBibleData));
-            } catch (e) {
-                console.error("Could not save data to localStorage:", e);
+let storyBibleData = {
+    "Series Overview": {
+        "The Foxfire Cycle": [
+            {
+                "title": "Series Logline",
+                "content": "<p>In a reality secretly trapped in a repeating cosmic cycle, a group of individuals—an American expatriate whose soul is fractured across worlds, a half-kitsune investigator haunted by her heritage, and a resilient survivor from a broken America—discover that their struggles against corporate conspiracies and ancient entities are echoes of past failures. They must harness their unique, cycle-breaking experiences to confront a tragic antagonist who seeks to \"save\" all existence by ending it, and in doing so, find a way to achieve a true, final reality.</p>"
+            },
+            {
+                "title": "Core Premise",
+                "content": "<p>The events of the trilogy are part of a time loop. The universe is stuck, repeating a series of catastrophic events involving the convergence of realms and the entity known as the <a href=\"#/search/The Kirin\" class=\"internal-link\">Kirin</a>. The true, hidden antagonist is <a href=\"#/search/Mushoku\" class=\"internal-link\">Mushoku</a>, a being who has become aware of this loop and, believing there is no escape, seeks to bring about \"<a href=\"#/search/Sunyata (The Void)\" class=\"internal-link\">Sunyata</a>\" (the void) as a merciful end to all existence's eternal suffering. The protagonists' journey is not just to stop the villains of their cycle, but to generate a novel outcome that finally breaks the loop.</p>"
             }
-        }
-
-        function loadData() {
-            const savedData = localStorage.getItem('storyBibleData_Aether');
-            if (savedData) {
-                try {
-                    storyBibleData = JSON.parse(savedData);
-                } catch (e) {
-                    console.error("Could not parse saved data:", e);
-                }
+        ]
+    },
+    "Characters": {
+        "Primary Protagonists & Key Figures": [
+            {
+                "title": "Alex 'Bowie' Shepard",
+                "content": "\n                    \n                        <p><strong>Physical Description:</strong> American/Caucasian/White Man, Early 30's, 5'11\", Average build, Light brown hair, Hazel eyes. Scar on chest from knife (hence the name \"Bowie\").</p>\n                        <p><strong>Overview:</strong> An American expatriate in Tokyo, working for a <a href=\"#/search/Mobex Corporation\" class=\"internal-link\">Mobex Corporation</a> shell company to maintain his work visa and avoid returning to the <a href=\"#/search/New American Republic (NAR)\" class=\"internal-link\">New American Republic (NAR)</a> where his sister <a href=\"#/search/Carly Shepard\" class=\"internal-link\">Carly Shepard</a> resides. He becomes entangled in the supernatural mystery surrounding <a href=\"#/search/Yume Minamoto / Sakura\" class=\"internal-link\">Yume Minamoto / Sakura</a>. His journey involves developing Ætheric sensitivity (manifesting as migraines), being guided by cryptic clues from entities like <a href=\"#/search/Mr. Whispers\" class=\"internal-link\">Mr. Whispers</a>, and eventually being \"split\" into two versions due to the <a href=\"#/search/Ikanajima Island\" class=\"internal-link\">Ikanajima Island</a> incident.</p><p><br></p>\n                        <p><strong>Key Traits:</strong> Observant, determined, develops empathy and a strong sense of responsibility. Susceptible to migraines linked to Ætheric sensitivity. Resourceful but often out of his depth in purely magical situations.</p><p><br></p>\n                        <p><strong>Motivations:</strong> Search for belonging, innate justice, visa security, and guilt over leaving his sister. Post-split, his drive is to understand his fractured nature and honor his other half's sacrifice.</p><p><br></p>\n                        <p><strong>Book Arcs:</strong></p><p><strong><br></strong></p>\n                        <ul>\n                            <li><strong><a href=\"#/search/Book 1: Fate and Foxfire\" class=\"internal-link\">Book 1: Fate and Foxfire</a>:</strong> Tasked to find Yume. Follows clues (katakana for \"Tulpa\"), teams with <a href=\"#/search/Mizuki / Hisoka\" class=\"internal-link\">Mizuki / Hisoka</a>. Attempts a ritual to save Yume from the <a href=\"#/search/The Æther\" class=\"internal-link\">Æther</a>. Enters the <a href=\"#/search/Kozyrev Mirror\" class=\"internal-link\">Kozyrev Mirror</a> on <a href=\"#/search/Ikanajima Island\" class=\"internal-link\">Ikanajima Island</a>, leading to his splitting and memory wipe by Mizuki. Receives an encrypted message from \"K\" (<a href=\"#/search/Kurai\" class=\"internal-link\">Kurai</a>) in the epilogue.</li><li><br></li>\n                            <li><strong><a href=\"#/search/Book 2: Family and Folklore\" class=\"internal-link\">Book 2: Family and Folklore</a> (NAR-Bowie):</strong> A \"split\" version in the NAR. Found in a stasis pod. Sacrifices himself to save Carly.</li><li><br></li>\n                            <li><strong><a href=\"#/search/Book 3: Faith and Finality\" class=\"internal-link\">Book 3: Faith and Finality</a> (Japan-Bowie):</strong> Original <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a>, memories wiped. Must confront his fractured nature and the new cosmic threat, <a href=\"#/search/Mushoku\" class=\"internal-link\">Mushoku</a>. Potentially re-merges with his other half.</li><li><br></li>\n                        </ul>\n                        <p><strong>Relationships:</strong> <a href=\"#/search/Mizuki / Hisoka\" class=\"internal-link\">Mizuki / Hisoka</a> (complex alliance), <a href=\"#/search/Yume Minamoto / Sakura\" class=\"internal-link\">Yume / Sakura</a> (initial case), <a href=\"#/search/Carly Shepard\" class=\"internal-link\">Carly Shepard</a> (sister), <a href=\"#/search/Mr. Whispers\" class=\"internal-link\">Mr. Whispers</a> (guide), <a href=\"#/search/Zed\" class=\"internal-link\">Zed</a> (antique dealer).</p>\n                    \n                ",
+                "realWorldEquivalent": "<p>His expatriate experience can be compared to the feeling of cultural displacement and search for identity found in the literature of authors like James Baldwin or Ernest Hemingway.</p>"
+            },
+            {
+                "title": "Mizuki / Hisoka",
+                "content": "\n                    \n                        <p><strong>Physical Description:</strong> Japanese woman, Late 20's, 5'2\", Slender-fit build, Black hair with bangs, Amber colored eyes.</p><p><br></p>\n                        <p><strong>Parentage:</strong> Father is a <a href=\"#/search/Kitsune (Fox Spirits)\" class=\"internal-link\">kitsune</a>, Mother is <a href=\"#/search/Yume Minamoto / Sakura\" class=\"internal-link\">Sakura</a> (a <a href=\"#/search/Thought Forms (Tulpas/Egregores)\" class=\"internal-link\">tulpa</a>).</p><p><br></p>\n                        <p><strong>Overview:</strong> An independent researcher driven by her mother Sakura's vanishing. She is half-kitsune (kitsune-kin), initially unaware of her full heritage, but her powers (phasing, <a href=\"#/search/Foxfire\" class=\"internal-link\">foxfire</a>) awaken during Book 1, leading her to embrace the name Hisoka, her true kitsune name.</p><p><br></p>\n                        <p><strong>Key Traits:</strong> Intelligent, resourceful, initially guarded and pragmatic, becomes immensely powerful. Deeply connected to the <a href=\"#/search/The Æther\" class=\"internal-link\">Æther</a> and kitsune lore.</p><p><br></p>\n                        <p><strong>Motivations:</strong> To understand her dual heritage, honor her mother, and accept the responsibilities of her power. Her initial guardedness stems from a lifetime of hiding her true nature.</p>\n                    \n                ",
+                "realWorldEquivalent": "<p>Her kitsune heritage draws from Japanese folklore, specifically tales of fox spirits who are often depicted as intelligent, powerful, and sometimes deceptive beings. See <a href=\"https://en.wikipedia.org/wiki/Kitsune\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">Kitsune on Wikipedia</a>.</p>"
+            },
+            {
+                "title": "Carly Shepard",
+                "content": "\n                    \n                        <p><strong>Overview:</strong> Alex's sister living in the <a href=\"#/search/New American Republic (NAR)\" class=\"internal-link\">New American Republic (NAR)</a>. A resourceful tech scavenger who becomes involved in the wider conflict.</p><p><br></p>\n                        <p><strong>Key Traits:</strong> Resilient, practical, skilled scavenger and forager, strong familial loyalty. Learns to adapt to supernatural elements, including local folk magic.</p><p><br></p>\n                        <p><strong>Motivations:</strong> Unbreakable familial love for Alex, immense survivor's guilt after NAR-Bowie's death, and a need to find her own strength and seek justice.</p><p><br></p>\n                        <p><strong>Relationships:</strong> <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Alex 'Bowie' Shepard</a> (brother), <a href=\"#/search/Aoi\" class=\"internal-link\">Aoi</a> (information contact), <a href=\"#/search/Shikako ('Onryō')\" class=\"internal-link\">Shikako</a> (uneasy ally), <a href=\"#/search/Fredrik Sørensen\" class=\"internal-link\">Fredrik Sørensen</a> (temporary, untrustworthy ally).</p>\n                    \n                ",
+                "realWorldEquivalent": "<p>Her skills in scavenging and survival in a collapsed society are reminiscent of characters in post-apocalyptic fiction like Cormac McCarthy's \"The Road\". Her learning of folk magic connects to traditions like Appalachian folk medicine or Pennsylvania Dutch Pow-wow.</p>"
+            },
+            {
+                "title": "Shikako ('Onryō')",
+                "content": "\n                    \n                        <p><strong>Physical Description:</strong> Japanese woman, Early 30's, 5'7\", Muscular build, Short cropped hair with silver streaks. Cybernetically enhanced feet and fingers.</p><p><br></p>\n                        <p><strong>Overview:</strong> A highly skilled <a href=\"#/search/Zenko Order\" class=\"internal-link\">Zenko Order</a> operative, working via Kiban Myobu. Possesses cybernetic enhancements. Initially detached and mission-focused, she gradually develops a degree of empathy.</p><p><br></p>\n                        <p><strong>Key Traits:</strong> Highly skilled (infiltration, combat, tech). Professional, detached, loyal to mission parameters (initially).</p>\n                    \n                ",
+                "realWorldEquivalent": "<p>Her character archetype is similar to cybernetically enhanced operatives in cyberpunk fiction, such as Major Motoko Kusanagi from <a href=\"https://en.wikipedia.org/wiki/Ghost_in_the_Shell\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">Ghost in the Shell</a>.</p>"
+            },
+            {
+                "title": "Aoi",
+                "content": "\n                    \n                        <p><strong>Physical Description:</strong> Late 20's - early 30's, 5'4\", Lean build, Bright blue hair, cargo pants, combat boots, hoodie. Always has electronic gadgets and an encrypted data disk around her neck.</p><p><br></p>\n                        <p><strong>Overview:</strong> A highly skilled data wrangler/hacker operating from a fortified bunker in the <a href=\"#/search/New American Republic (NAR)\" class=\"internal-link\">NAR</a>. Initially transactional (\"credits are credits\"), she develops loyalty to the group, especially after partially manifesting on <a href=\"#/search/Ikanajima Island\" class=\"internal-link\">Ikanajima Island</a> via her comms link.</p><p><br></p>\n                        <p><strong>Key Traits:</strong> Highly skilled hacker, resourceful, sarcastic, direct. \"Homegrown\" (no cybernetic mods).</p>\n                    \n                ",
+                "realWorldEquivalent": "<p>Represents the archetypal off-grid hacker from cyberpunk literature, like the console cowboys in William Gibson's <a href=\"https://en.wikipedia.org/wiki/Neuromancer\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">Neuromancer</a>, who operate outside the system and trade in the valuable currency of information.</p>"
             }
-        }
-
-        // --- AUTHENTICATION ---
-        function checkAuth() {
-            const accessLevel = sessionStorage.getItem('storyBibleAccessLevel');
-            if (accessLevel) {
-                passwordOverlay.style.display = 'none';
-                mainContent.classList.remove('hidden');
-                
-                bodyEl.classList.remove('full-access');
-                if (accessLevel === 'full') {
-                    bodyEl.classList.add('full-access');
-                }
-                
-                loadData();
-                setMode(false); // Always start in view mode
-            } else {
-                passwordOverlay.style.display = 'flex';
-                mainContent.classList.add('hidden');
+        ],
+        "Key Antagonists": [
+            {
+                "title": "Mushoku",
+                "content": "\n                    \n                        <p><strong>Overview:</strong> The primary antagonist of Book 3. A human or partial human with immense power.</p><p><br></p>\n                        <p><strong>Key Traits:</strong> Extremely powerful, philosophical, and tragic. His power may stem from his unique perception of reality.</p><p><br></p>\n                        <p><strong>Motivations (Deeper):</strong> Mushoku's motivation is not nihilism, but a twisted form of mercy. He perceives reality as an endless, meaningless time loop—a cosmic prison of repeating suffering. Having experienced countless iterations of events, he has concluded that the only true escape, the only salvation for all beings, is to end the cycle permanently through <a href=\"#/search/Sunyata (The Void)\" class=\"internal-link\">Sunyata</a> (the void). He sees his catastrophic actions as the ultimate act of compassion, releasing everyone from a prison only he can see.</p><p><br></p>\n                        <p><strong>Book Arc (Book 3):</strong> He is the final, hidden antagonist of the cycle. His actions are aimed at gathering the power needed to unmake existence. The protagonists must not only stop him but confront the horrifying possibility that his perception of reality might be right. Defeating him requires breaking the cycle itself, proving that a new outcome is possible.</p>\n                    \n                ",
+                "realWorldEquivalent": "<p>His philosophy draws from the Buddhist concept of <a href=\"https://en.wikipedia.org/wiki/%C5%9A%C5%ABnyat%C4%81\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">Śūnyatā (Emptiness)</a>, but twisted into a destructive, nihilistic goal. He becomes a tragic \"savior\" figure, similar to characters who believe in annihilation for a perceived greater good, but with the added horror of being trapped in a time loop like the protagonist of the film <a href=\"https://en.wikipedia.org/wiki/Groundhog_Day_(film)\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">Groundhog Day</a>, but on a cosmic scale.</p>"
+            },
+            {
+                "title": "Commander Colt",
+                "content": "\n                    \n                        <p><strong>Physical Description:</strong> Imposing man in his late 40s, 6'2\", muscular build. Close-cropped salt-and-pepper hair, steely gray eyes, weathered and scarred face. Cybernetically enhanced (damaged left leg).</p><p><br></p>\n                        <p><strong>Background &amp; Motivation:</strong> Born to Korean parents in Japan (Zainichi), he faced discrimination and hit a glass ceiling within the <a href=\"#/search/Yako Syndicate\" class=\"internal-link\">Yako Syndicate</a>. This fueled a ruthless, obsessive drive to gain power by any means. He believes he can control cosmic forces like the <a href=\"#/search/The Kirin\" class=\"internal-link\">Kirin</a>.</p><p><br></p>\n                        <p><strong>Overview:</strong> High-ranking <a href=\"#/search/Yako Syndicate\" class=\"internal-link\">Yako Syndicate</a> operative overseeing <a href=\"#/search/Project Tsunagari\" class=\"internal-link\">Project Tsunagari</a> on <a href=\"#/search/Ikanajima Island\" class=\"internal-link\">Ikanajima Island</a>. Ruthless and ambitious.</p>\n                    \n                ",
+                "realWorldEquivalent": "<p>His struggle as a Zainichi individual in Japan reflects real-world social and political issues regarding ethnicity and citizenship in the country. See <a href=\"https://en.wikipedia.org/wiki/Koreans_in_Japan\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">Koreans in Japan on Wikipedia</a>.</p>"
+            },
+            {
+                "title": "Yako Syndicate",
+                "content": "<p>The primary antagonistic organization in Book 1, seeking to control <a href=\"#/search/The Kirin\" class=\"internal-link\">The Kirin</a>. A criminal organization with deep roots in the corporate and supernatural worlds, aligned with the malevolent Yako <a href=\"#/search/Kitsune (Fox Spirits)\" class=\"internal-link\">kitsune</a> archetype. They use corporations like <a href=\"#/search/Mobex Corporation\" class=\"internal-link\">Mobex</a> and <a href=\"#/search/Kagami Tenko Corporation\" class=\"internal-link\">Kagami Tenko</a> as fronts.</p>",
+                "realWorldEquivalent": "<p>This organization blends the concept of the Japanese Yakuza with a supernatural, conspiratorial element, similar to the Vampire Clans in <a href=\"https://en.wikipedia.org/wiki/Vampire:_The_Masquerade\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">Vampire: The Masquerade</a> or the shadowy corporations in cyberpunk fiction that operate above the law.</p>"
             }
-        }
-        
-        function handleLogin() {
-            const enteredPassword = passwordInput.value;
-            let accessLevel = null;
-
-            if (enteredPassword === PASSWORDS.full) {
-                accessLevel = 'full';
-            } else if (enteredPassword === PASSWORDS.view) {
-                accessLevel = 'view';
+        ],
+        "Mentors, Guides, & Other Significant Figures": [
+            {
+                "title": "Ichiro Kobayashi",
+                "content": "<p><strong>Overview:</strong> A very old man, possibly not human, who appears as an elderly fortune teller. He gives <a href=\"#/search/Yume Minamoto / Sakura\" class=\"internal-link\">Yume</a> her special <a href=\"#/search/Ichiro Kobayashi's Special Tarot Deck\" class=\"internal-link\">tarot deck</a> in <a href=\"#/search/Watanabe Park\" class=\"internal-link\">Watanabe Park</a>. He may be a being who exists partially outside the time loop, attempting to nudge events toward a new outcome.</p>"
+            },
+            {
+                "title": "Mr. Whispers",
+                "content": "<p><strong>Overview:</strong> A talking white Persian cat with blue eyes and a golden hue who commands the \"Kitty Coalition\". He acts as an enigmatic guide to <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a>, providing cryptic advice. His knowledge may stem from retaining memories of past cycles.</p>"
+            },
+            {
+                "title": "Professor Shin'en Tajima",
+                "content": "<p><strong>Overview:</strong> A Japanese scientist in his mid-late 60s, expert on <a href=\"#/search/Ley Lines\" class=\"internal-link\">ley lines</a>. He developed the <a href=\"#/search/Aringold Circuit Routers (ARCs)\" class=\"internal-link\">ARCs</a>. Coerced by <a href=\"#/search/Commander Colt\" class=\"internal-link\">Colt</a>, his conscience awakens, and he chooses redemption by sacrificing himself to disrupt <a href=\"#/search/Project Tsunagari\" class=\"internal-link\">Project Tsunagari</a>, a heroic act that repeats in the cycle.</p>"
+            },
+            {
+                "title": "Dr. Gordon Kionomiki",
+                "content": "<p><strong>Overview:</strong> A Mobex scientist and colleague of <a href=\"#/search/Professor Shin'en Tajima\" class=\"internal-link\">Professor Tajima</a>. An expert in dimensional theory and occult sciences, he was a lead on <a href=\"#/search/Project Sakura\" class=\"internal-link\">Project Sakura</a>. He attempted to defect with critical information about <a href=\"#/search/Project Tsunagari\" class=\"internal-link\">Project Tsunagari</a> but was assassinated in a Shibuya alley after meeting a contact. His intel was relayed to Tajima via another defector.</p>"
+            },
+            {
+                "title": "The Harbinger",
+                "content": "<p><strong>Overview:</strong> A robed, kitsune-masked figure encountered by <a href=\"#/search/Kurai\" class=\"internal-link\">Kurai</a> in the <a href=\"#/search/The Æther\" class=\"internal-link\">Æther</a>. The Harbinger warns of <a href=\"#/search/The Kirin\" class=\"internal-link\">The Kirin</a> and the <a href=\"#/search/Project Tsunagari\" class=\"internal-link\">Convergence</a>, possibly trying to influence the current cycle based on knowledge of past ones.</p>"
+            },
+            {
+                "title": "Kurai & Takuma",
+                "content": "<p><strong>Overview:</strong> Journalists for the <a href=\"#/search/Kogitsune Kai\" class=\"internal-link\">Kogitsune Kai</a>. <a href=\"#/search/Kurai\" class=\"internal-link\">Kurai</a>'s Ætheric sensitivity may allow her to perceive echoes or bleed-through from previous iterations of the time loop, explaining her visions. As \"K,\" she sends the epilogue message to <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a>, a key step in altering the cycle.</p>"
             }
-
-            if (accessLevel) {
-                sessionStorage.setItem('storyBibleAccessLevel', accessLevel);
-                
-                passwordOverlay.classList.add('dissolving');
-                setTimeout(() => {
-                    passwordOverlay.style.opacity = '0';
-                    passwordOverlay.addEventListener('transitionend', () => {
-                        checkAuth();
-                    }, { once: true });
-                }, 500);
-
-            } else {
-                passwordError.classList.remove('hidden');
-                passwordInput.classList.add('border-red-500');
+        ],
+        "Minor Characters": [
+            {
+                "title": "The Bird-Watching Lady",
+                "content": "<p>An elderly woman in a red ombré turtleneck whom <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a> encounters in <a href=\"#/search/Watanabe Park\" class=\"internal-link\">Watanabe Park</a>. She cryptically discusses the power of names and is the first to confirm seeing <a href=\"#/search/Yume Minamoto / Sakura\" class=\"internal-link\">Yume</a> with the fortune teller, <a href=\"#/search/Ichiro Kobayashi\" class=\"internal-link\">Ichiro Kobayashi</a>.</p>"
+            },
+            {
+                "title": "Akihiko Saito",
+                "content": "<p>A Supply Chain Analyst for <a href=\"#/search/Mobex Corporation\" class=\"internal-link\">Mobex Corporation</a>. He bumps into <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a> in the park and also confirms seeing <a href=\"#/search/Yume Minamoto / Sakura\" class=\"internal-link\">Yume</a>. Bowie later uses his name as a ruse to gain access to the Mobex building.</p>"
+            },
+            {
+                "title": "Daisuke Ito",
+                "content": "<p>A young boy playing in a sandbox in <a href=\"#/search/Watanabe Park\" class=\"internal-link\">Watanabe Park</a>. He confirms seeing <a href=\"#/search/Yume Minamoto / Sakura\" class=\"internal-link\">Yume</a> with the \"old guy with cards\" and points <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a> towards the Torii gate, guided by the \"Kitty Coalition.\"</p>"
+            },
+            {
+                "title": "The Vagrant",
+                "content": "<p>A man near the <a href=\"#/search/The Bookstall\" class=\"internal-link\">bookstall</a> who accosts <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a>, shouting, \"The eyes of the mirror can see you in this cycle!\" This line hints at the story's larger time loop premise.</p>"
+            },
+            {
+                "title": "The Painter's Nephew",
+                "content": "<p>The executor of his aunt's estate. He sells <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a> the crucial <a href=\"#/search/The Painter's Journal & Brass Key\" class=\"internal-link\">painter's journal</a>, mentioning her obsession with \"kitsune and Æther\" and \"the hands pull, what the mirror can't show.\"</p>"
+            },
+            {
+                "title": "Liv",
+                "content": "<p>A member of the <a href=\"#/search/Nogitsune Union\" class=\"internal-link\">Nogitsune Union</a> with a bright pink pompadour. She rescues <a href=\"#/search/Shikako ('Onryō')\" class=\"internal-link\">Shikako</a> from the <a href=\"#/search/Yako Syndicate\" class=\"internal-link\">Yako Syndicate</a> on a motorcycle after her infiltration of <a href=\"#/search/Kagami Tenko Corporation\" class=\"internal-link\">Kagami Tenko</a>.</p>"
+            },
+            {
+                "title": "Orion",
+                "content": "<p>A sniper for the <a href=\"#/search/Yako Syndicate\" class=\"internal-link\">Yako Syndicate</a> who hunts <a href=\"#/search/Shikako ('Onryō')\" class=\"internal-link\">Shikako</a> after her escape, successfully tagging her with a nano tracker.</p>"
+            },
+            {
+                "title": "Taro",
+                "content": "<p>A <a href=\"#/search/Kappa (Taro)\" class=\"internal-link\">Kappa</a> living in the sewer system of the <a href=\"#/search/Ikanajima Island\" class=\"internal-link\">Ikanajima Island</a> facility. After <a href=\"#/search/Shikako ('Onryō')\" class=\"internal-link\">Shikako</a> shows him kindness, he befriends her and provides her with scavenged scuba gear to help her escape through the <a href=\"#/search/Ikanajima Underwater Caverns\" class=\"internal-link\">underwater caverns</a>.</p>"
+            },
+            {
+                "title": "Alec & Javier",
+                "content": "<p>Two researchers at <a href=\"#/search/Mobex Corporation\" class=\"internal-link\">Mobex</a> whose overheard conversation provides exposition on the theoretical creation of <a href=\"#/search/Thought Forms (Tulpas/Egregores)\" class=\"internal-link\">tulpas/egregores</a> (Projects Shinengata and Eidolon) and the <a href=\"#/search/PROTOCOL Network\" class=\"internal-link\">PROTOCOL network</a>.</p>"
             }
-        }
-
-        submitPasswordBtn.addEventListener('click', handleLogin);
-        passwordInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                handleLogin();
+        ]
+    },
+    "Key Locations": {
+        "Otherworldly": [
+            {
+                "title": "The Æther",
+                "content": "\n                    \n                        <p><strong>Nature:</strong> A liminal, energetic dimension existing between/underlying realities. It is mutable, responsive to consciousness/intent, and time within it is non-linear. It is the source of immense power.</p><p><br></p>\n                        <p><strong>Manifestations:</strong> Can appear as a white void (Yume's initial prison), a lush forest (sometimes with talking trees), or a kaleidoscope of colors.</p><p><br></p>\n                        <p><strong>Access:</strong> Gained through natural nexuses (<a href=\"#/search/Ley Lines\" class=\"internal-link\">ley line</a> convergences like <a href=\"#/search/Watanabe Park\" class=\"internal-link\">Watanabe Park</a>), innate ability (<a href=\"#/search/Kitsune (Fox Spirits)\" class=\"internal-link\">kitsune</a>), ritual magic, or advanced technology (the <a href=\"#/search/Kozyrev Mirror\" class=\"internal-link\">Kozyrev Mirror</a>).</p>\n                    \n                ",
+                "realWorldEquivalent": "<p>The concept is similar to the Astral Plane in theosophy and occult traditions, or the Fade in the Dragon Age video game series. It also shares traits with the \"Upside Down\" from <a href=\"https://en.wikipedia.org/wiki/Stranger_Things\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">Stranger Things</a>, a parallel dimension that mirrors and affects our own.</p>"
             }
-        });
-        
-        passwordInput.addEventListener('input', () => {
-            passwordError.classList.add('hidden');
-            passwordInput.classList.remove('border-red-500');
-        });
-
-        logoutButton.addEventListener('click', () => {
-            sessionStorage.removeItem('storyBibleAccessLevel');
-            location.reload();
-        });
-
-        // --- VIEW/EDIT MODE LOGIC ---
-        function setMode(edit) {
-            const accessLevel = sessionStorage.getItem('storyBibleAccessLevel');
-            
-            if (edit && accessLevel !== 'full') {
-                return;
+        ],
+        "Japan": [
+            {
+                "title": "Ikanajima Island",
+                "content": "\n                        <p>A remote island in the Pacific, formerly a religious site, bought by shell companies. It is the site of the <a href=\"#/search/Yako Syndicate\" class=\"internal-link\">Yako Syndicate</a>/<a href=\"#/search/Kagami Tenko Corporation\" class=\"internal-link\">Kagami Tenko</a>'s <a href=\"#/search/Project Tsunagari\" class=\"internal-link\">Project Tsunagari</a>. It is a powerful <a href=\"#/search/Ley Lines\" class=\"internal-link\">ley line</a> nexus and houses the <a href=\"#/search/Kozyrev Mirror\" class=\"internal-link\">Kozyrev Mirror</a>, <a href=\"#/search/Aringold Circuit Routers (ARCs)\" class=\"internal-link\">ARC routers</a>, and a nexus crystal. It is the site of <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie's</a> fracturing, the key anomaly that alters the time loop.</p>\n                    ",
+                "realWorldEquivalent": "<p>The concept of a mysterious, technologically advanced, and dangerous island is a classic trope, seen in works like <a href=\"https://en.wikipedia.org/wiki/The_Island_of_Doctor_Moreau\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">The Island of Doctor Moreau</a>, Michael Crichton's Jurassic Park, or the TV series <a href=\"https://en.wikipedia.org/wiki/Lost_(TV_series)\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">Lost</a>.</p>"
+            },
+            {
+                "title": "Watanabe Park",
+                "content": "<p>A key location in Tokyo and a powerful <a href=\"#/search/Ley Lines\" class=\"internal-link\">ley line</a> nexus. It is the site of <a href=\"#/search/Yume Minamoto / Sakura\" class=\"internal-link\">Yume's</a> disappearance and <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie's</a> initial investigation. A fountain in the park hides an entrance to underground tunnels that lead to a portal to the <a href=\"#/search/The Æther\" class=\"internal-link\">Æther</a>.</p>"
+            },
+            {
+                "title": "Love Hotel (Room 413)",
+                "content": "<p>A kitsch hotel near Lake Ashi. Room 413 is a site of reality bleed, appearing on a non-existent fourth floor. It contains an altar with ritual artifacts, including the <a href=\"#/search/Scrying Mirror\" class=\"internal-link\">scrying mirror</a>, which are crucial to Bowie's investigation.</p>"
+            },
+            {
+                "title": "The Bookstall",
+                "content": "<p>A small, outdoor book donation stall where <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a>, guided by the \"Kitty Coalition,\" finds a leather-bound book with the first katakana clue (ル) for \"Tulpa.\"</p>"
+            },
+            {
+                "title": "DRI-WET Izakaya",
+                "content": "<p>A small bar where <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a> and <a href=\"#/search/Mizuki / Hisoka\" class=\"internal-link\">Mizuki</a> are drugged by the bartender, Myles. The name was recommended by <a href=\"#/search/Zed\" class=\"internal-link\">Zed</a>.</p>"
+            },
+            {
+                "title": "The Shibuya Dive Bar",
+                "content": "<p>A dimly lit bar in Shibuya where <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a> is drugged for a second time. Here, a man in a hat gives him the crucial tip about the <a href=\"#/search/The Painter's Journal & Brass Key\" class=\"internal-link\">painter's journal</a>.</p>"
+            },
+            {
+                "title": "Subway Maintenance Room",
+                "content": "<p>An unmarked room on the Shinjuku Line where <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a>, guided by an internal voice, performs his second, successful ritual to open a portal to the <a href=\"#/search/The Æther\" class=\"internal-link\">Æther</a> and rescue <a href=\"#/search/Yume Minamoto / Sakura\" class=\"internal-link\">Yume</a>.</p>"
+            },
+            {
+                "title": "Ikanajima Underwater Caverns",
+                "content": "<p>A network of caverns beneath the <a href=\"#/search/Ikanajima Island\" class=\"internal-link\">Ikanajima Island</a> facility. <a href=\"#/search/Shikako ('Onryō')\" class=\"internal-link\">Shikako</a> escapes through here with the help of <a href=\"#/search/Taro\" class=\"internal-link\">Taro</a>. The caverns contain ancient ruins with murals depicting strange creatures and star systems, as well as the dangerous <a href=\"#/search/Denki-Ōunagi\" class=\"internal-link\">Denki-Ōunagi</a>.</p>"
             }
-
-            isEditMode = edit;
-            bodyEl.classList.toggle('edit-mode', isEditMode);
-            
-            if (isEditMode) {
-                editModeBtn.classList.add('bg-white', 'text-indigo-600', 'shadow');
-                viewModeBtn.classList.remove('bg-white', 'text-indigo-600', 'shadow');
-            } else {
-                viewModeBtn.classList.add('bg-white', 'text-indigo-600', 'shadow');
-                editModeBtn.classList.remove('bg-white', 'text-indigo-600', 'shadow');
+        ],
+        "New American Republic (NAR)": [
+            {
+                "title": "NAR Overview",
+                "content": "\n                        <p>The fractured, post-war remnants of the USA. It is characterized by feudal city-states, a barter economy, resource scarcity, and Ætheric \"scarring\" from past metaphysical events, especially in the Appalachian Mountains. The NAR is home to <a href=\"#/search/Carly Shepard\" class=\"internal-link\">Carly Shepard</a>, <a href=\"#/search/Aoi\" class=\"internal-link\">Aoi</a>, and various <a href=\"#/search/Cryptids (NAR)\" class=\"internal-link\">cryptids</a>. It contains a particle accelerator facility that is a sister site to the research on <a href=\"#/search/Ikanajima Island\" class=\"internal-link\">Ikanajima Island</a>.</p>\n                    ",
+                "realWorldEquivalent": "<p>Draws inspiration from post-apocalyptic settings like those in the <a href=\"https://en.wikipedia.org/wiki/Fallout_(series)\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">Fallout</a> video game series or the novel <a href=\"https://en.wikipedia.org/wiki/A_Canticle_for_Leibowitz\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">A Canticle for Leibowitz</a>, which explore themes of societal collapse, technological regression, and the rise of new, fragmented societies.</p>"
             }
-            renderApp();
-        }
-        
-        viewModeBtn.addEventListener('click', () => setMode(false));
-        editModeBtn.addEventListener('click', () => setMode(true));
-
-
-        // --- RENDER LOGIC ---
-        function renderApp() {
-            renderNavigation();
-            renderContentSections();
-            attachEventListeners();
-        }
-
-        function renderNavigation() {
-            const navContainer = document.getElementById('navigation-container');
-            navContainer.innerHTML = '';
-            Object.keys(storyBibleData).forEach(category => {
-                const categoryTitle = document.createElement('h2');
-                categoryTitle.className = 'text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3';
-                categoryTitle.textContent = category;
-                navContainer.appendChild(categoryTitle);
-
-                const ul = document.createElement('ul');
-                ul.className = 'space-y-2 mb-6';
-                
-                Object.keys(storyBibleData[category]).forEach(sectionKey => {
-                    const li = document.createElement('li');
-                    const a = document.createElement('a');
-                    const sectionId = `${category.replace(/\s+/g, '-')}-${sectionKey.replace(/\s+/g, '-')}`;
-                    a.href = `#${sectionId}`;
-                    a.textContent = sectionKey;
-                    a.className = 'block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-200 hover:text-gray-900';
-                    li.appendChild(a);
-                    ul.appendChild(li);
-                });
-                navContainer.appendChild(ul);
-            });
-        }
-
-        function renderContentSections() {
-            const contentArea = document.getElementById('content-area');
-            contentArea.innerHTML = '';
-            Object.entries(storyBibleData).forEach(([category, sections]) => {
-                Object.entries(sections).forEach(([sectionKey, entries]) => {
-                    const section = document.createElement('section');
-                    const sectionId = `${category.replace(/\s+/g, '-')}-${sectionKey.replace(/\s+/g, '-')}`;
-                    section.id = sectionId;
-                    section.className = 'mb-12';
-
-                    const sectionTitle = document.createElement('h2');
-                    sectionTitle.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6';
-                    sectionTitle.textContent = sectionKey;
-                    section.appendChild(sectionTitle);
-
-                    const cardContainer = document.createElement('div');
-                    cardContainer.className = 'space-y-6';
-                    
-                    entries.forEach((entry, index) => {
-                        cardContainer.appendChild(createCard(category, sectionKey, index, entry));
-                    });
-                    
-                    section.appendChild(cardContainer);
-
-                    const addButton = document.createElement('button');
-                    addButton.textContent = `+ Add New Entry to ${sectionKey}`;
-                    addButton.className = 'mt-6 bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-600 transition add-entry-btn edit-mode-only';
-                    addButton.dataset.category = category;
-                    addButton.dataset.section = sectionKey;
-                    section.appendChild(addButton);
-
-                    contentArea.appendChild(section);
-                });
-            });
-        }
-
-        function createCard(category, sectionKey, index, entryData) {
-            const card = document.createElement('div');
-            card.className = 'card p-6';
-            card.dataset.category = category;
-            card.dataset.section = sectionKey;
-            card.dataset.index = index;
-
-            let realWorldHtml = '';
-            if (entryData.realWorldEquivalent !== undefined) {
-                realWorldHtml = `
-                    <div class="mt-4 pt-4 border-t border-gray-200">
-                        <h4 class="text-sm font-semibold text-gray-600 mb-2">Real-World Equivalents & Inspirations</h4>
-                        <div class="prose-custom text-sm text-gray-700 editable" contenteditable="${isEditMode}" data-field="realWorldEquivalent">${entryData.realWorldEquivalent}</div>
-                    </div>
-                `;
+        ]
+    },
+    "Detailed Outline": {
+        "Book 1: Fate and Foxfire": [
+            {
+                "title": "Section: (Not a) Walk in the Park",
+                "content": "<h5>Chapter: A Walk in the Park</h5><p><a href=\"#/search/Yume Minamoto / Sakura\" class=\"internal-link\">Yume Minamoto</a>, feeling something is off in <a href=\"#/search/Watanabe Park\" class=\"internal-link\">Watanabe Park</a>, is drawn to an elderly fortune teller, <a href=\"#/search/Ichiro Kobayashi\" class=\"internal-link\">Ichiro Kobayashi</a>. During a tarot reading, reality dissolves into a white void where she hears cryptic phrases. When the park returns, Kobayashi is gone, leaving behind his rare <a href=\"#/search/Ichiro Kobayashi's Special Tarot Deck\" class=\"internal-link\">tarot deck</a>. That night, she dreams of a talking cherry blossom tree telling her to \"return the gift to the source.\" She returns to the park the next day, finds Kobayashi, and he gifts her the deck permanently before vanishing. Yume then disappears in a stream of colors, finding herself trapped in a white, liminal space—the <a href=\"#/search/The Æther\" class=\"internal-link\">Æther</a>.</p><p>&nbsp;</p><h5>Chapter: Vanishing Melody</h5><p><a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Alex \"Bowie\" Shepard</a> is tasked by his <a href=\"#/search/Mobex Corporation\" class=\"internal-link\">Mobex</a> shell-company boss to find the missing Yume. His investigation begins in <a href=\"#/search/Watanabe Park\" class=\"internal-link\">Watanabe Park</a>, where he encounters the cryptic <a href=\"#/search/The Bird-Watching Lady\" class=\"internal-link\">Bird-Watching Lady</a> and a salaryman, <a href=\"#/search/Akihiko Saito\" class=\"internal-link\">Akihiko Saito</a>. He is then guided by a trio of synchronized tabby cats toward a Torii gate, where he experiences an Æther-linked migraine.</p><p>&nbsp;</p><h5>Chapter: Shrouded Intuition</h5><p><a href=\"#/search/Mizuki / Hisoka\" class=\"internal-link\">Mizuki</a>, investigating disappearances, contacts the hacker <a href=\"#/search/Aoi\" class=\"internal-link\">Aoi</a> for information. This leads her to a shrine where she finds Yume's name in a guestbook. <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a>, also led there, meets Mizuki, and they form a wary alliance.</p><p>&nbsp;</p><h5>Chapter: Parasite Without a Host</h5><p>The <a href=\"#/search/Celestial Council (Kitsune)\" class=\"internal-link\">Kitsune Celestial Council</a> discusses the threat of Yume, <a href=\"#/search/The Kirin\" class=\"internal-link\">Kirin</a>, and the <a href=\"#/search/Yako Syndicate\" class=\"internal-link\">Yako Syndicate's</a> plans. Inari proposes the stasis bubble over <a href=\"#/search/Ikanajima Island\" class=\"internal-link\">Ikanajima Island</a> as a failsafe.</p><p>&nbsp;</p><h5>Chapter: Bronze</h5><p>Journalists <a href=\"#/search/Kurai\" class=\"internal-link\">Kurai</a> and <a href=\"#/search/Takuma\" class=\"internal-link\">Takuma</a> meet at a dive bar to discuss strange energy readings in <a href=\"#/search/Watanabe Park\" class=\"internal-link\">Watanabe Park</a>, linking them to similar reports from the <a href=\"#/search/New American Republic (NAR)\" class=\"internal-link\">NAR</a>.</p><p>&nbsp;</p><h5>Chapter: Moonlight Whiskers and Whispering Alleys</h5><p>The \"Kitty Coalition\" leads <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a> on a trail of clues: a book with 'ル', Yume's discarded bus ticket with 'ト', and a bowl with 'パ'. He deciphers the word \"Tulpa\" and encounters <a href=\"#/search/The Vagrant\" class=\"internal-link\">The Vagrant</a> who warns him about a \"cycle.\"</p><p>&nbsp;</p><h5>Chapter: A Wish and A Curse & Wishes Without Horse</h5><p>Yume's experience trapped in the <a href=\"#/search/The Æther\" class=\"internal-link\">Æther</a> is detailed. She recalls her tarot reading, sees a vision of <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a> sleeping, and explores the dream-forest, solidifying her entrapment.</p><p>&nbsp;</p><h5>Chapter: Veiled Mirage & The Mysterious Mizuki</h5><p><a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a> researches \"Tulpa,\" discovers the recurring username \"Mizuki,\" and finds her at the shrine. After a tense conversation, she directs him to the \"Cat Lady.\"</p><p>&nbsp;</p><h5>Chapter: Esoteric Arcana & Lineage Linkage</h5><p><a href=\"#/search/Mizuki / Hisoka\" class=\"internal-link\">Mizuki</a> visits <a href=\"#/search/Zed\" class=\"internal-link\">Zed's</a> antique shop, acquires a worn tarot deck, and uses it to psychically connect with Yume, swapping their Hierophant cards. She reflects on her kitsune heritage.</p><p>&nbsp;</p><h5>Chapter: Reveries and Echoes & Underground Tunnels</h5><p><a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a> dreams of the Æther forest. He finds the hidden entrance to the tunnels beneath <a href=\"#/search/Watanabe Park\" class=\"internal-link\">Watanabe Park</a>, discovers a portal, and makes first contact with Yume, who gives him the clue about Room 413.</p><p>&nbsp;</p><h5>Chapter: Concierge, Shadows in the Daylight, & Lantern Lights in the Library</h5><p><a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a> and <a href=\"#/search/Mizuki / Hisoka\" class=\"internal-link\">Mizuki</a> investigate the <a href=\"#/search/Love Hotel (Room 413)\" class=\"internal-link\">Love Hotel</a>, retrieving the <a href=\"#/search/Scrying Mirror\" class=\"internal-link\">scrying mirror</a> and the box with the <a href=\"#/search/The Painter's Journal & Brass Key\" class=\"internal-link\">painter's journal</a>. At <a href=\"#/search/Zed\" class=\"internal-link\">Zed's</a>, <a href=\"#/search/Mr. Whispers\" class=\"internal-link\">Mr. Whispers</a> provides instructions for a proper ritual.</p><p>&nbsp;</p><h5>Chapter: Adrift in the Æther, Sailing Solo, & Restoration</h5><p><a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie's</a> first ritual attempt fails. <a href=\"#/search/Mizuki / Hisoka\" class=\"internal-link\">Mizuki</a> leaves him. Guided by an inner voice, <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a> finds the <a href=\"#/search/Subway Maintenance Room\" class=\"internal-link\">Subway Maintenance Room</a> and successfully opens a new portal, stepping through to rescue <a href=\"#/search/Yume Minamoto / Sakura\" class=\"internal-link\">Yume</a>.</p>"
+            },
+            {
+                "title": "Section: data.fragments",
+                "content": "<h5>Chapter: Observe and Report & Expansion</h5><p><a href=\"#/search/Shikako ('Onryō')\" class=\"internal-link\">Shikako</a> infiltrates <a href=\"#/search/Kagami Tenko Corporation\" class=\"internal-link\">Kagami Tenko</a>. <a href=\"#/search/Takuma\" class=\"internal-link\">Takuma</a> investigates the break-in from the outside.</p><p>&nbsp;</p><h5>Chapter: Scientific Defection & Ones and Zeroes</h5><p><a href=\"#/search/Dr. Gordon Kionomiki\" class=\"internal-link\">Dr. Gordon Kionomiki</a> learns of \"<a href=\"#/search/Project Tsunagari\" class=\"internal-link\">Tsunagari</a>\" before being assassinated. <a href=\"#/search/Aoi\" class=\"internal-link\">Aoi</a> hacks <a href=\"#/search/Mobex Corporation\" class=\"internal-link\">Mobex</a> and uncovers <a href=\"#/search/Project Sakura\" class=\"internal-link\">Project Sakura</a>.</p><p>&nbsp;</p><h5>Chapter: Infiltration, Pink, Green, Emergence & Corporate Warfare</h5><p><a href=\"#/search/Shikako ('Onryō')\" class=\"internal-link\">Shikako</a> infiltrates a second Mobex facility. <a href=\"#/search/Kurai\" class=\"internal-link\">Kurai</a>'s visions intensify, and she meets <a href=\"#/search/The Harbinger\" class=\"internal-link\">The Harbinger</a>. <a href=\"#/search/Aoi\" class=\"internal-link\">Aoi</a> uncovers video logs of researchers <a href=\"#/search/Alec & Javier\" class=\"internal-link\">Alec & Javier</a> discussing tulpas and the <a href=\"#/search/PROTOCOL Network\" class=\"internal-link\">PROTOCOL network</a>.</p>"
+            },
+            {
+                "title": "Section: auth.callback(lineage)",
+                "content": "<h5>Chapter: Sørensen, Unknown Caller, Incarceration & Underwater Escape</h5><p>A flashback reveals <a href=\"#/search/Fredrik Sørensen\" class=\"internal-link\">Fredrik Sørensen</a>'s knowledge of <a href=\"#/search/The Kirin\" class=\"internal-link\">The Kirin</a>. In the present, <a href=\"#/search/Shikako ('Onryō')\" class=\"internal-link\">Shikako</a> is captured on <a href=\"#/search/Ikanajima Island\" class=\"internal-link\">Ikanajima Island</a>. She befriends the kappa <a href=\"#/search/Taro\" class=\"internal-link\">Taro</a>, who helps her escape through the <a href=\"#/search/Ikanajima Underwater Caverns\" class=\"internal-link\">underwater caverns</a>.</p>"
+            },
+            {
+                "title": "Section: routing_table.update(new_path)",
+                "content": "<h5>Chapter: Beyond the Ordinary, The Psychic and the Neon Lights, Smoke and Mirrors, Wave Goodbye & Connecting the Dots</h5><p>This sequence details <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a> and <a href=\"#/search/Mizuki / Hisoka\" class=\"internal-link\">Mizuki's</a> investigation leading them from <a href=\"#/search/Zed\" class=\"internal-link\">Zed's</a> shop to the <a href=\"#/search/DRI-WET Izakaya\" class=\"internal-link\">DRI-WET Izakaya</a> and a surreal jazz club where they are drugged. Afterwards, Mizuki leaves Bowie, giving him the swapped Hierophant card.</p>"
+            },
+            {
+                "title": "Section: interrupt_request(urgent_action)",
+                "content": "<h5>Chapter: The Lonely Island, Island Arrival, Phasing Out, Stable Powers, Reunion of Sorts, Fractured Reality & Station in Stasis</h5><p>This section covers the convergence on <a href=\"#/search/Ikanajima Island\" class=\"internal-link\">Ikanajima Island</a>, including <a href=\"#/search/Professor Shin'en Tajima\" class=\"internal-link\">Professor Tajima's</a> backstory, the arrival of the full team, <a href=\"#/search/Mizuki / Hisoka\" class=\"internal-link\">Mizuki's</a> full transformation into Hisoka, <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie's</a> entry into the <a href=\"#/search/Kozyrev Mirror\" class=\"internal-link\">Kozyrev Mirror</a>, and the deployment of the stasis bubble.</p>"
+            },
+            {
+                "title": "Section: gnostic.sub_routines & Kitsune + [the] Kirin",
+                "content": "<h5>Chapter: Split Persona, Foxfire, Belly of the Beast & Kirin and Kaiju</h5><p>The climax begins. Hisoka accepts her dual nature and uses her <a href=\"#/search/Foxfire\" class=\"internal-link\">foxfire</a> to disable the <a href=\"#/search/Aringold Circuit Routers (ARCs)\" class=\"internal-link\">ARCs</a>. The group is drawn into the nexus chamber to confront an empowered <a href=\"#/search/Commander Colt\" class=\"internal-link\">Commander Colt</a>. <a href=\"#/search/Aoi\" class=\"internal-link\">Aoi</a> discovers that Mizuki and Yume are candidates to be a host for <a href=\"#/search/The Kirin\" class=\"internal-link\">The Kirin</a>.</p>"
+            },
+            {
+                "title": "Section: return -; //EOF",
+                "content": "<h5>Chapter: Darkness, White, Sum of All Parts, Broken in Two & Epilogue</h5><p><a href=\"#/search/Professor Shin'en Tajima\" class=\"internal-link\">Tajima</a> sacrifices himself, causing the nexus to implode and seemingly killing <a href=\"#/search/Commander Colt\" class=\"internal-link\">Colt</a>. This event fractures <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie's</a> soul. <a href=\"#/search/Kurai\" class=\"internal-link\">Kurai</a> channels energy to help anchor <a href=\"#/search/Yume Minamoto / Sakura\" class=\"internal-link\">Yume</a>, who merges with her mother's essence to become <a href=\"#/search/Yume Minamoto / Sakura\" class=\"internal-link\">Sakura</a>. To protect <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a> from the fallout, <a href=\"#/search/Mizuki / Hisoka\" class=\"internal-link\">Hisoka</a> erases his memories. Months later, <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a> receives an encrypted package from \"K\" (<a href=\"#/search/Kurai\" class=\"internal-link\">Kurai</a>) containing a video of him with Yume, triggering a migraine and Déjà vu, setting the stage for the next cycle.</p>"
             }
-
-            card.innerHTML = `
-                <div class="flex justify-between items-start">
-                    <h3 class="text-xl font-bold text-gray-800 mb-3 editable" contenteditable="${isEditMode}" data-field="title">${entryData.title}</h3>
-                    <button class="add-link-btn text-sm text-indigo-600 hover:text-indigo-800 font-semibold edit-mode-only">Add Links</button>
-                </div>
-                <div class="prose-custom max-w-none text-gray-700 editable" contenteditable="${isEditMode}" data-field="content">
-                    ${entryData.content}
-                </div>
-                ${realWorldHtml}
-            `;
-            return card;
-        }
-
-        // --- EVENT LISTENERS ---
-        function attachEventListeners() {
-            const contentArea = document.getElementById('content-area');
-
-            contentArea.addEventListener('blur', (e) => {
-                if (isEditMode && e.target.matches('.editable')) {
-                    const card = e.target.closest('.card');
-                    if (!card) return;
-                    const category = card.dataset.category;
-                    const section = card.dataset.section;
-                    const index = card.dataset.index;
-                    const field = e.target.dataset.field;
-                    storyBibleData[category][section][index][field] = e.target.innerHTML;
-                    saveData();
-                }
-            }, true);
-
-            contentArea.addEventListener('click', (e) => {
-                if (isEditMode && e.target.matches('.add-entry-btn')) {
-                    const category = e.target.dataset.category;
-                    const section = e.target.dataset.section;
-                    const newEntry = { title: "New Title", content: "<p>New content goes here.</p>" };
-                    if (storyBibleData[category][section][0]?.realWorldEquivalent !== undefined) {
-                        newEntry.realWorldEquivalent = "<p>Real-world equivalent notes.</p>";
-                    }
-                    storyBibleData[category][section].push(newEntry);
-                    saveData();
-                    renderApp();
-                } else if (isEditMode && e.target.matches('.add-link-btn')) {
-                    const editableContent = e.target.closest('.card').querySelector('[data-field="content"]');
-                    saveSelection(editableContent);
-                    addLinkModal.classList.remove('hidden');
-                    document.getElementById('link-text').focus();
-                } else if (!isEditMode && e.target.matches('a.internal-link')) {
-                    e.preventDefault();
-                    const href = e.target.getAttribute('href'); 
-                    const searchTerm = decodeURIComponent(href.replace('#/search/', ''));
-                    searchInput.value = searchTerm;
-                    executeSearchAndDisplay(searchTerm);
-                }
-            });
-        }
-        
-        // --- EXPORT LOGIC ---
-        exportButton.addEventListener('click', () => {
-            const dataString = `let storyBibleData = ${JSON.stringify(storyBibleData, null, 4)};`;
-            document.getElementById('export-textarea').value = dataString;
-            exportModal.classList.remove('hidden');
-        });
-
-        closeExportButton.addEventListener('click', () => {
-            exportModal.classList.add('hidden');
-        });
-        
-        copyExportButton.addEventListener('click', () => {
-            const textarea = document.getElementById('export-textarea');
-            textarea.select();
-            document.execCommand('copy');
-            copyExportButton.textContent = 'Copied!';
-            setTimeout(() => {
-                 copyExportButton.textContent = 'Copy to Clipboard';
-            }, 2000);
-        });
-
-        // --- SEARCH LOGIC ---
-        function executeSearchAndDisplay(query) {
-            const lowerCaseQuery = query.toLowerCase().trim();
-            let firstMatchCard = null;
-
-            const cards = document.querySelectorAll('.card');
-            for (const card of cards) {
-                const titleEl = card.querySelector('[data-field="title"]');
-                if (!titleEl) continue;
-
-                const title = titleEl.textContent.toLowerCase();
-                
-                if (title === lowerCaseQuery) {
-                    firstMatchCard = card;
-                    break; 
-                }
+        ],
+        "Book 2: Family and Folklore": [
+            {
+                "title": "Book 2: Family and Folklore - The Consequence",
+                "content": "<p>This book explores the direct consequences of the anomaly. The focus shifts to the <a href=\"#/search/New American Republic (NAR)\" class=\"internal-link\">NAR</a>, where the \"other\" <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a> has become a key to a parallel conspiracy. <a href=\"#/search/Carly Shepard\" class=\"internal-link\">Carly Shepard's</a> quest is the cycle's new, unpredictable element in motion. The awakened NAR-Bowie makes a conscious, heroic sacrifice to save her—an act of pure will from an anomalous being that sends a shockwave through the metaphysical structure of the loop.</p>"
             }
-            
-            if (!firstMatchCard && cards.length > 0) {
-                 for (const card of cards) {
-                    const title = card.querySelector('[data-field="title"]').textContent.toLowerCase();
-                    const content = card.querySelector('[data-field="content"]').textContent.toLowerCase();
-                    const realWorld = card.querySelector('[data-field="realWorldEquivalent"]')?.textContent.toLowerCase() || '';
-
-                    if (title.includes(lowerCaseQuery) || content.includes(lowerCaseQuery) || realWorld.includes(lowerCaseQuery)) {
-                        firstMatchCard = card;
-                        break;
-                    }
-                }
+        ],
+        "Book 3: Faith and Finality": [
+            {
+                "title": "Book 3: Faith and Finality - The Breaking of the Wheel",
+                "content": "<p>This is the final loop. Armed with the unprecedented knowledge of <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie's</a> dual nature, the protagonists are positioned to end the cycle. They must confront <a href=\"#/search/Mushoku\" class=\"internal-link\">Mushoku</a>, the loop's tragic prisoner, and challenge his perception of reality. The key is making <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie</a> whole again through a metaphysical re-merging on <a href=\"#/search/Ikanajima Island\" class=\"internal-link\">Ikanajima Island</a>. The final confrontation is not just about overpowering <a href=\"#/search/Mushoku\" class=\"internal-link\">Mushoku</a>, but about proving his perception of a deterministic loop is wrong, and that a true \"finality\" other than annihilation is possible.</p>"
             }
-
-            if (firstMatchCard) {
-                clearSearchHighlights();
-                firstMatchCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                firstMatchCard.classList.add('search-highlight');
-                highlightTextInNode(firstMatchCard, lowerCaseQuery);
-
-                setTimeout(() => {
-                    firstMatchCard.classList.remove('search-highlight');
-                }, 2000);
+        ]
+    },
+    "Themes & Craft": {
+        "Core Themes": [
+            {
+                "title": "Core Themes Across the Saga",
+                "content": "\n                    <ul>\n                        <li><strong><a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Identity &amp; Duality</a>:</strong> Explores Human/Supernatural divides, the Self vs. Other, and fractured selves. See also: <a href=\"https://en.wikipedia.org/wiki/Duality_(philosophy)\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">Duality (philosophy)</a>.</li><li><br></li>\n                        <li><strong><a href=\"#/search/Carly Shepard\" class=\"internal-link\">Family &amp; Connection</a>:</strong> Examines bonds of blood (the Shepards), found family (the protagonist group), &amp; metaphysical ties (<a href=\"#/search/Mizuki / Hisoka\" class=\"internal-link\">Mizuki</a> &amp; <a href=\"#/search/Yume Minamoto / Sakura\" class=\"internal-link\">Sakura</a>). See also: <a href=\"https://en.wikipedia.org/wiki/Found_family\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">Found Family</a>.</li><li><br></li>\n                        <li><strong><a href=\"#/search/Zenko Order\" class=\"internal-link\">The Balance</a>:</strong> The conflict between the Mundane/Metaphysical, Order/Chaos, and Nature/Technology. See also: <a href=\"https://en.wikipedia.org/wiki/Dualism_in_cosmology\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">Cosmological Dualism</a>.</li><li><br></li>\n                        <li><strong><a href=\"#/search/Professor Shin'en Tajima\" class=\"internal-link\">Sacrifice &amp; Redemption</a>:</strong> Embodied in the actions of characters like <a href=\"#/search/Professor Shin'en Tajima\" class=\"internal-link\">Professor Tajima</a> and NAR-Bowie. See also: <a href=\"https://en.wikipedia.org/wiki/Redemption_arc\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">Redemption Arc</a>.</li><li><br></li>\n                        <li><strong>Knowledge, Power, &amp; Responsibility:</strong> A core struggle for all factions, from <a href=\"#/search/Mobex Corporation\" class=\"internal-link\">Mobex</a> to the <a href=\"#/search/Zenko Order\" class=\"internal-link\">Zenko Order</a>. See also: <a href=\"https://en.wikipedia.org/wiki/Power_(social_and_political)\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">Power (social and political)</a>.</li><li><br></li>\n                        <li><strong>Survival &amp; Resilience:</strong> Particularly prominent in the <a href=\"#/search/New American Republic (NAR)\" class=\"internal-link\">NAR</a> setting and with characters like <a href=\"#/search/Carly Shepard\" class=\"internal-link\">Carly</a>. See also: <a href=\"https://en.wikipedia.org/wiki/Psychological_resilience\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">Psychological Resilience</a>.</li><li><br></li>\n                        <li><strong>Faith &amp; The Unseen:</strong> The protagonists' belief in their reality vs. <a href=\"#/search/Mushoku\" class=\"internal-link\">Mushoku's</a> faith in his perception. See also: <a href=\"https://en.wikipedia.org/wiki/Faith\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">Faith</a>.</li><li><br></li>\n                        <li><strong>The Nature of Reality, Time, and Consciousness:</strong> The central metaphysical conflict of the time loop. See also: <a href=\"https://en.wikipedia.org/wiki/Philosophy_of_time\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">Philosophy of Time</a>.</li><li><br></li>\n                        <li><strong>Corporate Greed vs. Ancient Wisdom/Nature:</strong> The <a href=\"#/search/Yako Syndicate\" class=\"internal-link\">Yako Syndicate's</a> exploitation of <a href=\"#/search/Ley Lines\" class=\"internal-link\">ley lines</a> vs. the <a href=\"#/search/Zenko Order\" class=\"internal-link\">Zenko Order's</a> desire for balance.</li><li><br></li>\n                        <li><strong>Impermanence &amp; The Cycle of Existence:</strong> The core concept of the time loop and the Buddhist philosophies influencing characters like <a href=\"#/search/Mushoku\" class=\"internal-link\">Mushoku</a>. See also: <a href=\"https://en.wikipedia.org/wiki/Sa%E1%B9%83s%C4%81ra\" class=\"external-link\" target=\"_blank\" rel=\"noopener noreferrer\">Saṃsāra</a>.</li>\n                    </ul>\n                "
+            },
+            {
+                "title": "The Tragedy of Mushoku",
+                "content": "\n                    <p>The central ethical dilemma of the series revolves around <a href=\"#/search/Mushoku\" class=\"internal-link\">Mushoku</a>. Is it ethical to stop a being who is, in his own mind, acting out of mercy to end what he perceives as infinite suffering for all beings? His motivation forces the protagonists to question the very nature of their reality and whether their struggle for free will is meaningful if it's part of an endless, painful cycle. This reframes the final conflict from a simple battle of good vs. evil into a profound philosophical debate.</p>\n                "
             }
-        }
-        
-        searchInput.addEventListener('input', populateSearchDropdown);
-        searchInput.addEventListener('focus', populateSearchDropdown);
-        document.addEventListener('click', (e) => {
-            if (e.target.id !== 'search-input' && !searchResultsContainer.contains(e.target)) {
-                searchResultsContainer.classList.add('hidden');
-            }
-        });
-
-        function populateSearchDropdown() {
-            const query = searchInput.value.toLowerCase().trim();
-            searchResultsContainer.innerHTML = '';
-
-            if (query.length < 2) {
-                searchResultsContainer.classList.add('hidden');
-                clearSearchHighlights();
-                return;
-            }
-
-            const results = new Set();
-            document.querySelectorAll('.card [data-field="title"]').forEach(titleEl => {
-                const title = titleEl.textContent;
-                if (title.toLowerCase().includes(query)) {
-                    results.add(title);
-                }
-            });
-
-            if (results.size > 0) {
-                searchResultsContainer.classList.remove('hidden');
-                results.forEach(title => {
-                    const resultDiv = document.createElement('div');
-                    resultDiv.className = 'p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200';
-                    resultDiv.textContent = title;
-                    resultDiv.addEventListener('click', () => {
-                        searchInput.value = title;
-                        executeSearchAndDisplay(title);
-                        searchResultsContainer.classList.add('hidden');
-                    });
-                    searchResultsContainer.appendChild(resultDiv);
-                });
-            } else {
-                searchResultsContainer.classList.add('hidden');
-            }
-        }
-        
-        function clearSearchHighlights() {
-            document.querySelectorAll('.highlight').forEach(el => {
-                if (el.parentNode) {
-                    el.outerHTML = el.innerHTML;
-                }
-            });
-        }
-
-        function highlightTextInNode(node, query) {
-            clearSearchHighlights();
-            const regex = new RegExp(`(${query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
-            const treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
-            let textNodes = [];
-            while(treeWalker.nextNode()) {
-                if (treeWalker.currentNode.parentElement.tagName !== 'SCRIPT' && treeWalker.currentNode.parentElement.tagName !== 'STYLE') {
-                    textNodes.push(treeWalker.currentNode);
-                }
-            }
-            
-            textNodes.forEach(textNode => {
-                const text = textNode.nodeValue;
-                if (regex.test(text)) {
-                    const fragment = document.createDocumentFragment();
-                    let lastIndex = 0;
-                    text.replace(regex, (match, ...args) => {
-                        const offset = args[args.length - 2];
-                        if (offset > lastIndex) {
-                            fragment.appendChild(document.createTextNode(text.substring(lastIndex, offset)));
-                        }
-                        const highlightSpan = document.createElement('span');
-                        highlightSpan.className = 'highlight';
-                        highlightSpan.textContent = match;
-                        fragment.appendChild(highlightSpan);
-                        lastIndex = offset + match.length;
-                    });
-                    if (lastIndex < text.length) {
-                        fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
-                    }
-                    if (textNode.parentNode) {
-                        textNode.parentNode.replaceChild(fragment, textNode);
-                    }
-                }
-            });
-        }
-
-        // --- LINK MODAL LOGIC ---
-        linkTypeSelect.addEventListener('change', (e) => {
-            const label = document.getElementById('link-target-label');
-            const input = document.getElementById('link-target');
-            if (e.target.value === 'internal') {
-                label.textContent = 'Reference (Entry Name)';
-                input.placeholder = 'e.g., Alex \'Bowie\' Shepard';
-            } else {
-                label.textContent = 'URL';
-                input.placeholder = 'https://en.wikipedia.org/wiki/...';
-            }
-        });
-
-        cancelLinkButton.addEventListener('click', () => {
-            addLinkModal.classList.add('hidden');
-            currentSelection = null;
-        });
-
-        insertLinkButton.addEventListener('click', () => {
-            const linkText = document.getElementById('link-text').value;
-            const linkType = document.getElementById('link-type').value;
-            const linkTarget = document.getElementById('link-target').value;
-
-            if (!linkText || !linkTarget) {
-                alert('Please fill in both Link Text and the target/URL.');
-                return;
-            }
-
-            let linkHtml;
-            if (linkType === 'internal') {
-                linkHtml = `<a href="#/search/${encodeURIComponent(linkTarget)}" class="internal-link">${linkText}</a>`;
-            } else {
-                linkHtml = `<a href="${linkTarget}" class="external-link" target="_blank" rel="noopener noreferrer">${linkText}</a>`;
-            }
-
-            restoreSelection();
-            if (window.getSelection().rangeCount > 0) {
-                 document.execCommand('insertHTML', false, linkHtml + '&nbsp;');
-            }
-
-            if (currentSelection && currentSelection.focusNode) {
-                const editable = currentSelection.focusNode.parentElement.closest('.editable');
-                if (editable) {
-                    editable.dispatchEvent(new Event('blur', { bubbles: true }));
-                }
-            }
-
-            document.getElementById('link-text').value = '';
-            document.getElementById('link-target').value = '';
-            addLinkModal.classList.add('hidden');
-            currentSelection = null;
-        });
-
-        function saveSelection(containerEl) {
-            const selection = window.getSelection();
-            if (selection.rangeCount > 0 && containerEl.contains(selection.getRangeAt(0).commonAncestorContainer)) {
-                currentSelection = selection.getRangeAt(0).cloneRange();
-                document.getElementById('link-text').value = currentSelection.toString();
-            } else {
-                currentSelection = null;
-                document.getElementById('link-text').value = '';
-            }
-        }
-
-        function restoreSelection() {
-            if (currentSelection) {
-                const selection = window.getSelection();
-                selection.removeAllRanges();
-                selection.addRange(currentSelection);
-            }
-        }
-
-        // --- INITIALIZATION ---
-        checkAuth();
-    });
-    </script>
-
-</body>
-</html>
+        ]
+    }
+};
