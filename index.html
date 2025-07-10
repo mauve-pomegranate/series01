@@ -8,6 +8,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <script src="story_bible_data.js"></script>
+    
     <style>
         /* Custom Styles */
         body {
@@ -206,122 +209,8 @@
     </div>
 
     <script id="app-logic">
-    // --- DATA STORE ---
-    let storyBibleData = {};
-
     // --- APPLICATION LOGIC ---
     document.addEventListener('DOMContentLoaded', () => {
-        // Build the story bible data object now that all data files are loaded
-        storyBibleData = {
-            "Series Overview": {
-                "Series Overview": [
-                    {
-                        "title": "Series Logline",
-                        "content": "<p>Across fractured realities and hidden worlds, a diverse group of individuals—an American expatriate, a half-kitsune investigator, a hardened operative, and resilient survivors of a broken America—must unravel ancient prophecies, confront corporate conspiracies, and battle cosmic entities to prevent the annihilation of all existence, forcing them to question the nature of identity, sacrifice, and the threads that bind family and fate.</p>"
-                    },
-                    {
-                        "title": "Working Titles (By Book)",
-                        "content": "<ul><li>Book 1: Fate and Foxfire</li><li>Book 2: Family and Folklore</li><li>Book 3: Faith and Finality</li></ul>"
-                    },
-                    {
-                        "title": "Genre & Audience",
-                        "content": "<p><strong>Primary Genre:</strong> Urban Fantasy / Speculative Fiction</p><p><strong>Secondary Elements:</strong> Conspiracy Thriller, Post-Apocalyptic (Book 2), Mythic Fiction, Cosmic Horror (hints).</p><p><strong>Target Audience:</strong> Older Young Adult to Adult, interested in complex plots, intricate world-building, Japanese & American folklore, blend of magic/science, and character-driven stories with strong emotional cores.</p>"
-                    }
-                ]
-            },
-            "Characters": {
-                "Primary Protagonists": [
-                    {
-                        "title": "Alex 'Bowie' Shepard",
-                        "content": "<p>An American expatriate in Tokyo who gets drawn into a supernatural conspiracy after being tasked to find the missing Yume Minamoto. His investigation leads him to develop strange powers and confront ancient forces.</p>"
-                    },
-                    {
-                        "title": "Mizuki / Hisoka",
-                        "content": "<p>A half-kitsune investigator searching for her lost mother. She is a powerful ally with a deep connection to the Æther and Japanese folklore.</p>"
-                    },
-                    {
-                        "title": "Carly Shepard",
-                        "content": "<p>Bowie's resourceful sister living in the fractured New American Republic (NAR). A skilled scavenger and survivor who becomes a key player in the later stages of the conflict.</p>"
-                    },
-                    {
-                        "title": "Shikako ('Onryō')",
-                        "content": "<p>A cybernetically enhanced operative for the Zenko Order. Initially detached and professional, she becomes a crucial member of the team.</p>"
-                    },
-                    {
-                        "title": "Aoi",
-                        "content": "<p>A brilliant hacker operating from a fortified bunker in the NAR. Initially motivated by payment, she develops a loyalty to the group after becoming entangled in their conflicts.</p>"
-                    },
-                    {
-                        "title": "Yume Minamoto / Sakura",
-                        "content": "<p>The central mystery of Book 1. A sophisticated thought form created by the Mobex Corporation. She is the key to understanding the nature of the Æther and the plans of the Yako Syndicate. She eventually merges with her original essence to become the powerful being known as Sakura.</p>"
-                    }
-                ],
-                "Key Antagonists": [
-                    {
-                        "title": "Koda",
-                        "content": "<p>The true antagonist of the saga. A being who perceives the repeating time loop of reality and seeks to end all existence as an act of mercy. His nihilistic philosophy presents a profound ethical and metaphysical challenge to the heroes.</p>"
-                    },
-                    {
-                        "title": "Commander Colt",
-                        "content": "<p>A ruthless Yako Syndicate operative overseeing Project Tsunagari. His ambition and cruelty make him the primary physical threat in Book 1.</p>"
-                    }
-                ],
-                "Minor Characters": [
-                    {
-                        "title": "Ichiro Kobayashi",
-                        "content": "<p>An enigmatic, ancient fortune teller who provides Yume with the special tarot deck, setting the events of the story in motion.</p>"
-                    },
-                    {
-                        "title": "Mr. Whispers",
-                        "content": "<p>A talking cat who acts as a cryptic guide for Bowie, providing essential clues and lore about the Æther and kitsune.</p>"
-                    },
-                    {
-                        "title": "Professor Shin'en Tajima",
-                        "content": "<p>The brilliant but coerced scientist behind the ARC routers. He ultimately sacrifices himself to thwart Commander Colt's plans.</p>"
-                    }
-                ]
-            },
-            "Key Locations": {
-                "Main Hubs": [
-                    {
-                        "title": "Tokyo, Japan",
-                        "content": "<p>The primary setting for Book 1. A city of contrasts, where modern skyscrapers hide ancient shrines and corporate conspiracies intersect with supernatural phenomena.</p>"
-                    },
-                    {
-                        "title": "New American Republic (NAR)",
-                        "content": "<p>The setting for much of Book 2. A fractured, post-apocalyptic version of the USA characterized by scarcity, local folklore, and hidden dangers.</p>"
-                    },
-                    {
-                        "title": "Ikanajima Island",
-                        "content": "<p>A remote island that houses the secret facility for Project Tsunagari and becomes the site of the Book 1 climax.</p>"
-                    },
-                    {
-                        "title": "The Æther",
-                        "content": "<p>A liminal dimension that underpins reality. It is a place of immense power, non-linear time, and strange manifestations.</p>"
-                    }
-                ]
-            },
-            "Glossary": {
-                "Key Terms": [
-                    {
-                        "title": "Glossary",
-                        "content": "<p><strong>Æther:</strong> A liminal, energetic dimension. Source of supernatural power.</p><p><strong>Kitsune:</strong> Magical fox spirits from Japanese folklore.</p><p><strong>Egregore:</strong> A thought form created from collective consciousness.</p><p><strong>The Kirin:</strong> The ultimate Egregore, a conscious, reality-bending weapon.</p><p><strong>Project Tsunagari:</strong> The Yako Syndicate's plan to merge realities.</p><p><strong>Sunyata:</strong> The void of emptiness; Koda's ultimate goal.</p>"
-                    }
-                ]
-            },
-            "Themes & Craft": {
-                "Core Concepts": [
-                     {
-                        "title": "Symbolism & Deeper Meanings",
-                        "content": "<p><strong>Foxes/Kitsune:</strong> Duality (Zenko vs. Yako), trickery, intelligence, transformation.</p><p><strong>Mirrors:</strong> Self-reflection, truth, illusion, fractured selves, windows to other realities.</p><p><strong>Eyes (especially Green):</strong> Windows to the soul, perception, connection to the Æther. Green eyes (Yume/Sakura) signify an otherworldly nature.</p>"
-                    },
-                    {
-                        "title": "Character Voice & Dialogue Style Guide",
-                        "content": "<p><strong>Alex 'Bowie' Shepard:</strong> Informal, prone to mild sarcasm or bewildered humor. Asks questions to make sense of the bizarre.</p><p><strong>Mizuki/Hisoka:</strong> (Mizuki) Guarded, analytical, precise. (Hisoka) More confident, powerful, commanding.</p><p><strong>Carly Shepard:</strong> Pragmatic, direct, no-nonsense from her NAR upbringing.</p>"
-                    }
-                ]
-            }
-        };
 
         // --- GLOBAL STATE ---
         let isEditMode = false;
