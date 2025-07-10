@@ -644,8 +644,24 @@ let storyBibleData = {
         
         // --- EXPORT LOGIC ---
         exportButton.addEventListener('click', () => {
-            const dataString = `let storyBibleData = ${JSON.stringify(storyBibleData, null, 4)};`;
-            document.getElementById('export-textarea').value = dataString;
+            // Get the static application logic once
+            const fullScriptText = document.querySelector('script:not([src])').textContent;
+            const appLogicMarker = '// --- APPLICATION LOGIC ---';
+            const appLogicStartIndex = fullScriptText.indexOf(appLogicMarker);
+            const appLogicString = fullScriptText.substring(appLogicStartIndex);
+
+            // Create the new, complete script content with current data
+            const newScriptContent = `\n    // --- DATA STORE ---\nlet storyBibleData = ${JSON.stringify(storyBibleData, null, 4)};\n\n    ${appLogicString}`;
+
+            // Create a clone of the document to modify safely
+            const docClone = document.cloneNode(true);
+            docClone.querySelector('script:not([src])').textContent = newScriptContent;
+
+            // Get the final HTML string
+            const fullHtml = "<!DOCTYPE html>\n" + docClone.documentElement.outerHTML;
+
+            // Set it to the textarea
+            document.getElementById('export-textarea').value = fullHtml;
             exportModal.classList.remove('hidden');
         });
 
