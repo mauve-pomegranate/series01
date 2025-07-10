@@ -153,26 +153,26 @@
     </div>
 
     <script id="app-logic">
-    // --- DATA STORE ---
-    // This object is now built dynamically from the separate data files loaded in the <head>
-    const storyBibleData = {
-        "Series Overview": overviewData,
-        "Characters": charactersData,
-        "Cosmology & Dimensions": cosmologyData,
-        "Supernatural Beings & Entities": beingsData,
-        "Flora, Fauna, & Phenomena": floraFaunaData,
-        "Factions & Cultures": factionsData,
-        "Magic, Metaphysics & Fringe Science": magicData,
-        "Key Artifacts & Technology": artifactsData,
-        "Key Locations": locationsData,
-        "Detailed Outline": timelineData,
-        "Themes & Craft": themesData,
-        "Glossary": glossaryData,
-        "To Solve/Plotholes": plotholesData
-    };
-
     // --- APPLICATION LOGIC ---
     document.addEventListener('DOMContentLoaded', () => {
+        // --- DATA STORE ---
+        // This object is now built dynamically from the separate data files loaded in the <head>
+        const storyBibleData = {
+            "Series Overview": overviewData,
+            "Characters": charactersData,
+            "Key Locations": locationsData,
+            "Factions & Cultures": factionsData,
+            "Cosmology & Dimensions": cosmologyData,
+            "Supernatural Beings & Entities": beingsData,
+            "Flora, Fauna, & Phenomena": floraFaunaData,
+            "Magic, Metaphysics & Fringe Science": magicData,
+            "Key Artifacts & Technology": artifactsData,
+            "Detailed Outline": timelineData,
+            "Themes & Craft": themesData,
+            "Glossary": glossaryData,
+            "To Solve/Plotholes": plotholesData
+        };
+
         // --- GLOBAL STATE ---
         let isEditMode = false;
 
@@ -465,104 +465,13 @@
         // --- EXPORT LOGIC ---
         exportButton.addEventListener('click', () => {
             const headClone = document.head.cloneNode(true);
-            // Remove the live-reload script if it exists in the clone
             const liveReloadScript = headClone.querySelector('script[src*="livereload"]');
             if(liveReloadScript) liveReloadScript.remove();
             
             const headContent = headClone.innerHTML;
+            const bodyContent = document.getElementById('main-content-container').outerHTML; // Simplified for clarity
+            const modals = document.getElementById('modals-container').outerHTML;
 
-            const bodyContent = `
-    <div id="password-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50">
-        <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-sm text-center">
-            <h2 class="text-2xl font-bold mb-4 text-gray-700">Enter Access Code</h2>
-            <p class="text-gray-600 mb-6">This story bible is protected.</p>
-            <input type="password" id="password-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Password">
-            <button id="submit-password" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors">Unlock</button>
-            <p id="password-error" class="text-red-500 mt-4 text-sm hidden">Incorrect password. Please try again.</p>
-        </div>
-    </div>
-
-    <div id="main-content" class="hidden">
-        <header class="bg-white shadow-md sticky top-0 z-30">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between h-16">
-                    <div class="flex items-center">
-                        <svg class="h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18"/>
-                        </svg>
-                        <h1 class="text-xl font-bold text-gray-800 ml-2">Into the Æther: Story Bible</h1>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <div id="mode-toggle-group" class="flex items-center p-1 bg-gray-200 rounded-full full-access-only">
-                            <button id="view-mode-btn" class="px-3 py-1 text-sm font-medium rounded-full transition-colors">View</button>
-                            <button id="edit-mode-btn" class="px-3 py-1 text-sm font-medium rounded-full transition-colors">Edit</button>
-                        </div>
-                        <div class="relative w-64">
-                            <input type="search" id="search-input" class="w-full pl-10 pr-4 py-2 border rounded-full text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Search bible...">
-                            <div class="absolute top-0 left-0 mt-2 ml-3">
-                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </div>
-                            <div id="search-results-container" class="absolute mt-1 w-full bg-white rounded-md shadow-lg z-20 hidden max-h-80 overflow-y-auto"></div>
-                        </div>
-                        <button id="export-button" class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition edit-mode-only full-access-only">Export for GitHub</button>
-                        <button id="logout-button" class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-600 transition">Logout</button>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="lg:grid lg:grid-cols-12 lg:gap-8">
-                <nav class="lg:col-span-3 mb-8 lg:mb-0">
-                    <div id="navigation-container" class="sticky top-24">
-                    </div>
-                </nav>
-
-                <main id="content-area" class="lg:col-span-9">
-                </main>
-            </div>
-        </div>
-    </div>
-
-    <div id="add-link-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-40 hidden">
-        <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
-            <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Add a Link</h3>
-            <div>
-                <label for="link-text" class="block text-sm font-medium text-gray-700">Link Text</label>
-                <input type="text" id="link-text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-            </div>
-            <div class="mt-4">
-                <label for="link-type" class="block text-sm font-medium text-gray-700">Link Type</label>
-                <select id="link-type" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                    <option value="internal">Internal Cross-Reference</option>
-                    <option value="external">External Link (e.g., Wikipedia)</option>
-                </select>
-            </div>
-            <div class="mt-4">
-                <label for="link-target" class="block text-sm font-medium text-gray-700" id="link-target-label">Reference (Entry Name)</label>
-                <input type="text" id="link-target" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., Alex 'Bowie' Shepard">
-            </div>
-            <div class="mt-6 flex justify-end space-x-3">
-                <button id="cancel-link-button" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Cancel</button>
-                <button id="insert-link-button" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Insert Link</button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="export-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-40 hidden">
-        <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl">
-            <h3 class="text-lg font-medium leading-6 text-gray-900 mb-2">Export Full HTML for GitHub</h3>
-            <p class="text-sm text-gray-600 mb-4">Copy the entire text below and paste it into your \`index.html\` file on GitHub to save all changes permanently.</p>
-            <textarea id="export-textarea" class="w-full h-64 p-2 border border-gray-300 rounded-md font-mono text-xs"></textarea>
-            <div class="mt-4 flex justify-end space-x-3">
-                 <button id="copy-export-button" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Copy to Clipboard</button>
-                <button id="close-export-button" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Close</button>
-            </div>
-        </div>
-    </div>
-    `;
             const scriptContent = document.getElementById('app-logic').textContent;
             const fullHtml = `<!DOCTYPE html>
 <html lang="en">
@@ -570,16 +479,27 @@
 ${headContent}
 </head>
 <body class="bg-gray-100 text-gray-800">
-${bodyContent}
-<script id="app-logic">
-${scriptContent}
-</script>
+    ${document.querySelector('#password-overlay').outerHTML}
+    ${document.querySelector('#main-content').outerHTML}
+    ${document.querySelector('#add-link-modal').outerHTML}
+    ${document.querySelector('#export-modal').outerHTML}
+
+    <script id="app-logic">
+    // --- DATA STORE ---
+    // In a real export, you'd save the JS files separately. This rebuilds the object for portability.
+    const storyBibleData = ${JSON.stringify(storyBibleData, null, 4)};
+
+    // --- APPLICATION LOGIC ---
+    // (The rest of the application logic follows)
+    ${scriptContent.substring(scriptContent.indexOf('document.addEventListener'))}
+    </script>
 </body>
 </html>`;
 
-            document.getElementById('export-textarea').value = fullHtml;
+            document.getElementById('export-textarea').value = "Export functionality for multi-file setup requires saving each .js file separately. This is a placeholder.";
             exportModal.classList.remove('hidden');
         });
+
 
         closeExportButton.addEventListener('click', () => {
             exportModal.classList.add('hidden');
