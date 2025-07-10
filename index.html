@@ -222,6 +222,10 @@
                     {
                         "title": "Working Titles (By Book)",
                         "content": "<ul><li>Book 1: Fate and Foxfire</li><li>Book 2: Family and Folklore</li><li>Book 3: Faith and Finality</li></ul>"
+                    },
+                    {
+                        "title": "Genre & Audience",
+                        "content": "<p><strong>Primary Genre:</strong> Urban Fantasy / Speculative Fiction</p><p><strong>Secondary Elements:</strong> Conspiracy Thriller, Post-Apocalyptic (Book 2), Mythic Fiction, Cosmic Horror (hints).</p><p><strong>Target Audience:</strong> Older Young Adult to Adult, interested in complex plots, intricate world-building, Japanese & American folklore, blend of magic/science, and character-driven stories with strong emotional cores.</p>"
                     }
                 ]
             },
@@ -352,7 +356,6 @@
         // --- DATA PERSISTENCE ---
         function saveData() {
             try {
-                // This function is less useful in a multi-file setup, but retained for edit-mode persistence
                 localStorage.setItem('storyBibleData_Aether', JSON.stringify(storyBibleData));
             } catch (e) {
                 console.error("Could not save data to localStorage:", e);
@@ -363,7 +366,6 @@
             const savedData = localStorage.getItem('storyBibleData_Aether');
             if (savedData) {
                 try {
-                    // If there's locally saved data, merge it over the file-based data
                     const localData = JSON.parse(savedData);
                     Object.assign(storyBibleData, localData);
                 } catch (e) {
@@ -385,7 +387,7 @@
                 }
                 
                 loadData();
-                setMode(false); // Always start in view mode
+                setMode(false); 
             } else {
                 passwordOverlay.style.display = 'flex';
                 mainContent.classList.add('hidden');
