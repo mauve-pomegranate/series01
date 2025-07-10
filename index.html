@@ -8,55 +8,108 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    
-    <script src="data_overview.js"></script>
-    <script src="data_characters.js"></script>
-    <script src="data_cosmology.js"></script>
-    <script src="data_beings.js"></script>
-    <script src="data_flora.js"></script>
-    <script src="data_factions.js"></script>
-    <script src="data_magic.js"></script>
-    <script src="data_artifacts.js"></script>
-    <script src="data_locations.js"></script>
-    <script src="data_timeline.js"></script>
-    <script src="data_themes.js"></script>
-    <script src="data_glossary.js"></script>
-    <script src="data_plotholes.js"></script>
-    
     <style>
-        /* All CSS from before remains unchanged */
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        .prose-custom { font-family: 'Lora', serif; }
-        .prose-custom h1, .prose-custom h2, .prose-custom h3, .prose-custom h4, .prose-custom h5 { font-family: 'Inter', sans-serif; font-weight: 700; }
-        .card { background-color: #ffffff; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); transition: box-shadow 0.3s ease-in-out; }
-        .card:hover { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
-        .editable[contenteditable="true"]:focus { outline: 2px solid #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); }
+        /* Custom Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .prose-custom {
+            font-family: 'Lora', serif;
+        }
+        .prose-custom h1, .prose-custom h2, .prose-custom h3, .prose-custom h4, .prose-custom h5 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .editable[contenteditable="true"]:focus {
+            outline: 2px solid #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+        /* Link Styles */
         .prose-custom a.internal-link { color: #6d28d9; text-decoration: none; font-weight: 600; cursor: pointer; }
         .prose-custom a.internal-link:hover { text-decoration: underline; }
         .prose-custom a.external-link { color: #059669; text-decoration: none; font-weight: 600; }
         .prose-custom a.external-link:hover { text-decoration: underline; }
         .prose-custom a.external-link::after { content: ' ↗'; display: inline-block; font-size: 0.8em; vertical-align: super; }
+        
+        /* Search Highlight */
         .highlight { background-color: #fef08a; border-radius: 0.25rem; padding: 0 2px; }
         .search-highlight { background-color: #fcd34d; animation: flash 1.5s ease-in-out; }
         @keyframes flash { 0% { background-color: #fcd34d; } 50% { background-color: #fef08a; } 100% { background-color: #fcd34d; } }
+
+        /* Edit Mode UI */
         #mode-toggle-group, #export-button { display: none; }
         body.full-access #mode-toggle-group { display: flex; }
         body.edit-mode.full-access #export-button { display: block; }
+        
         .add-entry-btn, .add-link-btn { display: none; }
         body.edit-mode .add-entry-btn, body.edit-mode .add-link-btn { display: block; }
+        
         body.edit-mode .prose-custom a { pointer-events: none; }
+        
+        /* Login Animation */
         #password-overlay.dissolving { opacity: 0; transition: opacity 1.5s ease-out; }
-        #password-overlay.dissolving::after { content: ''; position: absolute; inset: 0; background: conic-gradient(from 90deg at 50% 50%, #6366f1, #a855f7, #ec4899, #f59e0b, #84cc16, #10b981, #06b6d4, #3b82f6, #6366f1); filter: blur(80px) saturate(2); opacity: 1; transition: opacity 1s ease-out; z-index: 1; }
+        #password-overlay.dissolving::after {
+            content: ''; position: absolute; inset: 0;
+            background: conic-gradient(from 90deg at 50% 50%, #6366f1, #a855f7, #ec4899, #f59e0b, #84cc16, #10b981, #06b6d4, #3b82f6, #6366f1);
+            filter: blur(80px) saturate(2); opacity: 1; transition: opacity 1s ease-out; z-index: 1;
+        }
         #password-overlay.dissolving > div { transition: opacity 0.5s ease-in; opacity: 0; }
-        #navigation-container summary { cursor: pointer; list-style: none; display: flex; align-items: center; padding: 0.5rem 0.75rem; border-radius: 0.375rem; }
-        #navigation-container summary:hover { background-color: #e5e7eb; }
-        #navigation-container summary::-webkit-details-marker { display: none; }
-        #navigation-container summary::before { content: '►'; margin-right: 0.5rem; font-size: 0.6em; transition: transform 0.2s; }
-        #navigation-container details[open] > summary::before { transform: rotate(90deg); }
-        #navigation-container details .nav-links { padding-left: 1.5rem; border-left: 1px solid #d1d5db; margin-left: 0.5rem; }
-        .prose-custom table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; margin-bottom: 1.5rem; }
-        .prose-custom th, .prose-custom td { border: 1px solid #d1d5db; padding: 0.75rem; text-align: left; }
-        .prose-custom th { background-color: #f3f4f6; font-weight: 600; }
+
+        /* Navigation Accordion Styles */
+        #navigation-container summary {
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+        }
+        #navigation-container summary:hover {
+            background-color: #e5e7eb;
+        }
+        #navigation-container summary::-webkit-details-marker {
+            display: none;
+        }
+        #navigation-container summary::before {
+            content: '►';
+            margin-right: 0.5rem;
+            font-size: 0.6em;
+            transition: transform 0.2s;
+        }
+        #navigation-container details[open] > summary::before {
+            transform: rotate(90deg);
+        }
+        #navigation-container details .nav-links {
+            padding-left: 1.5rem;
+            border-left: 1px solid #d1d5db;
+            margin-left: 0.5rem;
+        }
+        /* Table Styles */
+        .prose-custom table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .prose-custom th, .prose-custom td {
+            border: 1px solid #d1d5db;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        .prose-custom th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -153,24 +206,117 @@
     </div>
 
     <script id="app-logic">
+    // --- DATA STORE ---
+    let storyBibleData = {};
+
     // --- APPLICATION LOGIC ---
     document.addEventListener('DOMContentLoaded', () => {
-        // --- DATA STORE ---
-        // This object is now built dynamically from the separate data files loaded in the <head>
-        const storyBibleData = {
-            "Series Overview": overviewData,
-            "Characters": charactersData,
-            "Key Locations": locationsData,
-            "Factions & Cultures": factionsData,
-            "Cosmology & Dimensions": cosmologyData,
-            "Supernatural Beings & Entities": beingsData,
-            "Flora, Fauna, & Phenomena": floraFaunaData,
-            "Magic, Metaphysics & Fringe Science": magicData,
-            "Key Artifacts & Technology": artifactsData,
-            "Detailed Outline": timelineData,
-            "Themes & Craft": themesData,
-            "Glossary": glossaryData,
-            "To Solve/Plotholes": plotholesData
+        // Build the story bible data object now that all data files are loaded
+        storyBibleData = {
+            "Series Overview": {
+                "Series Overview": [
+                    {
+                        "title": "Series Logline",
+                        "content": "<p>Across fractured realities and hidden worlds, a diverse group of individuals—an American expatriate, a half-kitsune investigator, a hardened operative, and resilient survivors of a broken America—must unravel ancient prophecies, confront corporate conspiracies, and battle cosmic entities to prevent the annihilation of all existence, forcing them to question the nature of identity, sacrifice, and the threads that bind family and fate.</p>"
+                    },
+                    {
+                        "title": "Working Titles (By Book)",
+                        "content": "<ul><li>Book 1: Fate and Foxfire</li><li>Book 2: Family and Folklore</li><li>Book 3: Faith and Finality</li></ul>"
+                    }
+                ]
+            },
+            "Characters": {
+                "Primary Protagonists": [
+                    {
+                        "title": "Alex 'Bowie' Shepard",
+                        "content": "<p>An American expatriate in Tokyo who gets drawn into a supernatural conspiracy after being tasked to find the missing Yume Minamoto. His investigation leads him to develop strange powers and confront ancient forces.</p>"
+                    },
+                    {
+                        "title": "Mizuki / Hisoka",
+                        "content": "<p>A half-kitsune investigator searching for her lost mother. She is a powerful ally with a deep connection to the Æther and Japanese folklore.</p>"
+                    },
+                    {
+                        "title": "Carly Shepard",
+                        "content": "<p>Bowie's resourceful sister living in the fractured New American Republic (NAR). A skilled scavenger and survivor who becomes a key player in the later stages of the conflict.</p>"
+                    },
+                    {
+                        "title": "Shikako ('Onryō')",
+                        "content": "<p>A cybernetically enhanced operative for the Zenko Order. Initially detached and professional, she becomes a crucial member of the team.</p>"
+                    },
+                    {
+                        "title": "Aoi",
+                        "content": "<p>A brilliant hacker operating from a fortified bunker in the NAR. Initially motivated by payment, she develops a loyalty to the group after becoming entangled in their conflicts.</p>"
+                    },
+                    {
+                        "title": "Yume Minamoto / Sakura",
+                        "content": "<p>The central mystery of Book 1. A sophisticated thought form created by the Mobex Corporation. She is the key to understanding the nature of the Æther and the plans of the Yako Syndicate. She eventually merges with her original essence to become the powerful being known as Sakura.</p>"
+                    }
+                ],
+                "Key Antagonists": [
+                    {
+                        "title": "Koda",
+                        "content": "<p>The true antagonist of the saga. A being who perceives the repeating time loop of reality and seeks to end all existence as an act of mercy. His nihilistic philosophy presents a profound ethical and metaphysical challenge to the heroes.</p>"
+                    },
+                    {
+                        "title": "Commander Colt",
+                        "content": "<p>A ruthless Yako Syndicate operative overseeing Project Tsunagari. His ambition and cruelty make him the primary physical threat in Book 1.</p>"
+                    }
+                ],
+                "Minor Characters": [
+                    {
+                        "title": "Ichiro Kobayashi",
+                        "content": "<p>An enigmatic, ancient fortune teller who provides Yume with the special tarot deck, setting the events of the story in motion.</p>"
+                    },
+                    {
+                        "title": "Mr. Whispers",
+                        "content": "<p>A talking cat who acts as a cryptic guide for Bowie, providing essential clues and lore about the Æther and kitsune.</p>"
+                    },
+                    {
+                        "title": "Professor Shin'en Tajima",
+                        "content": "<p>The brilliant but coerced scientist behind the ARC routers. He ultimately sacrifices himself to thwart Commander Colt's plans.</p>"
+                    }
+                ]
+            },
+            "Key Locations": {
+                "Main Hubs": [
+                    {
+                        "title": "Tokyo, Japan",
+                        "content": "<p>The primary setting for Book 1. A city of contrasts, where modern skyscrapers hide ancient shrines and corporate conspiracies intersect with supernatural phenomena.</p>"
+                    },
+                    {
+                        "title": "New American Republic (NAR)",
+                        "content": "<p>The setting for much of Book 2. A fractured, post-apocalyptic version of the USA characterized by scarcity, local folklore, and hidden dangers.</p>"
+                    },
+                    {
+                        "title": "Ikanajima Island",
+                        "content": "<p>A remote island that houses the secret facility for Project Tsunagari and becomes the site of the Book 1 climax.</p>"
+                    },
+                    {
+                        "title": "The Æther",
+                        "content": "<p>A liminal dimension that underpins reality. It is a place of immense power, non-linear time, and strange manifestations.</p>"
+                    }
+                ]
+            },
+            "Glossary": {
+                "Key Terms": [
+                    {
+                        "title": "Glossary",
+                        "content": "<p><strong>Æther:</strong> A liminal, energetic dimension. Source of supernatural power.</p><p><strong>Kitsune:</strong> Magical fox spirits from Japanese folklore.</p><p><strong>Egregore:</strong> A thought form created from collective consciousness.</p><p><strong>The Kirin:</strong> The ultimate Egregore, a conscious, reality-bending weapon.</p><p><strong>Project Tsunagari:</strong> The Yako Syndicate's plan to merge realities.</p><p><strong>Sunyata:</strong> The void of emptiness; Koda's ultimate goal.</p>"
+                    }
+                ]
+            },
+            "Themes & Craft": {
+                "Core Concepts": [
+                     {
+                        "title": "Symbolism & Deeper Meanings",
+                        "content": "<p><strong>Foxes/Kitsune:</strong> Duality (Zenko vs. Yako), trickery, intelligence, transformation.</p><p><strong>Mirrors:</strong> Self-reflection, truth, illusion, fractured selves, windows to other realities.</p><p><strong>Eyes (especially Green):</strong> Windows to the soul, perception, connection to the Æther. Green eyes (Yume/Sakura) signify an otherworldly nature.</p>"
+                    },
+                    {
+                        "title": "Character Voice & Dialogue Style Guide",
+                        "content": "<p><strong>Alex 'Bowie' Shepard:</strong> Informal, prone to mild sarcasm or bewildered humor. Asks questions to make sense of the bizarre.</p><p><strong>Mizuki/Hisoka:</strong> (Mizuki) Guarded, analytical, precise. (Hisoka) More confident, powerful, commanding.</p><p><strong>Carly Shepard:</strong> Pragmatic, direct, no-nonsense from her NAR upbringing.</p>"
+                    }
+                ]
+            }
         };
 
         // --- GLOBAL STATE ---
@@ -464,42 +610,10 @@
         
         // --- EXPORT LOGIC ---
         exportButton.addEventListener('click', () => {
-            const headClone = document.head.cloneNode(true);
-            const liveReloadScript = headClone.querySelector('script[src*="livereload"]');
-            if(liveReloadScript) liveReloadScript.remove();
-            
-            const headContent = headClone.innerHTML;
-            const bodyContent = document.getElementById('main-content-container').outerHTML; // Simplified for clarity
-            const modals = document.getElementById('modals-container').outerHTML;
-
-            const scriptContent = document.getElementById('app-logic').textContent;
-            const fullHtml = `<!DOCTYPE html>
-<html lang="en">
-<head>
-${headContent}
-</head>
-<body class="bg-gray-100 text-gray-800">
-    ${document.querySelector('#password-overlay').outerHTML}
-    ${document.querySelector('#main-content').outerHTML}
-    ${document.querySelector('#add-link-modal').outerHTML}
-    ${document.querySelector('#export-modal').outerHTML}
-
-    <script id="app-logic">
-    // --- DATA STORE ---
-    // In a real export, you'd save the JS files separately. This rebuilds the object for portability.
-    const storyBibleData = ${JSON.stringify(storyBibleData, null, 4)};
-
-    // --- APPLICATION LOGIC ---
-    // (The rest of the application logic follows)
-    ${scriptContent.substring(scriptContent.indexOf('document.addEventListener'))}
-    </script>
-</body>
-</html>`;
-
-            document.getElementById('export-textarea').value = "Export functionality for multi-file setup requires saving each .js file separately. This is a placeholder.";
+            const finalHtml = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+            document.getElementById('export-textarea').value = finalHtml;
             exportModal.classList.remove('hidden');
         });
-
 
         closeExportButton.addEventListener('click', () => {
             exportModal.classList.add('hidden');
