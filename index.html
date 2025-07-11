@@ -110,7 +110,7 @@
             margin-left: 0.5rem;
         }
 
-                /* Accordion Styles for Character Cards */
+        /* Accordion Styles for Character Cards */
         .card details > summary {
             list-style: none; /* Hide the default marker */
         }
@@ -127,6 +127,7 @@
         .card details[open] > summary::before {
             transform: rotate(90deg);
         }
+        
         /* Table Styles */
         .prose-custom table {
             width: 100%;
@@ -473,23 +474,57 @@
                 });
             });
         }
+        
+        function createCard(category, sectionKey, index, entryData) {
+            const card = document.createElement('div');
+            card.className = 'card'; // We remove padding here to let the inner elements control it
+            card.dataset.category = category;
+            card.dataset.section = sectionKey;
+            card.dataset.index = index;
 
-        /* Accordion Styles for Character Cards */
-        .card details > summary {
-            list-style: none; /* Hide the default marker */
-        }
-        .card details > summary::-webkit-details-marker {
-            display: none; /* Hide the default marker in Chrome */
-        }
-        .card details > summary::before {
-            content: '►';
-            margin-right: 0.75rem;
-            font-size: 0.8em;
-            transition: transform 0.2s;
-            display: inline-block;
-        }
-        .card details[open] > summary::before {
-            transform: rotate(90deg);
+            let realWorldHtml = '';
+            if (entryData.realWorldEquivalent !== undefined) {
+                realWorldHtml = `
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <h4 class="text-sm font-semibold text-gray-600 mb-2">Real-World Equivalents & Inspirations</h4>
+                        <div class="prose-custom text-sm text-gray-700 editable" contenteditable="${isEditMode}" data-field="realWorldEquivalent">${entryData.realWorldEquivalent}</div>
+                    </div>
+                `;
+            }
+
+            // Check for the new accordion flag
+            if (entryData.isAccordion) {
+                // Accordion HTML for Koda
+                card.innerHTML = `
+                    <details>
+                        <summary class="p-6 cursor-pointer flex justify-between items-center">
+                            <h3 class="text-xl font-bold text-gray-800 editable" contenteditable="${isEditMode}" data-field="title">${entryData.title}</h3>
+                            <span class="add-link-btn text-sm text-indigo-600 hover:text-indigo-800 font-semibold edit-mode-only mr-4">Add Links</span>
+                        </summary>
+                        <div class="p-6 pt-0">
+                            <div class="prose-custom max-w-none text-gray-700 editable" contenteditable="${isEditMode}" data-field="content">
+                                ${entryData.content}
+                            </div>
+                            ${realWorldHtml}
+                        </div>
+                    </details>
+                `;
+            } else {
+                // Standard card HTML for everyone else
+                card.innerHTML = `
+                    <div class="p-6">
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3 editable" contenteditable="${isEditMode}" data-field="title">${entryData.title}</h3>
+                            <button class="add-link-btn text-sm text-indigo-600 hover:text-indigo-800 font-semibold edit-mode-only">Add Links</button>
+                        </div>
+                        <div class="prose-custom max-w-none text-gray-700 editable" contenteditable="${isEditMode}" data-field="content">
+                            ${entryData.content}
+                        </div>
+                        ${realWorldHtml}
+                    </div>
+                `;
+            }
+            return card;
         }
 
         // --- EVENT LISTENERS ---
@@ -725,7 +760,7 @@
 
             restoreSelection();
             if (window.getSelection().rangeCount > 0) {
-                 document.execCommand('insertHTML', false, linkHtml + '&nbsp;');
+                 document.execCommand('insertHTML', false, linkHtml + ' ');
             }
 
             if (currentSelection && currentSelection.focusNode) {
