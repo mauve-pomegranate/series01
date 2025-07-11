@@ -122,4 +122,4 @@ var charactersData = {
             "content": "<p><strong>Nature:</strong> Full-blooded <a href=\"#/search/Kitsune (Fox Spirits)\" class=\"internal-link\">kitsune</a> (Type TBD).</p><p><strong>Role:</strong> Romantically connected to <a href=\"#/search/Sakura\" class=\"internal-link\">Sakura</a> (Mizuki's mother).</p><p><strong>Abilities:</strong> Mastery over <a href=\"#/search/Foxfire\" class=\"internal-link\">foxfire</a>. Each kitsune has specific element/alignment (his is TBD, Mizuki's is TBD).</p><p><strong>Background:</strong> (TBD - Is he a member of the <a href=\"#/search/Celestial Council\" class=\"internal-link\">Celestial Council</a>?)</p><p><strong>Significance:</strong> Explains Mizuki's kitsune heritage and latent powers. His past relationship with Sakura is central to Mizuki's motivations. His potential connection to the Celestial Council could be a future plot point.</p>"
         }
     ]
-};```
+};
