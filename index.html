@@ -9,7 +9,19 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
-    <script src="story_bible_data.js"></script>
+    <script src="data_overview.js" defer></script>
+    <script src="data_characters.js" defer></script>
+    <script src="data_cosmology.js" defer></script>
+    <script src="data_beings.js" defer></script>
+    <script src="data_flora.js" defer></script>
+    <script src="data_factions.js" defer></script>
+    <script src="data_magic.js" defer></script>
+    <script src="data_artifacts.js" defer></script>
+    <script src="data_locations.js" defer></script>
+    <script src="data_timeline.js" defer></script>
+    <script src="data_themes.js" defer></script>
+    <script src="data_glossary.js" defer></script>
+    <script src="data_plotholes.js" defer></script>
     
     <style>
         /* Custom Styles */
@@ -211,6 +223,22 @@
     <script id="app-logic">
     // --- APPLICATION LOGIC ---
     document.addEventListener('DOMContentLoaded', () => {
+        // Build the story bible data object now that all data files are loaded
+        const storyBibleData = {
+            "Series Overview": overviewData,
+            "Characters": charactersData,
+            "Key Locations": locationsData,
+            "Factions & Cultures": factionsData,
+            "Cosmology & Dimensions": cosmologyData,
+            "Supernatural Beings & Entities": beingsData,
+            "Flora, Fauna, & Phenomena": floraFaunaData,
+            "Magic, Metaphysics & Fringe Science": magicData,
+            "Key Artifacts & Technology": artifactsData,
+            "Detailed Outline": timelineData,
+            "Themes & Craft": themesData,
+            "Glossary": glossaryData,
+            "To Solve/Plotholes": plotholesData
+        };
 
         // --- GLOBAL STATE ---
         let isEditMode = false;
@@ -245,6 +273,7 @@
         // --- DATA PERSISTENCE ---
         function saveData() {
             try {
+                // This function is less useful in a multi-file setup, but retained for edit-mode persistence
                 localStorage.setItem('storyBibleData_Aether', JSON.stringify(storyBibleData));
             } catch (e) {
                 console.error("Could not save data to localStorage:", e);
@@ -255,6 +284,7 @@
             const savedData = localStorage.getItem('storyBibleData_Aether');
             if (savedData) {
                 try {
+                    // If there's locally saved data, merge it over the file-based data
                     const localData = JSON.parse(savedData);
                     Object.assign(storyBibleData, localData);
                 } catch (e) {
