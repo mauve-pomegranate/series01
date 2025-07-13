@@ -14,8 +14,8 @@
     <script src="data_cosmology.js" defer></script>
     <script src="data_beings.js" defer></script>
     <script src="data_flora.js" defer></script>
-    <script src="data_fauna.js" defer></script>
-    <script src="data_environmental_phenomena.js" defer></script>
+    <script src="data_fauna.js" defer></script> 
+    <script src="data_environmental_phenomena.js" defer></script> 
     <script src="data_factions.js" defer></script>
     <script src="data_magic.js" defer></script>
     <script src="data_artifacts.js" defer></script>
@@ -194,7 +194,7 @@
                     sectionSummary.className = 'text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1 cursor-pointer';
                     sectionSummary.textContent = sectionKey;
                     const ul = document.createElement('ul');
-ul.className = 'space-y-1 mb-4';
+                    ul.className = 'space-y-1 mb-4';
                     sectionData.items.forEach(entry => {
                         const li = document.createElement('li');
                         const a = document.createElement('a');
@@ -218,18 +218,37 @@ ul.className = 'space-y-1 mb-4';
             contentArea.innerHTML = '';
             Object.entries(storyBibleData).forEach(([category, sections]) => {
                 Object.entries(sections).forEach(([sectionKey, sectionData]) => {
-                    const section = document.createElement('section');
-                    section.id = generateId(sectionKey);
-                    section.className = 'mb-12';
-                    const sectionTitle = document.createElement('h2');
-                    sectionTitle.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6';
-                    sectionTitle.textContent = sectionKey;
-                    section.appendChild(sectionTitle);
-                    const cardContainer = document.createElement('div');
-                    cardContainer.className = 'space-y-6';
-                    sectionData.items.forEach(entry => cardContainer.appendChild(createCard(entry)));
-                    section.appendChild(cardContainer);
-                    contentArea.appendChild(section);
+                    if (sectionData.isAccordion) {
+                        const sectionDetails = document.createElement('details');
+                        sectionDetails.id = generateId(sectionKey);
+                        sectionDetails.className = 'card mb-12';
+                        sectionDetails.open = true;
+                        const sectionSummary = document.createElement('summary');
+                        sectionSummary.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6 cursor-pointer';
+                        sectionSummary.textContent = sectionKey;
+                        const sectionContent = document.createElement('div');
+                        sectionContent.className = 'p-6';
+                        const cardContainer = document.createElement('div');
+                        cardContainer.className = 'space-y-6';
+                        sectionData.items.forEach(entry => cardContainer.appendChild(createCard(entry)));
+                        sectionContent.appendChild(cardContainer);
+                        sectionDetails.appendChild(sectionSummary);
+                        sectionDetails.appendChild(sectionContent);
+                        contentArea.appendChild(sectionDetails);
+                    } else {
+                        const section = document.createElement('section');
+                        section.id = generateId(sectionKey);
+                        section.className = 'mb-12';
+                        const sectionTitle = document.createElement('h2');
+                        sectionTitle.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6';
+                        sectionTitle.textContent = sectionKey;
+                        section.appendChild(sectionTitle);
+                        const cardContainer = document.createElement('div');
+                        cardContainer.className = 'space-y-6';
+                        sectionData.items.forEach(entry => cardContainer.appendChild(createCard(entry)));
+                        section.appendChild(cardContainer);
+                        contentArea.appendChild(section);
+                    }
                 });
             });
         }
