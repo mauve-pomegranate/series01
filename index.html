@@ -41,6 +41,11 @@
         .search-highlight { background-color: #fcd34d; animation: flash 1.5s ease-in-out; }
         @keyframes flash { 0% { background-color: #fcd34d; } 50% { background-color: #fef08a; } 100% { background-color: #fcd34d; } }
         #password-overlay.dissolving { opacity: 0; transition: opacity 1.5s ease-out; }
+        #password-overlay.dissolving::after {
+            content: ''; position: absolute; inset: 0;
+            background: conic-gradient(from 90deg at 50% 50%, #6366f1, #a855f7, #ec4899, #f59e0b, #84cc16, #10b981, #06b6d4, #3b82f6, #6366f1);
+            filter: blur(80px) saturate(2); opacity: 1; transition: opacity 1s ease-out; z-index: 1;
+        }
         #password-overlay.dissolving > div { transition: opacity 0.5s ease-in; opacity: 0; }
         summary { cursor: pointer; list-style: none; }
         summary::-webkit-details-marker { display: none; }
@@ -189,7 +194,7 @@
                     sectionSummary.className = 'text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1 cursor-pointer';
                     sectionSummary.textContent = sectionKey;
                     const ul = document.createElement('ul');
-                    ul.className = 'space-y-1 mb-4';
+ul.className = 'space-y-1 mb-4';
                     sectionData.items.forEach(entry => {
                         const li = document.createElement('li');
                         const a = document.createElement('a');
@@ -211,7 +216,7 @@
         function renderContentSections() {
             const contentArea = document.getElementById('content-area');
             contentArea.innerHTML = '';
-            Object.values(storyBibleData).forEach(sections => {
+            Object.entries(storyBibleData).forEach(([category, sections]) => {
                 Object.entries(sections).forEach(([sectionKey, sectionData]) => {
                     const section = document.createElement('section');
                     section.id = generateId(sectionKey);
