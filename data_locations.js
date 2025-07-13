@@ -1,14 +1,14 @@
 const locationsData = {
     "Japan": {
-        "isAccordion": true,
-        "items": [
+        isAccordion: true,
+        items: [
             {
                 "title": "Watanabe Park (Tokyo)",
                 "content": "<p><strong>Significance:</strong> A key <a href=\"#/search/Ley Lines\" class=\"internal-link\">ley line</a> nexus. Site of <a href=\"#/search/Yume Minamoto / Sakura\" class=\"internal-link\">Yume Minamoto's</a> disappearance and <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">Bowie's</a> initial investigation.</p><br><p><strong>Features:</strong> Contains a fountain that hides an entrance to underground tunnels leading to an Æther portal.</p><br><p><strong>Encounters:</strong> Bowie meets the <a href=\"#/search/The Bird-Watching Lady\" class=\"internal-link\">bird-watching lady</a>, <a href=\"#/search/Akihiko Saito\" class=\"internal-link\">Akihiko Saito</a>, and <a href=\"#/search/Daisuke Ito\" class=\"internal-link\">Daisuke Ito</a> here. Site of Bowie's first (partially successful) portal attempt.</p>"
             },
             {
                 "title": "Ikanajima Island",
-                "content": "<p><strong>Nature:</strong> Remote island in the Pacific, former religious site, later bought by shell companies for <a href=\"#/search/Yako Syndicate\" class=\"internal-link\">Yako</a>/<a href=\"#/search/Kagami Tenko Corporation\" class=\"internal-link\">Kagami Tenko's</a> <a href=\"#/search/Project Tsunagari\" class=\"internal-link\">Tsunagari</a> project. Hollow, anchored to the ocean floor.</p><br><p><strong>Features:</strong> Site of the <a href=\"#/search/Kozyrev Mirror\" class=\"internal-link\">Kozyrev Mirror</a>, <a href=\"#/search/Aringold Circuit Routers (ARCs)\" class=\"internal-link\">ARC routers</a>, a central nexus crystal. Surrounded by buoys, large dock, solar array. Sparse wildlife includes irradiated crabs and lemurs.</p><br><p><strong>Underground Facility:</strong> Extensive complex with labs, holding cells (where <a href=\"#/search/Shikako ('Onryō')\" class=\"internal-link\">Shikako</a> was held), a sewer system (<a href=\"#/search/Taro\" class=\"internal-link\">Taro's</a> domain), and underwater caverns.</p><br><p><strong>Plot Role:</strong> Site of Book 1 climax, deployment of the <a href=\"#/search/Celestial Council\" class=\"internal-link\">Celestial Council's</a> stasis bubble, and the facility's eventual destruction. Bowie is \"split\" here. Bowie returns in Book 3 for his re-merging.</p>"
+                "content": "<p><strong>Nature:</strong> Remote island in the Pacific, former religious site, later bought by shell companies for <a href=\"#/search/Yako Syndicate\" class=\"internal-link\">Yako</a>/<a href=\"#/search/Mobex / Kagami Tenko Corporation\" class=\"internal-link\">Kagami Tenko's</a> <a href=\"#/search/Project Tsunagari\" class=\"internal-link\">Tsunagari</a> project. Hollow, anchored to the ocean floor.</p><br><p><strong>Features:</strong> Site of the <a href=\"#/search/Kozyrev Mirror\" class=\"internal-link\">Kozyrev Mirror</a>, <a href=\"#/search/Aringold Circuit Routers (ARCs)\" class=\"internal-link\">ARC routers</a>, a central nexus crystal. Surrounded by buoys, large dock, solar array. Sparse wildlife includes irradiated crabs and lemurs.</p><br><p><strong>Underground Facility:</strong> Extensive complex with labs, holding cells (where <a href=\"#/search/Shikako ('Onryō')\" class=\"internal-link\">Shikako</a> was held), a sewer system (<a href=\"#/search/Taro\" class=\"internal-link\">Taro's</a> domain), and underwater caverns.</p><br><p><strong>Plot Role:</strong> Site of Book 1 climax, deployment of the <a href=\"#/search/Celestial Council\" class=\"internal-link\">Celestial Council's</a> stasis bubble, and the facility's eventual destruction. Bowie is \"split\" here. Bowie returns in Book 3 for his re-merging.</p>"
             },
             {
                 "title": "Love Hotel (Lake Ashi)",
@@ -69,8 +69,8 @@ const locationsData = {
         ]
     },
     "New American Republic (NAR)": {
-        "isAccordion": true,
-        "items": [
+        isAccordion: true,
+        items: [
             {
                 "title": "Appalachian Mountains",
                 "content": "<p><strong>Significance:</strong> Region heavily affected by <a href=\"#/search/Ætheric Scarring (NAR)\" class=\"internal-link\">Ætheric scarring</a> due to the hidden particle accelerator facility. A key <a href=\"#/search/Ley Lines\" class=\"internal-link\">ley line</a> area.</p><br><p><strong>Features:</strong> Site of the massive, unstable <a href=\"#/search/NAR Particle Accelerator\" class=\"internal-link\">particle accelerator</a> (sister site to Ikanajima), <a href=\"#/search/Carly's Cabin & Local Towns\" class=\"internal-link\">Carly's cabin</a>, the <a href=\"#/search/\"Forest Witch\" (NAR)\" class=\"internal-link\">Forest Witch's</a> dwelling, and various cryptid manifestations.</p>"
@@ -90,8 +90,8 @@ const locationsData = {
         ]
     },
     "Underground Tunnels & Caverns": {
-        "isAccordion": true,
-        "items": [
+        isAccordion: true,
+        items: [
             {
                 "title": "Watanabe Park Tunnels",
                 "content": "<p><strong>Access:</strong> Hidden ladder under the park's fountain.</p><br><p><strong>Features:</strong> Contain glyphs/carvings on the walls. Lead to a bioluminescent cavern with an <a href=\"#/search/Albino Pine Tree\" class=\"internal-link\">albino pine tree</a> and a stone archway portal to the <a href=\"#/search/The Æther\" class=\"internal-link\">Æther</a>.</p>"
@@ -103,6 +103,15 @@ const locationsData = {
             {
                 "title": "NAR Appalachian Facility Caves",
                 "content": "<p>Extensive cave system housing the <a href=\"#/search/NAR Particle Accelerator\" class=\"internal-link\">particle accelerator</a>. Site of Ætheric experiments, cryptid containment, and intense reality distortions.</p>"
+            }
+        ]
+    },
+    "Otherworldly": {
+        isAccordion: true,
+        items: [
+            {
+                "title": "The Æther",
+                "content": "<p><strong>Nature:</strong> Liminal, energetic dimension(s) existing between/underlying realities. Mutable, responsive to consciousness/intent. Time is non-linear. Source of immense power.</p><br><p><strong>Manifestations:</strong> White void, lush forests (can be dark/foggy or feature talking trees), prismatic-walled rooms, kaleidoscope of colors.</p><br><p><strong>Access:</strong> Natural nexuses (ley line convergences), innate ability (kitsune, sensitives), ritual, advanced technology (<a href=\"#/search/Kozyrev Mirror\" class=\"internal-link\">Kozyrev Mirror</a>).</p><br><p><strong>Properties:</strong> Contains echoes of souls/memories (<a href=\"#/search/Purple Hands\" class=\"internal-link\">purple hands</a>). Influences and is influenced by ley lines.</p>"
             }
         ]
     }
