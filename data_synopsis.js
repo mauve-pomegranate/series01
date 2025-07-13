@@ -1,4 +1,4 @@
-const bookSynopsisData = {
+const synopsisData = {
     "Book Synopsis": {
         isAccordion: false,
         items: [
