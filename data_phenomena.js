@@ -1,4 +1,4 @@
-const environmentalPhenomenaData = {
+const phenomenaData = {
     "Environmental Phenomena": {
         isAccordion: false,
         items: [
