@@ -15,7 +15,7 @@
     <script src="data_beings.js" defer></script>
     <script src="data_flora.js" defer></script>
     <script src="data_fauna.js" defer></script> 
-    <script src="data_phenomena.js" defer></script>
+    <script src="data_phenomena.js" defer></script> 
     <script src="data_factions.js" defer></script>
     <script src="data_magic.js" defer></script>
     <script src="data_artifacts.js" defer></script>
@@ -41,6 +41,11 @@
         .search-highlight { background-color: #fcd34d; animation: flash 1.5s ease-in-out; }
         @keyframes flash { 0% { background-color: #fcd34d; } 50% { background-color: #fef08a; } 100% { background-color: #fcd34d; } }
         #password-overlay.dissolving { opacity: 0; transition: opacity 1.5s ease-out; }
+        #password-overlay.dissolving::after {
+            content: ''; position: absolute; inset: 0;
+            background: conic-gradient(from 90deg at 50% 50%, #6366f1, #a855f7, #ec4899, #f59e0b, #84cc16, #10b981, #06b6d4, #3b82f6, #6366f1);
+            filter: blur(80px) saturate(2); opacity: 1; transition: opacity 1s ease-out; z-index: 1;
+        }
         #password-overlay.dissolving > div { transition: opacity 0.5s ease-in; opacity: 0; }
         summary { cursor: pointer; list-style: none; }
         summary::-webkit-details-marker { display: none; }
@@ -107,21 +112,22 @@
 
     <script id="app-logic">
     document.addEventListener('DOMContentLoaded', () => {
+        // --- DATA ASSEMBLY ---
         const storyBibleData = {
-            "Series Overview": overviewData["Series Overview"],
+            "Series Overview": overviewData,
             "Characters": charactersData,
-            "Book Synopsis": bookSynopsisData["Book Synopsis"],
+            "Book Synopsis": bookSynopsisData,
             "Key Locations": locationsData,
-            "Factions": factionsData["Factions"],
-            "Cosmology & Dimensions": cosmologyData["Cosmology & Dimensions"],
-            "Supernatural Beings & Entities": beingsData["Supernatural Beings & Entities"],
+            "Factions": factionsData,
+            "Cosmology & Dimensions": cosmologyData,
+            "Supernatural Beings & Entities": beingsData,
             "Flora & Fauna": { "Flora": floraData.Flora, "Fauna": faunaData.Fauna },
-            "Environmental Phenomena": phenomenaData["Environmental Phenomena"],
+            "Environmental Phenomena": phenomenaData,
             "Magic, Metaphysics & Fringe Science": magicData,
-            "Key Artifacts & Technology": artifactsData["Key Artifacts & Technology"],
-            "Themes & Craft": themesData["Themes & Craft"],
-            "Glossary": glossaryData["Glossary"],
-            "To Solve/Plotholes": plotholesData["To Solve/Plotholes"]
+            "Key Artifacts & Technology": artifactsData,
+            "Themes & Craft": themesData,
+            "Glossary": glossaryData,
+            "To Solve/Plotholes": plotholesData
         };
 
         let searchIndex = [];
@@ -165,51 +171,36 @@
         }
 
         function renderApp() {
-            renderNavigation();
-            renderContentSections();
+            try {
+                renderNavigation();
+                renderContentSections();
+            } catch (error) {
+                console.error("A critical error occurred during rendering:", error);
+                document.getElementById('content-area').innerHTML = `<div class="p-6 card"><h3 class="text-xl font-bold text-red-600">Error Rendering Page</h3><p class="mt-2 text-gray-700">A data file may be missing or corrupted. Please check the console for details.</p></div>`;
+            }
         }
 
         function renderNavigation() {
             const navContainer = document.getElementById('navigation-container');
             navContainer.innerHTML = '';
-            Object.entries(storyBibleData).forEach(([category, data]) => {
+            Object.entries(storyBibleData).forEach(([category, sections]) => {
                 const categoryDetails = document.createElement('details');
                 const categorySummary = document.createElement('summary');
                 categorySummary.className = 'text-lg font-bold text-gray-700 mb-2 cursor-pointer';
                 categorySummary.textContent = category;
                 categoryDetails.appendChild(categorySummary);
-
                 const sectionsList = document.createElement('div');
                 sectionsList.className = 'nav-links';
-
-                // Check if the data has subsections (like Characters or Flora & Fauna)
-                if (data.items === undefined) { 
-                    Object.entries(data).forEach(([sectionKey, sectionData]) => {
-                        const items = sectionData.items || sectionData;
-                        const sectionDetails = document.createElement('details');
-                        const sectionSummary = document.createElement('summary');
-                        sectionSummary.className = 'text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1 cursor-pointer';
-                        sectionSummary.textContent = sectionKey;
-                        const ul = document.createElement('ul');
-                        ul.className = 'space-y-1 mb-4';
-                        items.forEach(entry => {
-                            if (!entry.title) return;
-                            const li = document.createElement('li');
-                            const a = document.createElement('a');
-                            a.href = `#${generateId(entry.title)}`;
-                            a.textContent = entry.title;
-                            a.className = 'block px-3 py-1 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-200 hover:text-gray-900';
-                            li.appendChild(a);
-                            ul.appendChild(li);
-                        });
-                        sectionDetails.appendChild(sectionSummary);
-                        sectionDetails.appendChild(ul);
-                        sectionsList.appendChild(sectionDetails);
-                    });
-                } else { // It's a single-level category
+                Object.entries(sections).forEach(([sectionKey, sectionData]) => {
+                    const items = sectionData.items || sectionData;
+                    if (!Array.isArray(items)) return; 
+                    const sectionDetails = document.createElement('details');
+                    const sectionSummary = document.createElement('summary');
+                    sectionSummary.className = 'text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1 cursor-pointer';
+                    sectionSummary.textContent = sectionKey;
                     const ul = document.createElement('ul');
-                    ul.className = 'space-y-1 mb-4 ml-2';
-                     data.items.forEach(entry => {
+                    ul.className = 'space-y-1 mb-4';
+                    items.forEach(entry => {
                         if (!entry.title) return;
                         const li = document.createElement('li');
                         const a = document.createElement('a');
@@ -219,8 +210,10 @@
                         li.appendChild(a);
                         ul.appendChild(li);
                     });
-                    sectionsList.appendChild(ul);
-                }
+                    sectionDetails.appendChild(sectionSummary);
+                    sectionDetails.appendChild(ul);
+                    sectionsList.appendChild(sectionDetails);
+                });
                 categoryDetails.appendChild(sectionsList);
                 navContainer.appendChild(categoryDetails);
             });
@@ -229,38 +222,28 @@
         function renderContentSections() {
             const contentArea = document.getElementById('content-area');
             contentArea.innerHTML = '';
-             Object.entries(storyBibleData).forEach(([category, sections]) => {
+            Object.entries(storyBibleData).forEach(([category, sections]) => {
                 const categoryWrapper = document.createElement('div');
                 categoryWrapper.id = generateId(category);
+                Object.entries(sections).forEach(([sectionKey, sectionData]) => {
+                    const items = sectionData.items || sectionData;
+                    if (!Array.isArray(items)) return;
 
-                // If it's a single-level category, render cards directly
-                if (sections.items) {
+                    const sectionElement = document.createElement('section');
+                    sectionElement.id = generateId(sectionKey);
+                    sectionElement.className = 'mb-12';
                     const sectionTitle = document.createElement('h2');
                     sectionTitle.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6';
-                    sectionTitle.textContent = category;
-                    categoryWrapper.appendChild(sectionTitle);
+                    sectionTitle.textContent = sectionKey;
+                    sectionElement.appendChild(sectionTitle);
                     const cardContainer = document.createElement('div');
                     cardContainer.className = 'space-y-6';
-                    sections.items.forEach(entry => cardContainer.appendChild(createCard(entry)));
-                    categoryWrapper.appendChild(cardContainer);
-                } else { // It's a multi-level category
-                    Object.entries(sections).forEach(([sectionKey, sectionData]) => {
-                        const sectionElement = document.createElement('section');
-                        sectionElement.id = generateId(sectionKey);
-                        sectionElement.className = 'mb-12';
-                        const sectionTitle = document.createElement('h2');
-                        sectionTitle.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6';
-                        sectionTitle.textContent = sectionKey;
-                        sectionElement.appendChild(sectionTitle);
-                        const cardContainer = document.createElement('div');
-                        cardContainer.className = 'space-y-6';
-                        sectionData.items.forEach(entry => cardContainer.appendChild(createCard(entry)));
-                        sectionElement.appendChild(cardContainer);
-                        categoryWrapper.appendChild(sectionElement);
-                    });
-                }
+                    items.forEach(entry => cardContainer.appendChild(createCard(entry)));
+                    sectionElement.appendChild(cardContainer);
+                    categoryWrapper.appendChild(sectionElement);
+                });
                 contentArea.appendChild(categoryWrapper);
-             });
+            });
         }
         
         function createCard(entryData) {
@@ -276,24 +259,19 @@
         function buildSearchIndex() {
             searchIndex = [];
             Object.values(storyBibleData).forEach(categoryData => {
-                if (categoryData.items) { // Single-level
-                     categoryData.items.forEach(item => addSearchableItem(item));
-                } else { // Multi-level
-                    Object.values(categoryData).forEach(sectionData => {
-                        if (sectionData.items) {
-                             sectionData.items.forEach(item => addSearchableItem(item));
-                        }
-                    });
-                }
+                Object.values(categoryData).forEach(sectionData => {
+                    const items = sectionData.items || sectionData;
+                    if (Array.isArray(items)) {
+                        items.forEach(item => {
+                            if (item && item.title) {
+                                const tempDiv = document.createElement('div');
+                                tempDiv.innerHTML = (item.content || '') + (item.realWorldEquivalent || '');
+                                searchIndex.push({ title: item.title, text: (item.title + ' ' + tempDiv.textContent).toLowerCase(), id: generateId(item.title) });
+                            }
+                        });
+                    }
+                });
             });
-        }
-        
-        function addSearchableItem(item) {
-             if (item && item.title) {
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = (item.content || '') + (item.realWorldEquivalent || '');
-                searchIndex.push({ title: item.title, text: (item.title + ' ' + tempDiv.textContent).toLowerCase(), id: generateId(item.title) });
-            }
         }
 
         function executeSearchAndDisplay(query) {
