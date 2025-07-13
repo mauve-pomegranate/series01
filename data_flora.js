@@ -6,11 +6,11 @@ const floraFaunaData = {
         },
         {
             "title": "Albino Pine Tree",
-            "content": "<p><strong>Appearance:</strong> Strikingly white.</p><br><p><strong>Location:</strong> Found in a bioluminescent, Æther-touched cavern near a stone archway portal in the <a href=\"#/search/Underground Tunnels Caverns\" class=\"internal-link\">Watanabe Park Tunnels</a>.</p><br><p><strong>Significance:</strong> Its unnatural appearance marks it as significant. Could be a guardian of the space, an Ætheric energy conduit, or a unique species adapted to the strange energies of the tunnel. Might have specific magical properties.</p>"
+            "content": "<p><strong>Appearance:</strong> Strikingly white.</p><br><p><strong>Location:</strong> Found in a bioluminescent, Æther-touched cavern near a stone archway portal in the <a href=\"#/search/Underground Tunnels & Caverns\" class=\"internal-link\">Watanabe Park Tunnels</a>.</p><br><p><strong>Significance:</strong> Its unnatural appearance marks it as significant. Could be a guardian of the space, an Ætheric energy conduit, or a unique species adapted to the strange energies of the tunnel. Might have specific magical properties.</p>"
         },
         {
             "title": "Glowing Mushrooms",
-            "content": "<p><strong>Appearance:</strong> Emit a soft bioluminescence.</p><br><p><strong>Location:</strong> <a href=\"#/search/Underground Tunnels Caverns\" class=\"internal-link\">Underground Tunnel - Watanabe Park</a> & <a href=\"#/search/New American Republic (NAR)\" class=\"internal-link\">NAR</a> Caves.</p><br><p><strong>Significance:</strong> Indicate areas with high Ætheric energy or unusual ecosystems created by reality bleed-through. Might have alchemical or ritualistic properties, lighting dark caverns.</p>"
+            "content": "<p><strong>Appearance:</strong> Emit a soft bioluminescence.</p><br><p><strong>Location:</strong> <a href=\"#/search/Underground Tunnels & Caverns\" class=\"internal-link\">Underground Tunnel - Watanabe Park</a> & <a href=\"#/search/New American Republic (NAR)\" class=\"internal-link\">NAR</a> Caves.</p><br><p><strong>Significance:</strong> Indicate areas with high Ætheric energy or unusual ecosystems created by reality bleed-through. Might have alchemical or ritualistic properties, lighting dark caverns.</p>"
         },
         {
             "title": "Æther-Touched Flora (NAR)",
@@ -54,7 +54,7 @@ const floraFaunaData = {
         },
         {
             "title": "Bioluminescence",
-            "content": "<p>Fungi, flora (kelp), and fauna emitting light in Æther-touched environments like the <a href=\"#/search/Underground Tunnels Caverns\" class=\"internal-link\">underground caverns</a>, creating eerie, otherworldly atmospheres.</p>"
+            "content": "<p>Fungi, flora (kelp), and fauna emitting light in Æther-touched environments like the <a href=\"#/search/Underground Tunnels & Caverns\" class=\"internal-link\">underground caverns</a>, creating eerie, otherworldly atmospheres.</p>"
         },
         {
             "title": "Portal Visuals",
