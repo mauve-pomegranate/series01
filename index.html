@@ -168,6 +168,10 @@
             renderNavigation();
             renderContentSections();
         }
+        
+        function getItemsFromSection(sectionData) {
+            return sectionData.items || sectionData;
+        }
 
         function renderNavigation() {
             const navContainer = document.getElementById('navigation-container');
@@ -181,8 +185,7 @@
                 const sectionsList = document.createElement('div');
                 sectionsList.className = 'nav-links';
                 Object.entries(sections).forEach(([sectionKey, sectionData]) => {
-                    const items = sectionData.items || sectionData;
-                    if (!Array.isArray(items)) return; 
+                    const items = getItemsFromSection(sectionData);
                     const sectionDetails = document.createElement('details');
                     const sectionSummary = document.createElement('summary');
                     sectionSummary.className = 'text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1 cursor-pointer';
@@ -215,8 +218,7 @@
                 const categoryWrapper = document.createElement('div');
                 categoryWrapper.id = generateId(category);
                 Object.entries(sections).forEach(([sectionKey, sectionData]) => {
-                    const items = sectionData.items || sectionData;
-                    if (!Array.isArray(items)) return; 
+                    const items = getItemsFromSection(sectionData);
                     const sectionElement = document.createElement('section');
                     sectionElement.id = generateId(sectionKey);
                     sectionElement.className = 'mb-12';
@@ -248,7 +250,7 @@
             searchIndex = [];
             Object.values(storyBibleData).forEach(categoryData => {
                 Object.values(categoryData).forEach(sectionData => {
-                    const items = sectionData.items || sectionData;
+                    const items = getItemsFromSection(sectionData);
                     if (Array.isArray(items)) {
                         items.forEach(item => {
                             if (item && item.title) {
