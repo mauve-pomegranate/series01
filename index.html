@@ -20,7 +20,7 @@
     <script src="data_magic.js" defer></script>
     <script src="data_artifacts.js" defer></script>
     <script src="data_locations.js" defer></script>
-    <script src="data_book_synopsis.js" defer></script>
+    <script src="data_synopsis.js" defer></script>
     <script src="data_themes.js" defer></script>
     <script src="data_glossary.js" defer></script>
     <script src="data_plotholes.js" defer></script>
@@ -39,6 +39,12 @@
         #navigation-container .nav-links { padding-left: 1rem; }
         #back-to-top { position: fixed; bottom: 2rem; right: 2rem; background-color: #4f46e5; color: white; padding: 0.75rem; border-radius: 9999px; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
         #back-to-top.visible { opacity: 1; visibility: visible; }
+        .search-highlight {
+            background-color: #fde68a;
+            transition: background-color 0.5s ease-in-out;
+            border: 2px solid #f59e0b;
+            border-radius: 0.75rem;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -80,7 +86,7 @@
         const storyBibleData = {
             "Series Overview": overviewData,
             "Characters": charactersData,
-            "Book Synopsis": bookSynopsisData,
+            "Book Synopsis": synopsisData,
             "Key Locations": locationsData,
             "Factions": factionsData,
             "Cosmology & Dimensions": cosmologyData,
