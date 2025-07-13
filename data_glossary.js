@@ -1,8 +1,9 @@
 const glossaryData = {
-    "Glossary": [
-        {
-            "title": "Glossary of Terms",
-            "content": `
+    "Glossary": {
+        items: [
+            {
+                "title": "Glossary of Terms",
+                "content": `
 <p><strong>Æther:</strong> A liminal, energetic dimension existing between/underlying realities, responsive to consciousness, and where time is non-linear. The source of much supernatural power.</p><br>
 <p><strong>Ætheric Sensitivity:</strong> The ability to perceive or be affected by the <a href="#/search/The Æther" class="internal-link">Æther</a> and its energies. Manifests differently in individuals (e.g., Bowie's migraines, Kurai's visions, Mizuki's intuition).</p><br>
 <p><strong>Agate 'Key' Necklace:</strong> An ancient grounding artifact gifted to <a href="#/search/Alex 'Bowie' Shepard" class="internal-link">Bowie</a> by <a href="#/search/Zed" class="internal-link">Zed</a> that resonates with Ætheric energy.</p><br>
@@ -62,6 +63,7 @@ const glossaryData = {
 <p><strong>Zenko Order:</strong> A benevolent faction of <a href="#/search/Kitsune (Fox Spirits)" class="internal-link">kitsune</a>, aligned with <a href="#/search/Inari Ōkami" class="internal-link">Inari</a> and the <a href="#/search/Celestial Council" class="internal-link">Celestial Council</a>, dedicated to maintaining cosmic balance.</p><br>
 <p><strong>Zainichi:</strong> Term for ethnic Koreans residing in Japan; relevant to <a href="#/search/Commander Colt" class="internal-link">Commander Colt's</a> backstory and motivations.</p>
 `
-        }
-    ]
+            }
+        ]
+    }
 };
