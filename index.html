@@ -14,7 +14,7 @@
     <script src="data_cosmology.js" defer></script>
     <script src="data_beings.js" defer></script>
     <script src="data_flora.js" defer></script>
-    <script src="data_factions.js" defer></script>
+    <script src="data_fauna.js" defer></script> <script src="data_environmental_phenomena.js" defer></script> <script src="data_factions.js" defer></script>
     <script src="data_magic.js" defer></script>
     <script src="data_artifacts.js" defer></script>
     <script src="data_locations.js" defer></script>
@@ -25,13 +25,12 @@
     
     <style>
         /* Custom Styles */
+        :root { scroll-behavior: smooth; } /* Smooth Scrolling */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
         }
-        .prose-custom {
-            font-family: 'Lora', serif;
-        }
+        .prose-custom { font-family: 'Lora', serif; }
         .prose-custom h1, .prose-custom h2, .prose-custom h3, .prose-custom h4, .prose-custom h5 {
             font-family: 'Inter', sans-serif;
             font-weight: 700;
@@ -42,9 +41,8 @@
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             transition: box-shadow 0.3s ease-in-out;
         }
-        .card:hover {
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-        }
+        .card:hover { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+        
         /* Link Styles */
         .prose-custom a.internal-link { color: #6d28d9; text-decoration: none; font-weight: 600; cursor: pointer; }
         .prose-custom a.internal-link:hover { text-decoration: underline; }
@@ -66,69 +64,52 @@
         }
         #password-overlay.dissolving > div { transition: opacity 0.5s ease-in; opacity: 0; }
 
-        /* Navigation Accordion Styles */
-        #navigation-container summary {
+        /* Accordion Styles */
+        summary {
             cursor: pointer;
-            list-style: none;
-            display: flex;
-            align-items: center;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.375rem;
+            list-style: none; /* Hide default marker */
         }
-        #navigation-container summary:hover {
-            background-color: #e5e7eb;
+        summary::-webkit-details-marker { display: none; } /* Hide default marker in Chrome */
+        
+        /* Navigation Accordion */
+        #navigation-container summary { display: flex; align-items: center; padding: 0.5rem 0.75rem; border-radius: 0.375rem; }
+        #navigation-container summary:hover { background-color: #e5e7eb; }
+        #navigation-container summary::before { content: '►'; margin-right: 0.5rem; font-size: 0.6em; transition: transform 0.2s; }
+        #navigation-container details[open] > summary::before { transform: rotate(90deg); }
+        #navigation-container details .nav-links { padding-left: 1rem; border-left: 1px solid #d1d5db; margin-left: 0.5rem; }
+
+        /* Content Accordion Animation */
+        details .accordion-content {
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+            max-height: 0;
         }
-        #navigation-container summary::-webkit-details-marker {
-            display: none;
-        }
-        #navigation-container summary::before {
-            content: '►';
-            margin-right: 0.5rem;
-            font-size: 0.6em;
-            transition: transform 0.2s;
-        }
-        #navigation-container details[open] > summary::before {
-            transform: rotate(90deg);
-        }
-        #navigation-container details .nav-links {
-            padding-left: 1.5rem;
-            border-left: 1px solid #d1d5db;
-            margin-left: 0.5rem;
+        details[open] .accordion-content {
+            max-height: 1000vh; /* A large value */
         }
 
-        /* Accordion Styles for Character Cards */
-        .card details > summary {
-            list-style: none;
-        }
-        .card details > summary::-webkit-details-marker {
-            display: none;
-        }
-        .card details > summary::before {
-            content: '►';
-            margin-right: 0.75rem;
-            font-size: 0.8em;
-            transition: transform 0.2s;
-            display: inline-block;
-        }
-        .card details[open] > summary::before {
-            transform: rotate(90deg);
-        }
-        
         /* Table Styles */
-        .prose-custom table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        .prose-custom th, .prose-custom td {
-            border: 1px solid #d1d5db;
+        .prose-custom table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; margin-bottom: 1.5rem; }
+        .prose-custom th, .prose-custom td { border: 1px solid #d1d5db; padding: 0.75rem; text-align: left; }
+        .prose-custom th { background-color: #f3f4f6; font-weight: 600; }
+        
+        /* Back to Top Button */
+        #back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: #4f46e5;
+            color: white;
             padding: 0.75rem;
-            text-align: left;
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
         }
-        .prose-custom th {
-            background-color: #f3f4f6;
-            font-weight: 600;
+        #back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
         }
     </style>
 </head>
@@ -179,11 +160,17 @@
             </div>
         </div>
     </div>
+    
+    <a href="#" id="back-to-top" title="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+        </svg>
+    </a>
 
     <script id="app-logic">
-    // --- APPLICATION LOGIC (VIEW-ONLY) ---
+    // --- APPLICATION LOGIC (VIEW-ONLY, REFACTORED) ---
     document.addEventListener('DOMContentLoaded', () => {
-        // Build the story bible data object now that all data files are loaded
+        // --- DATA ASSEMBLY ---
         const storyBibleData = {
             "Series Overview": overviewData,
             "Characters": charactersData,
@@ -191,7 +178,9 @@
             "Factions & Cultures": factionsData,
             "Cosmology & Dimensions": cosmologyData,
             "Supernatural Beings & Entities": beingsData,
-            "Flora, Fauna, & Phenomena": floraFaunaData,
+            "Flora": floraData,
+            "Fauna": faunaData,
+            "Environmental Phenomena": environmentalPhenomenaData,
             "Magic, Metaphysics & Fringe Science": magicData,
             "Key Artifacts & Technology": artifactsData,
             "Detailed Outline": timelineData,
@@ -199,6 +188,9 @@
             "Glossary": glossaryData,
             "To Solve/Plotholes": plotholesData
         };
+
+        // --- GLOBAL STATE & CACHE ---
+        let searchIndex = [];
 
         // --- DOM ELEMENT REFERENCES ---
         const passwordOverlay = document.getElementById('password-overlay');
@@ -209,18 +201,20 @@
         const logoutButton = document.getElementById('logout-button');
         const searchInput = document.getElementById('search-input');
         const searchResultsContainer = document.getElementById('search-results-container');
+        const backToTopButton = document.getElementById('back-to-top');
         
         const PASSWORDS = {
             full: "03311985",
             view: "415semple"
         };
-
+        
         // --- AUTHENTICATION ---
         function checkAuth() {
             const accessLevel = sessionStorage.getItem('storyBibleAccessLevel');
             if (accessLevel) {
                 passwordOverlay.style.display = 'none';
                 mainContent.classList.remove('hidden');
+                buildSearchIndex();
                 renderApp();
             } else {
                 passwordOverlay.style.display = 'flex';
@@ -233,18 +227,15 @@
             let accessLevel = null;
 
             if (enteredPassword === PASSWORDS.full || enteredPassword === PASSWORDS.view) {
-                accessLevel = 'view'; // Simplified to a single access level
+                accessLevel = 'view';
             }
 
             if (accessLevel) {
                 sessionStorage.setItem('storyBibleAccessLevel', accessLevel);
-                
                 passwordOverlay.classList.add('dissolving');
                 setTimeout(() => {
                     passwordOverlay.style.opacity = '0';
-                    passwordOverlay.addEventListener('transitionend', () => {
-                        checkAuth();
-                    }, { once: true });
+                    passwordOverlay.addEventListener('transitionend', checkAuth, { once: true });
                 }, 500);
 
             } else {
@@ -253,57 +244,55 @@
             }
         }
 
-        submitPasswordBtn.addEventListener('click', handleLogin);
-        passwordInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                handleLogin();
-            }
-        });
-        
-        passwordInput.addEventListener('input', () => {
-            passwordError.classList.add('hidden');
-            passwordInput.classList.remove('border-red-500');
-        });
-
-        logoutButton.addEventListener('click', () => {
-            sessionStorage.removeItem('storyBibleAccessLevel');
-            location.reload();
-        });
-
         // --- RENDER LOGIC ---
         function renderApp() {
             renderNavigation();
             renderContentSections();
-            attachEventListeners();
         }
 
         function renderNavigation() {
             const navContainer = document.getElementById('navigation-container');
             navContainer.innerHTML = '';
-            Object.keys(storyBibleData).forEach(category => {
-                const details = document.createElement('details');
-                
-                const summary = document.createElement('summary');
-                summary.className = 'text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1 cursor-pointer';
-                summary.textContent = category;
-                
-                const ul = document.createElement('ul');
-                ul.className = 'space-y-1 mb-4 nav-links';
-                
-                Object.keys(storyBibleData[category]).forEach(sectionKey => {
-                    const li = document.createElement('li');
-                    const a = document.createElement('a');
-                    const sectionId = `${category.replace(/\s+/g, '-')}-${sectionKey.replace(/\s+/g, '-')}`;
-                    a.href = `#${sectionId}`;
-                    a.textContent = sectionKey;
-                    a.className = 'block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-200 hover:text-gray-900';
-                    li.appendChild(a);
-                    ul.appendChild(li);
-                });
+            Object.entries(storyBibleData).forEach(([category, sections]) => {
+                const categoryDetails = document.createElement('details');
+                categoryDetails.open = true;
 
-                details.appendChild(summary);
-                details.appendChild(ul);
-                navContainer.appendChild(details);
+                const categorySummary = document.createElement('summary');
+                categorySummary.className = 'text-lg font-bold text-gray-700 mb-2 cursor-pointer';
+                categorySummary.textContent = category;
+                categoryDetails.appendChild(categorySummary);
+
+                const sectionsList = document.createElement('div');
+                sectionsList.className = 'nav-links';
+                
+                Object.entries(sections).forEach(([sectionKey, sectionData]) => {
+                    const sectionDetails = document.createElement('details');
+                    sectionDetails.open = true;
+                    
+                    const sectionSummary = document.createElement('summary');
+                    sectionSummary.className = 'text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1 cursor-pointer';
+                    sectionSummary.textContent = sectionKey;
+                    
+                    const ul = document.createElement('ul');
+                    ul.className = 'space-y-1 mb-4';
+                    
+                    sectionData.items.forEach(entry => {
+                        const li = document.createElement('li');
+                        const a = document.createElement('a');
+                        a.href = `#${generateId(entry.title)}`;
+                        a.textContent = entry.title;
+                        a.className = 'block px-3 py-1 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-200 hover:text-gray-900';
+                        li.appendChild(a);
+                        ul.appendChild(li);
+                    });
+
+                    sectionDetails.appendChild(sectionSummary);
+                    sectionDetails.appendChild(ul);
+                    sectionsList.appendChild(sectionDetails);
+                });
+                
+                categoryDetails.appendChild(sectionsList);
+                navContainer.appendChild(categoryDetails);
             });
         }
 
@@ -312,171 +301,98 @@
             contentArea.innerHTML = '';
             Object.entries(storyBibleData).forEach(([category, sections]) => {
                 Object.entries(sections).forEach(([sectionKey, sectionData]) => {
+                    const section = document.createElement('section');
+                    section.id = generateId(sectionKey);
+                    section.className = 'mb-12';
+
+                    const sectionTitle = document.createElement('h2');
+                    sectionTitle.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6';
+                    sectionTitle.textContent = sectionKey;
+                    section.appendChild(sectionTitle);
+
+                    const cardContainer = document.createElement('div');
+                    cardContainer.className = 'space-y-6';
                     
-                    if (sectionData.isAccordion) {
-                        const sectionDetails = document.createElement('details');
-                        const sectionId = `${category.replace(/\s+/g, '-')}-${sectionKey.replace(/\s+/g, '-')}`;
-                        sectionDetails.id = sectionId;
-                        sectionDetails.className = 'card mb-12';
-                        sectionDetails.open = true;
-
-                        const sectionSummary = document.createElement('summary');
-                        sectionSummary.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6 cursor-pointer';
-                        sectionSummary.textContent = sectionKey;
-                        
-                        const sectionContent = document.createElement('div');
-                        sectionContent.className = 'p-6';
-
-                        const cardContainer = document.createElement('div');
-                        cardContainer.className = 'space-y-6';
-
-                        sectionData.items.forEach((entry, index) => {
-                            cardContainer.appendChild(createCard(category, sectionKey, index, entry));
-                        });
-                        
-                        sectionContent.appendChild(cardContainer);
-                        sectionDetails.appendChild(sectionSummary);
-                        sectionDetails.appendChild(sectionContent);
-                        contentArea.appendChild(sectionDetails);
-
-                    } else {
-                        const section = document.createElement('section');
-                        const sectionId = `${category.replace(/\s+/g, '-')}-${sectionKey.replace(/\s+/g, '-')}`;
-                        section.id = sectionId;
-                        section.className = 'mb-12';
-
-                        const sectionTitle = document.createElement('h2');
-                        sectionTitle.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6';
-                        sectionTitle.textContent = sectionKey;
-                        section.appendChild(sectionTitle);
-
-                        const cardContainer = document.createElement('div');
-                        cardContainer.className = 'space-y-6';
-                        
-                        sectionData.forEach((entry, index) => {
-                            cardContainer.appendChild(createCard(category, sectionKey, index, entry));
-                        });
-                        
-                        section.appendChild(cardContainer);
-                        contentArea.appendChild(section);
-                    }
+                    sectionData.items.forEach(entry => {
+                        cardContainer.appendChild(createCard(entry));
+                    });
+                    
+                    section.appendChild(cardContainer);
+                    contentArea.appendChild(section);
                 });
             });
         }
         
-        function createCard(category, sectionKey, index, entryData) {
+        function createCard(entryData) {
             const card = document.createElement('div');
+            card.id = generateId(entryData.title);
             card.className = 'card';
-            card.dataset.category = category;
-            card.dataset.section = sectionKey;
-            card.dataset.index = index;
 
-            let realWorldHtml = '';
-            if (entryData.realWorldEquivalent !== undefined) {
-                realWorldHtml = `
-                    <div class="mt-4 pt-4 border-t border-gray-200">
-                        <h4 class="text-sm font-semibold text-gray-600 mb-2">Real-World Equivalents & Inspirations</h4>
-                        <div class="prose-custom text-sm text-gray-700">${entryData.realWorldEquivalent}</div>
-                    </div>
-                `;
-            }
+            let realWorldHtml = entryData.realWorldEquivalent ? `
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <h4 class="text-sm font-semibold text-gray-600 mb-2">Real-World Equivalents & Inspirations</h4>
+                    <div class="prose-custom text-sm text-gray-700">${entryData.realWorldEquivalent}</div>
+                </div>
+            ` : '';
 
-            if (entryData.isAccordion) {
-                card.innerHTML = `
-                    <details>
-                        <summary class="p-6 cursor-pointer flex justify-between items-center">
-                            <h3 class="text-xl font-bold text-gray-800">${entryData.title}</h3>
-                        </summary>
-                        <div class="p-6 pt-0">
-                            <div class="prose-custom max-w-none text-gray-700">
-                                ${entryData.content}
-                            </div>
+            let contentHtml = entryData.isAccordion ? `
+                <details>
+                    <summary class="p-6 flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-gray-800">${entryData.title}</h3>
+                    </summary>
+                    <div class="accordion-content">
+                        <div class="px-6 pb-6 pt-0">
+                            <div class="prose-custom max-w-none text-gray-700">${entryData.content}</div>
                             ${realWorldHtml}
                         </div>
-                    </details>
-                `;
-            } else {
-                card.innerHTML = `
-                    <div class="p-6">
-                        <div class="flex justify-between items-start">
-                            <h3 class="text-xl font-bold text-gray-800 mb-3">${entryData.title}</h3>
-                        </div>
-                        <div class="prose-custom max-w-none text-gray-700">
-                            ${entryData.content}
-                        </div>
-                        ${realWorldHtml}
                     </div>
-                `;
-            }
+                </details>
+            ` : `
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">${entryData.title}</h3>
+                    <div class="prose-custom max-w-none text-gray-700">${entryData.content}</div>
+                    ${realWorldHtml}
+                </div>
+            `;
+            
+            card.innerHTML = contentHtml;
             return card;
         }
 
-        // --- EVENT LISTENERS ---
-        function attachEventListeners() {
-            const contentArea = document.getElementById('content-area');
-
-            contentArea.addEventListener('click', (e) => {
-                if (e.target.matches('a.internal-link')) {
-                    e.preventDefault();
-                    const href = e.target.getAttribute('href'); 
-                    const searchTerm = decodeURIComponent(href.replace('#/search/', ''));
-                    searchInput.value = searchTerm;
-                    executeSearchAndDisplay(searchTerm);
-                }
+        // --- SEARCH LOGIC ---
+        function buildSearchIndex() {
+            searchIndex = [];
+            Object.values(storyBibleData).forEach(sections => {
+                Object.values(sections).forEach(sectionData => {
+                    sectionData.items.forEach(item => {
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = item.content + (item.realWorldEquivalent || '');
+                        searchIndex.push({
+                            title: item.title,
+                            text: (item.title + ' ' + tempDiv.textContent).toLowerCase(),
+                            id: generateId(item.title)
+                        });
+                    });
+                });
             });
         }
-        
-        // --- SEARCH LOGIC ---
+
         function executeSearchAndDisplay(query) {
             const lowerCaseQuery = query.toLowerCase().trim();
-            let firstMatchCard = null;
+            const result = searchIndex.find(item => item.title.toLowerCase() === lowerCaseQuery);
 
-            const cards = document.querySelectorAll('.card');
-            for (const card of cards) {
-                const h3El = card.querySelector('h3');
-                if (!h3El) continue;
-
-                const title = h3El.textContent.toLowerCase();
-                
-                if (title === lowerCaseQuery) {
-                    firstMatchCard = card;
-                    break; 
+            if (result) {
+                const targetCard = document.getElementById(result.id);
+                if (targetCard) {
+                    clearSearchHighlights();
+                    targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    targetCard.classList.add('search-highlight');
+                    highlightTextInNode(targetCard, lowerCaseQuery);
+                    setTimeout(() => targetCard.classList.remove('search-highlight'), 2000);
                 }
-            }
-            
-            if (!firstMatchCard && cards.length > 0) {
-                 for (const card of cards) {
-                    const title = card.querySelector('h3').textContent.toLowerCase();
-                    const content = card.querySelector('.prose-custom').textContent.toLowerCase();
-                    const realWorld = card.querySelector('[data-field="realWorldEquivalent"]')?.textContent.toLowerCase() || '';
-
-                    if (title.includes(lowerCaseQuery) || content.includes(lowerCaseQuery) || realWorld.includes(lowerCaseQuery)) {
-                        firstMatchCard = card;
-                        break;
-                    }
-                }
-            }
-
-            if (firstMatchCard) {
-                clearSearchHighlights();
-                firstMatchCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                firstMatchCard.classList.add('search-highlight');
-                highlightTextInNode(firstMatchCard, lowerCaseQuery);
-
-                setTimeout(() => {
-                    firstMatchCard.classList.remove('search-highlight');
-                }, 2000);
             }
         }
         
-        searchInput.addEventListener('input', populateSearchDropdown);
-        searchInput.addEventListener('focus', populateSearchDropdown);
-        document.addEventListener('click', (e) => {
-            if (e.target.id !== 'search-input' && !searchResultsContainer.contains(e.target)) {
-                searchResultsContainer.classList.add('hidden');
-            }
-        });
-
         function populateSearchDropdown() {
             const query = searchInput.value.toLowerCase().trim();
             searchResultsContainer.innerHTML = '';
@@ -487,17 +403,13 @@
                 return;
             }
 
-            const results = new Set();
-            document.querySelectorAll('.card h3').forEach(titleEl => {
-                const title = titleEl.textContent;
-                if (title.toLowerCase().includes(query)) {
-                    results.add(title);
-                }
-            });
+            const results = searchIndex
+                .filter(item => item.text.includes(query))
+                .map(item => item.title);
 
-            if (results.size > 0) {
+            if (results.length > 0) {
                 searchResultsContainer.classList.remove('hidden');
-                results.forEach(title => {
+                [...new Set(results)].forEach(title => {
                     const resultDiv = document.createElement('div');
                     resultDiv.className = 'p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200';
                     resultDiv.textContent = title;
@@ -515,19 +427,16 @@
         
         function clearSearchHighlights() {
             document.querySelectorAll('.highlight').forEach(el => {
-                if (el.parentNode) {
-                    el.outerHTML = el.innerHTML;
-                }
+                if (el.parentNode) { el.outerHTML = el.innerHTML; }
             });
         }
 
         function highlightTextInNode(node, query) {
-            clearSearchHighlights();
             const regex = new RegExp(`(${query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
             const treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
             let textNodes = [];
             while(treeWalker.nextNode()) {
-                if (treeWalker.currentNode.parentElement.tagName !== 'SCRIPT' && treeWalker.currentNode.parentElement.tagName !== 'STYLE') {
+                if (!['SCRIPT', 'STYLE'].includes(treeWalker.currentNode.parentElement.tagName)) {
                     textNodes.push(treeWalker.currentNode);
                 }
             }
@@ -539,29 +448,65 @@
                     let lastIndex = 0;
                     text.replace(regex, (match, ...args) => {
                         const offset = args[args.length - 2];
-                        if (offset > lastIndex) {
-                            fragment.appendChild(document.createTextNode(text.substring(lastIndex, offset)));
-                        }
+                        if (offset > lastIndex) { fragment.appendChild(document.createTextNode(text.substring(lastIndex, offset))); }
                         const highlightSpan = document.createElement('span');
                         highlightSpan.className = 'highlight';
                         highlightSpan.textContent = match;
                         fragment.appendChild(highlightSpan);
                         lastIndex = offset + match.length;
                     });
-                    if (lastIndex < text.length) {
-                        fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
-                    }
-                    if (textNode.parentNode) {
-                        textNode.parentNode.replaceChild(fragment, textNode);
-                    }
+                    if (lastIndex < text.length) { fragment.appendChild(document.createTextNode(text.substring(lastIndex))); }
+                    if (textNode.parentNode) { textNode.parentNode.replaceChild(fragment, textNode); }
                 }
             });
         }
+        
+        // --- UTILITY & EVENT LISTENERS ---
+        function generateId(text) {
+            return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        }
+
+        // Auth Listeners
+        submitPasswordBtn.addEventListener('click', handleLogin);
+        passwordInput.addEventListener('keypress', e => e.key === 'Enter' && handleLogin());
+        passwordInput.addEventListener('input', () => {
+            passwordError.classList.add('hidden');
+            passwordInput.classList.remove('border-red-500');
+        });
+        logoutButton.addEventListener('click', () => {
+            sessionStorage.removeItem('storyBibleAccessLevel');
+            location.reload();
+        });
+
+        // Search Listeners
+        searchInput.addEventListener('input', populateSearchDropdown);
+        searchInput.addEventListener('focus', populateSearchDropdown);
+        document.addEventListener('click', e => {
+            if (e.target.id !== 'search-input' && !searchResultsContainer.contains(e.target)) {
+                searchResultsContainer.classList.add('hidden');
+            }
+        });
+        document.getElementById('content-area').addEventListener('click', e => {
+            if (e.target.matches('a.internal-link')) {
+                e.preventDefault();
+                const searchTerm = decodeURIComponent(e.target.getAttribute('href').replace('#/search/', ''));
+                searchInput.value = searchTerm;
+                executeSearchAndDisplay(searchTerm);
+            }
+        });
+
+        // Back to Top Listener
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopButton.classList.add('visible');
+            } else {
+                backToTopButton.classList.remove('visible');
+            }
+        });
 
         // --- INITIALIZATION ---
         checkAuth();
     });
     </script>
-
 </body>
 </html>
