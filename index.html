@@ -14,8 +14,8 @@
     <script src="data_cosmology.js" defer></script>
     <script src="data_beings.js" defer></script>
     <script src="data_flora.js" defer></script>
-    <script src="data_fauna.js" defer></script> 
-    <script src="data_environmental_phenomena.js" defer></script> 
+    <script src="data_fauna.js" defer></script>
+    <script src="data_environmental_phenomena.js" defer></script>
     <script src="data_factions.js" defer></script>
     <script src="data_magic.js" defer></script>
     <script src="data_artifacts.js" defer></script>
@@ -26,93 +26,36 @@
     <script src="data_plotholes.js" defer></script>
     
     <style>
-        /* Custom Styles */
-        :root { scroll-behavior: smooth; } /* Smooth Scrolling */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-        }
+        :root { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
         .prose-custom { font-family: 'Lora', serif; }
-        .prose-custom h1, .prose-custom h2, .prose-custom h3, .prose-custom h4, .prose-custom h5 {
-            font-family: 'Inter', sans-serif;
-            font-weight: 700;
-        }
-        .card {
-            background-color: #ffffff;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            transition: box-shadow 0.3s ease-in-out;
-        }
+        .prose-custom h1, .prose-custom h2, .prose-custom h3, .prose-custom h4, .prose-custom h5 { font-family: 'Inter', sans-serif; font-weight: 700; }
+        .card { background-color: #ffffff; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); transition: box-shadow 0.3s ease-in-out; }
         .card:hover { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
-        
-        /* Link Styles */
         .prose-custom a.internal-link { color: #6d28d9; text-decoration: none; font-weight: 600; cursor: pointer; }
         .prose-custom a.internal-link:hover { text-decoration: underline; }
         .prose-custom a.external-link { color: #059669; text-decoration: none; font-weight: 600; }
         .prose-custom a.external-link:hover { text-decoration: underline; }
         .prose-custom a.external-link::after { content: ' ↗'; display: inline-block; font-size: 0.8em; vertical-align: super; }
-        
-        /* Search Highlight */
         .highlight { background-color: #fef08a; border-radius: 0.25rem; padding: 0 2px; }
         .search-highlight { background-color: #fcd34d; animation: flash 1.5s ease-in-out; }
         @keyframes flash { 0% { background-color: #fcd34d; } 50% { background-color: #fef08a; } 100% { background-color: #fcd34d; } }
-
-        /* Login Animation */
         #password-overlay.dissolving { opacity: 0; transition: opacity 1.5s ease-out; }
-        #password-overlay.dissolving::after {
-            content: ''; position: absolute; inset: 0;
-            background: conic-gradient(from 90deg at 50% 50%, #6366f1, #a855f7, #ec4899, #f59e0b, #84cc16, #10b981, #06b6d4, #3b82f6, #6366f1);
-            filter: blur(80px) saturate(2); opacity: 1; transition: opacity 1s ease-out; z-index: 1;
-        }
         #password-overlay.dissolving > div { transition: opacity 0.5s ease-in; opacity: 0; }
-
-        /* Accordion Styles */
-        summary {
-            cursor: pointer;
-            list-style: none; /* Hide default marker */
-        }
-        summary::-webkit-details-marker { display: none; } /* Hide default marker in Chrome */
-        
-        /* Navigation Accordion */
+        summary { cursor: pointer; list-style: none; }
+        summary::-webkit-details-marker { display: none; }
         #navigation-container summary { display: flex; align-items: center; padding: 0.5rem 0.75rem; border-radius: 0.375rem; }
         #navigation-container summary:hover { background-color: #e5e7eb; }
         #navigation-container summary::before { content: '►'; margin-right: 0.5rem; font-size: 0.6em; transition: transform 0.2s; }
         #navigation-container details[open] > summary::before { transform: rotate(90deg); }
         #navigation-container details .nav-links { padding-left: 1rem; border-left: 1px solid #d1d5db; margin-left: 0.5rem; }
-
-        /* Content Accordion Animation */
-        details .accordion-content {
-            overflow: hidden;
-            transition: max-height 0.5s cubic-bezier(0.25, 0.1, 0.25, 1.0);
-            max-height: 0;
-        }
-        details[open] .accordion-content {
-            max-height: 1000vh; /* A large value */
-        }
-
-        /* Table Styles */
+        details .accordion-content { overflow: hidden; transition: max-height 0.5s cubic-bezier(0.25, 0.1, 0.25, 1.0); max-height: 0; }
+        details[open] .accordion-content { max-height: 1000vh; }
         .prose-custom table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; margin-bottom: 1.5rem; }
         .prose-custom th, .prose-custom td { border: 1px solid #d1d5db; padding: 0.75rem; text-align: left; }
         .prose-custom th { background-color: #f3f4f6; font-weight: 600; }
-        
-        /* Back to Top Button */
-        #back-to-top {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background-color: #4f46e5;
-            color: white;
-            padding: 0.75rem;
-            border-radius: 9999px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-        #back-to-top.visible {
-            opacity: 1;
-            visibility: visible;
-        }
+        #back-to-top { position: fixed; bottom: 2rem; right: 2rem; background-color: #4f46e5; color: white; padding: 0.75rem; border-radius: 9999px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+        #back-to-top.visible { opacity: 1; visibility: visible; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -138,9 +81,7 @@
                         <div class="relative w-64">
                             <input type="search" id="search-input" class="w-full pl-10 pr-4 py-2 border rounded-full text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Search bible...">
                             <div class="absolute top-0 left-0 mt-2 ml-3">
-                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
+                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                             </div>
                             <div id="search-results-container" class="absolute mt-1 w-full bg-white rounded-md shadow-lg z-20 hidden max-h-80 overflow-y-auto"></div>
                         </div>
@@ -153,26 +94,19 @@
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="lg:grid lg:grid-cols-12 lg:gap-8">
                 <nav class="lg:col-span-3 mb-8 lg:mb-0">
-                    <div id="navigation-container" class="sticky top-24">
-                        </div>
+                    <div id="navigation-container" class="sticky top-24"></div>
                 </nav>
-
-                <main id="content-area" class="lg:col-span-9">
-                    </main>
+                <main id="content-area" class="lg:col-span-9"></main>
             </div>
         </div>
     </div>
     
     <a href="#" id="back-to-top" title="Back to top">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" /></svg>
     </a>
 
     <script id="app-logic">
-    // --- APPLICATION LOGIC (VIEW-ONLY, REFACTORED) ---
     document.addEventListener('DOMContentLoaded', () => {
-        // --- DATA ASSEMBLY ---
         const storyBibleData = {
             "Series Overview": overviewData,
             "Characters": charactersData,
@@ -191,10 +125,7 @@
             "To Solve/Plotholes": plotholesData
         };
 
-        // --- GLOBAL STATE & CACHE ---
         let searchIndex = [];
-
-        // --- DOM ELEMENT REFERENCES ---
         const passwordOverlay = document.getElementById('password-overlay');
         const passwordInput = document.getElementById('password-input');
         const submitPasswordBtn = document.getElementById('submit-password');
@@ -205,15 +136,10 @@
         const searchResultsContainer = document.getElementById('search-results-container');
         const backToTopButton = document.getElementById('back-to-top');
         
-        const PASSWORDS = {
-            full: "03311985",
-            view: "415semple"
-        };
+        const PASSWORDS = { full: "03311985", view: "415semple" };
         
-        // --- AUTHENTICATION ---
         function checkAuth() {
-            const accessLevel = sessionStorage.getItem('storyBibleAccessLevel');
-            if (accessLevel) {
+            if (sessionStorage.getItem('storyBibleAccessLevel')) {
                 passwordOverlay.style.display = 'none';
                 mainContent.classList.remove('hidden');
                 buildSearchIndex();
@@ -226,27 +152,19 @@
         
         function handleLogin() {
             const enteredPassword = passwordInput.value;
-            let accessLevel = null;
-
             if (enteredPassword === PASSWORDS.full || enteredPassword === PASSWORDS.view) {
-                accessLevel = 'view';
-            }
-
-            if (accessLevel) {
-                sessionStorage.setItem('storyBibleAccessLevel', accessLevel);
+                sessionStorage.setItem('storyBibleAccessLevel', 'view');
                 passwordOverlay.classList.add('dissolving');
                 setTimeout(() => {
                     passwordOverlay.style.opacity = '0';
                     passwordOverlay.addEventListener('transitionend', checkAuth, { once: true });
                 }, 500);
-
             } else {
                 passwordError.classList.remove('hidden');
                 passwordInput.classList.add('border-red-500');
             }
         }
 
-        // --- RENDER LOGIC ---
         function renderApp() {
             renderNavigation();
             renderContentSections();
@@ -258,26 +176,20 @@
             Object.entries(storyBibleData).forEach(([category, sections]) => {
                 const categoryDetails = document.createElement('details');
                 categoryDetails.open = true;
-
                 const categorySummary = document.createElement('summary');
                 categorySummary.className = 'text-lg font-bold text-gray-700 mb-2 cursor-pointer';
                 categorySummary.textContent = category;
                 categoryDetails.appendChild(categorySummary);
-
                 const sectionsList = document.createElement('div');
                 sectionsList.className = 'nav-links';
-                
                 Object.entries(sections).forEach(([sectionKey, sectionData]) => {
                     const sectionDetails = document.createElement('details');
                     sectionDetails.open = true;
-                    
                     const sectionSummary = document.createElement('summary');
                     sectionSummary.className = 'text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1 cursor-pointer';
                     sectionSummary.textContent = sectionKey;
-                    
                     const ul = document.createElement('ul');
                     ul.className = 'space-y-1 mb-4';
-                    
                     sectionData.items.forEach(entry => {
                         const li = document.createElement('li');
                         const a = document.createElement('a');
@@ -287,12 +199,10 @@
                         li.appendChild(a);
                         ul.appendChild(li);
                     });
-
                     sectionDetails.appendChild(sectionSummary);
                     sectionDetails.appendChild(ul);
                     sectionsList.appendChild(sectionDetails);
                 });
-                
                 categoryDetails.appendChild(sectionsList);
                 navContainer.appendChild(categoryDetails);
             });
@@ -301,24 +211,18 @@
         function renderContentSections() {
             const contentArea = document.getElementById('content-area');
             contentArea.innerHTML = '';
-            Object.entries(storyBibleData).forEach(([category, sections]) => {
+            Object.values(storyBibleData).forEach(sections => {
                 Object.entries(sections).forEach(([sectionKey, sectionData]) => {
                     const section = document.createElement('section');
                     section.id = generateId(sectionKey);
                     section.className = 'mb-12';
-
                     const sectionTitle = document.createElement('h2');
                     sectionTitle.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6';
                     sectionTitle.textContent = sectionKey;
                     section.appendChild(sectionTitle);
-
                     const cardContainer = document.createElement('div');
                     cardContainer.className = 'space-y-6';
-                    
-                    sectionData.items.forEach(entry => {
-                        cardContainer.appendChild(createCard(entry));
-                    });
-                    
+                    sectionData.items.forEach(entry => cardContainer.appendChild(createCard(entry)));
                     section.appendChild(cardContainer);
                     contentArea.appendChild(section);
                 });
@@ -329,39 +233,11 @@
             const card = document.createElement('div');
             card.id = generateId(entryData.title);
             card.className = 'card';
-
-            let realWorldHtml = entryData.realWorldEquivalent ? `
-                <div class="mt-4 pt-4 border-t border-gray-200">
-                    <h4 class="text-sm font-semibold text-gray-600 mb-2">Real-World Equivalents & Inspirations</h4>
-                    <div class="prose-custom text-sm text-gray-700">${entryData.realWorldEquivalent}</div>
-                </div>
-            ` : '';
-
-            let contentHtml = entryData.isAccordion ? `
-                <details>
-                    <summary class="p-6 flex justify-between items-center">
-                        <h3 class="text-xl font-bold text-gray-800">${entryData.title}</h3>
-                    </summary>
-                    <div class="accordion-content">
-                        <div class="px-6 pb-6 pt-0">
-                            <div class="prose-custom max-w-none text-gray-700">${entryData.content}</div>
-                            ${realWorldHtml}
-                        </div>
-                    </div>
-                </details>
-            ` : `
-                <div class="p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">${entryData.title}</h3>
-                    <div class="prose-custom max-w-none text-gray-700">${entryData.content}</div>
-                    ${realWorldHtml}
-                </div>
-            `;
-            
-            card.innerHTML = contentHtml;
+            const realWorldHtml = entryData.realWorldEquivalent ? `<div class="mt-4 pt-4 border-t border-gray-200"><h4 class="text-sm font-semibold text-gray-600 mb-2">Real-World Equivalents & Inspirations</h4><div class="prose-custom text-sm text-gray-700">${entryData.realWorldEquivalent}</div></div>` : '';
+            card.innerHTML = entryData.isAccordion ? `<details><summary class="p-6 flex justify-between items-center"><h3 class="text-xl font-bold text-gray-800">${entryData.title}</h3></summary><div class="accordion-content"><div class="px-6 pb-6 pt-0"><div class="prose-custom max-w-none text-gray-700">${entryData.content}</div>${realWorldHtml}</div></div></details>` : `<div class="p-6"><h3 class="text-xl font-bold text-gray-800 mb-3">${entryData.title}</h3><div class="prose-custom max-w-none text-gray-700">${entryData.content}</div>${realWorldHtml}</div>`;
             return card;
         }
 
-        // --- SEARCH LOGIC ---
         function buildSearchIndex() {
             searchIndex = [];
             Object.values(storyBibleData).forEach(sections => {
@@ -369,11 +245,7 @@
                     sectionData.items.forEach(item => {
                         const tempDiv = document.createElement('div');
                         tempDiv.innerHTML = item.content + (item.realWorldEquivalent || '');
-                        searchIndex.push({
-                            title: item.title,
-                            text: (item.title + ' ' + tempDiv.textContent).toLowerCase(),
-                            id: generateId(item.title)
-                        });
+                        searchIndex.push({ title: item.title, text: (item.title + ' ' + tempDiv.textContent).toLowerCase(), id: generateId(item.title) });
                     });
                 });
             });
@@ -382,7 +254,6 @@
         function executeSearchAndDisplay(query) {
             const lowerCaseQuery = query.toLowerCase().trim();
             const result = searchIndex.find(item => item.title.toLowerCase() === lowerCaseQuery);
-
             if (result) {
                 const targetCard = document.getElementById(result.id);
                 if (targetCard) {
@@ -398,20 +269,15 @@
         function populateSearchDropdown() {
             const query = searchInput.value.toLowerCase().trim();
             searchResultsContainer.innerHTML = '';
-
             if (query.length < 2) {
                 searchResultsContainer.classList.add('hidden');
                 clearSearchHighlights();
                 return;
             }
-
-            const results = searchIndex
-                .filter(item => item.text.includes(query))
-                .map(item => item.title);
-
+            const results = [...new Set(searchIndex.filter(item => item.text.includes(query)).map(item => item.title))];
             if (results.length > 0) {
                 searchResultsContainer.classList.remove('hidden');
-                [...new Set(results)].forEach(title => {
+                results.forEach(title => {
                     const resultDiv = document.createElement('div');
                     resultDiv.className = 'p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200';
                     resultDiv.textContent = title;
@@ -428,21 +294,14 @@
         }
         
         function clearSearchHighlights() {
-            document.querySelectorAll('.highlight').forEach(el => {
-                if (el.parentNode) { el.outerHTML = el.innerHTML; }
-            });
+            document.querySelectorAll('.highlight').forEach(el => { if (el.parentNode) el.outerHTML = el.innerHTML; });
         }
 
         function highlightTextInNode(node, query) {
             const regex = new RegExp(`(${query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
             const treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
             let textNodes = [];
-            while(treeWalker.nextNode()) {
-                if (!['SCRIPT', 'STYLE'].includes(treeWalker.currentNode.parentElement.tagName)) {
-                    textNodes.push(treeWalker.currentNode);
-                }
-            }
-            
+            while(treeWalker.nextNode()) if (!['SCRIPT', 'STYLE'].includes(treeWalker.currentNode.parentElement.tagName)) textNodes.push(treeWalker.currentNode);
             textNodes.forEach(textNode => {
                 const text = textNode.nodeValue;
                 if (regex.test(text)) {
@@ -450,44 +309,27 @@
                     let lastIndex = 0;
                     text.replace(regex, (match, ...args) => {
                         const offset = args[args.length - 2];
-                        if (offset > lastIndex) { fragment.appendChild(document.createTextNode(text.substring(lastIndex, offset))); }
+                        if (offset > lastIndex) fragment.appendChild(document.createTextNode(text.substring(lastIndex, offset)));
                         const highlightSpan = document.createElement('span');
                         highlightSpan.className = 'highlight';
                         highlightSpan.textContent = match;
                         fragment.appendChild(highlightSpan);
                         lastIndex = offset + match.length;
                     });
-                    if (lastIndex < text.length) { fragment.appendChild(document.createTextNode(text.substring(lastIndex))); }
-                    if (textNode.parentNode) { textNode.parentNode.replaceChild(fragment, textNode); }
+                    if (lastIndex < text.length) fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
+                    if (textNode.parentNode) textNode.parentNode.replaceChild(fragment, textNode);
                 }
             });
         }
         
-        // --- UTILITY & EVENT LISTENERS ---
-        function generateId(text) {
-            return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        }
-
-        // Auth Listeners
+        function generateId(text) { return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''); }
         submitPasswordBtn.addEventListener('click', handleLogin);
         passwordInput.addEventListener('keypress', e => e.key === 'Enter' && handleLogin());
-        passwordInput.addEventListener('input', () => {
-            passwordError.classList.add('hidden');
-            passwordInput.classList.remove('border-red-500');
-        });
-        logoutButton.addEventListener('click', () => {
-            sessionStorage.removeItem('storyBibleAccessLevel');
-            location.reload();
-        });
-
-        // Search Listeners
+        passwordInput.addEventListener('input', () => { passwordError.classList.add('hidden'); passwordInput.classList.remove('border-red-500'); });
+        logoutButton.addEventListener('click', () => { sessionStorage.removeItem('storyBibleAccessLevel'); location.reload(); });
         searchInput.addEventListener('input', populateSearchDropdown);
         searchInput.addEventListener('focus', populateSearchDropdown);
-        document.addEventListener('click', e => {
-            if (e.target.id !== 'search-input' && !searchResultsContainer.contains(e.target)) {
-                searchResultsContainer.classList.add('hidden');
-            }
-        });
+        document.addEventListener('click', e => { if (e.target.id !== 'search-input' && !searchResultsContainer.contains(e.target)) searchResultsContainer.classList.add('hidden'); });
         document.getElementById('content-area').addEventListener('click', e => {
             if (e.target.matches('a.internal-link')) {
                 e.preventDefault();
@@ -496,17 +338,7 @@
                 executeSearchAndDisplay(searchTerm);
             }
         });
-
-        // Back to Top Listener
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                backToTopButton.classList.add('visible');
-            } else {
-                backToTopButton.classList.remove('visible');
-            }
-        });
-
-        // --- INITIALIZATION ---
+        window.addEventListener('scroll', () => { backToTopButton.classList.toggle('visible', window.scrollY > 300); });
         checkAuth();
     });
     </script>
