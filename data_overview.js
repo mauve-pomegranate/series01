@@ -10,7 +10,7 @@ const overviewData = {
         },
         {
             "title": "Genre & Audience",
-            "content": "<p><strong>Primary Genre:</strong> Urban Fantasy / Speculative Fiction</p><p><strong>Secondary Elements:</strong> Conspiracy Thriller, Post-Apocalyptic (Book 2), Mythic Fiction, Cosmic Horror (hints).</p><p><strong>Target Audience:</strong> Older Young Adult to Adult, interested in complex plots, intricate world-building, Japanese & American folklore, blend of magic/science, and character-driven stories with strong emotional cores.</p>"
+            "content": "<p><strong>Primary Genre:</strong> Urban Fantasy / Speculative Fiction</p><br><p><strong>Secondary Elements:</strong> Conspiracy Thriller, Post-Apocalyptic (Book 2), Mythic Fiction, Cosmic Horror (hints).</p><br><p><strong>Target Audience:</strong> Older Young Adult to Adult, interested in complex plots, intricate world-building, Japanese & American folklore, blend of magic/science, and character-driven stories with strong emotional cores.</p>"
         }
     ]
 };
