@@ -111,7 +111,9 @@
     </a>
 
     <script id="app-logic">
+    // --- DIAGNOSTIC VERSION ---
     document.addEventListener('DOMContentLoaded', () => {
+        console.log("DOM fully loaded. Assembling data...");
         const storyBibleData = {
             "Series Overview": overviewData,
             "Characters": charactersData,
@@ -129,6 +131,7 @@
             "Glossary": glossaryData,
             "To Solve/Plotholes": plotholesData
         };
+        console.log("Data assembly complete. StoryBibleData object:", storyBibleData);
 
         let searchIndex = [];
         const passwordOverlay = document.getElementById('password-overlay');
@@ -144,20 +147,25 @@
         const PASSWORDS = { full: "03311985", view: "415semple" };
         
         function checkAuth() {
+            console.log("Checking authentication...");
             if (sessionStorage.getItem('storyBibleAccessLevel')) {
+                console.log("Auth successful. Hiding overlay and rendering app.");
                 passwordOverlay.style.display = 'none';
                 mainContent.classList.remove('hidden');
                 buildSearchIndex();
                 renderApp();
             } else {
+                console.log("No auth found. Displaying password overlay.");
                 passwordOverlay.style.display = 'flex';
                 mainContent.classList.add('hidden');
             }
         }
         
         function handleLogin() {
+            console.log("Login attempt...");
             const enteredPassword = passwordInput.value;
             if (enteredPassword === PASSWORDS.full || enteredPassword === PASSWORDS.view) {
+                console.log("Password correct.");
                 sessionStorage.setItem('storyBibleAccessLevel', 'view');
                 passwordOverlay.classList.add('dissolving');
                 setTimeout(() => {
@@ -165,20 +173,29 @@
                     passwordOverlay.addEventListener('transitionend', checkAuth, { once: true });
                 }, 500);
             } else {
+                console.log("Password incorrect.");
                 passwordError.classList.remove('hidden');
                 passwordInput.classList.add('border-red-500');
             }
         }
 
         function renderApp() {
-            renderNavigation();
-            renderContentSections();
+            console.log("--- renderApp() called ---");
+            try {
+                renderNavigation();
+                renderContentSections();
+                console.log("--- renderApp() completed successfully ---");
+            } catch (error) {
+                console.error("!!! CRITICAL ERROR IN RENDERAPP !!!", error);
+            }
         }
 
         function renderNavigation() {
+            console.log("Starting renderNavigation()...");
             const navContainer = document.getElementById('navigation-container');
             navContainer.innerHTML = '';
             Object.entries(storyBibleData).forEach(([category, sections]) => {
+                console.log(`Navigating category: ${category}`);
                 const categoryDetails = document.createElement('details');
                 categoryDetails.open = true;
                 const categorySummary = document.createElement('summary');
@@ -211,46 +228,31 @@
                 categoryDetails.appendChild(sectionsList);
                 navContainer.appendChild(categoryDetails);
             });
+            console.log("Finished renderNavigation().");
         }
 
         function renderContentSections() {
+            console.log("Starting renderContentSections()...");
             const contentArea = document.getElementById('content-area');
             contentArea.innerHTML = '';
             Object.entries(storyBibleData).forEach(([category, sections]) => {
+                console.log(`Rendering content for category: ${category}`);
                 Object.entries(sections).forEach(([sectionKey, sectionData]) => {
-                    if (sectionData.isAccordion) {
-                        const sectionDetails = document.createElement('details');
-                        sectionDetails.id = generateId(sectionKey);
-                        sectionDetails.className = 'card mb-12';
-                        sectionDetails.open = true;
-                        const sectionSummary = document.createElement('summary');
-                        sectionSummary.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6 cursor-pointer';
-                        sectionSummary.textContent = sectionKey;
-                        const sectionContent = document.createElement('div');
-                        sectionContent.className = 'p-6';
-                        const cardContainer = document.createElement('div');
-                        cardContainer.className = 'space-y-6';
-                        sectionData.items.forEach(entry => cardContainer.appendChild(createCard(entry)));
-                        sectionContent.appendChild(cardContainer);
-                        sectionDetails.appendChild(sectionSummary);
-                        sectionDetails.appendChild(sectionContent);
-                        contentArea.appendChild(sectionDetails);
-                    } else {
-                        const section = document.createElement('section');
-                        section.id = generateId(sectionKey);
-                        section.className = 'mb-12';
-                        const sectionTitle = document.createElement('h2');
-                        sectionTitle.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6';
-                        sectionTitle.textContent = sectionKey;
-                        section.appendChild(sectionTitle);
-                        const cardContainer = document.createElement('div');
-                        cardContainer.className = 'space-y-6';
-                        sectionData.items.forEach(entry => cardContainer.appendChild(createCard(entry)));
-                        section.appendChild(cardContainer);
-                        contentArea.appendChild(section);
-                    }
+                    const section = document.createElement('section');
+                    section.id = generateId(sectionKey);
+                    section.className = 'mb-12';
+                    const sectionTitle = document.createElement('h2');
+                    sectionTitle.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6';
+                    sectionTitle.textContent = sectionKey;
+                    section.appendChild(sectionTitle);
+                    const cardContainer = document.createElement('div');
+                    cardContainer.className = 'space-y-6';
+                    sectionData.items.forEach(entry => cardContainer.appendChild(createCard(entry)));
+                    section.appendChild(cardContainer);
+                    contentArea.appendChild(section);
                 });
             });
+            console.log("Finished renderContentSections().");
         }
         
         function createCard(entryData) {
@@ -263,6 +265,7 @@
         }
 
         function buildSearchIndex() {
+            console.log("Building search index...");
             searchIndex = [];
             Object.values(storyBibleData).forEach(sections => {
                 Object.values(sections).forEach(sectionData => {
@@ -273,6 +276,7 @@
                     });
                 });
             });
+            console.log("Search index built successfully.", searchIndex);
         }
 
         function executeSearchAndDisplay(query) {
@@ -363,6 +367,9 @@
             }
         });
         window.addEventListener('scroll', () => { backToTopButton.classList.toggle('visible', window.scrollY > 300); });
+        
+        // --- INITIALIZATION ---
+        console.log("Adding initial event listeners and running checkAuth()...");
         checkAuth();
     });
     </script>
