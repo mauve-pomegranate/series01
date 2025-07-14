@@ -46,18 +46,16 @@
             border-radius: 0.75rem;
         }
 
-        /* Rainbow Transition Effect */
+        /* Wavy Rainbow Ombre Transition */
         #password-overlay.rainbow-bg {
-            animation: rainbow-cycle 2s linear;
+            background: linear-gradient(270deg, #ff7f7f, #ffbf7f, #ffff7f, #7fff7f, #7fbfff, #7f7fff, #ff7fff);
+            background-size: 1400% 1400%;
+            animation: wavy-rainbow 10s ease infinite;
         }
-        @keyframes rainbow-cycle {
-            0%   { background-color: hsl(0, 100%, 50%); }
-            17%  { background-color: hsl(60, 100%, 50%); }
-            33%  { background-color: hsl(120, 100%, 50%); }
-            50%  { background-color: hsl(180, 100%, 50%); }
-            67%  { background-color: hsl(240, 100%, 50%); }
-            83%  { background-color: hsl(300, 100%, 50%); }
-            100% { background-color: hsl(360, 100%, 50%); }
+        @keyframes wavy-rainbow {
+            0%{background-position:0% 50%}
+            50%{background-position:100% 50%}
+            100%{background-position:0% 50%}
         }
         #password-overlay.fade-out {
             opacity: 0;
@@ -72,6 +70,7 @@
             <h2 class="text-2xl font-bold mb-4 text-gray-700">Enter Access Code</h2>
             <input type="password" id="password-input" class="w-full px-4 py-2 border rounded-lg">
             <button id="submit-password" class="w-full mt-4 bg-indigo-600 text-white py-2 rounded-lg">Unlock</button>
+            <p id="error-message" class="text-red-500 mt-2 font-semibold hidden"></p>
         </div>
     </div>
 
@@ -131,6 +130,7 @@
         const navContainer = document.getElementById('navigation-container');
         const contentArea = document.getElementById('content-area');
         const logoutButton = document.getElementById('logout-button');
+        const errorMessage = document.getElementById('error-message');
         
         const PASSWORDS = { full: "03311985", view: "415semple" };
         
@@ -147,6 +147,7 @@
         }
         
         function handleLogin() {
+            errorMessage.classList.add('hidden'); // Hide message on new attempt
             if (passwordInput.value === PASSWORDS.full || passwordInput.value === PASSWORDS.view) {
                 sessionStorage.setItem('storyBibleAccessLevel', 'view');
                 
@@ -162,7 +163,8 @@
                 }, 2000); // Rainbow effect lasts for 2 seconds
 
             } else {
-                window.location.href = "https://www.youtube.com/watch%3Fv%3DdQw4w9WgXcQ";
+                errorMessage.textContent = "This is not for you";
+                errorMessage.classList.remove('hidden');
             }
         }
 
@@ -251,6 +253,7 @@
         }
 
         function buildSearchIndex() {
+            searchIndex.length = 0; // Clear index before building
             Object.values(storyBibleData).forEach(categoryData => {
                 Object.values(categoryData).forEach(sectionData => {
                     if (sectionData && Array.isArray(sectionData.items)) {
