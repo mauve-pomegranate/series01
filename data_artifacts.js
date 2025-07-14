@@ -24,7 +24,7 @@ const artifactsData = {
             {
                 "title": "Aringold Circuit Routers (ARCs)",
                 "content": "<p><strong>Origin:</strong> Developed by <a href=\"#/search/Professor Shin'en Tajima\" class=\"internal-link\">Prof. Shin'en Tajima</a>.</p><br><p><strong>Original Intent:</strong> To detect, measure, and stabilize energy fluctuations across <a href=\"#/search/Ley Lines\" class=\"internal-link\">ley lines</a>.</p><br><p><strong>Weaponization/Misuse:</strong> Co-opted by <a href=\"#/search/Yako Syndicate\" class=\"internal-link\">Yako</a>/<a href=\"#/search/Kagami Tenko Corporation\" class=\"internal-link\">Kagami Tenko</a>. Reconfigured to channel and amplify ley line energy to power the <a href=\"#/search/Project Tsunagari\" class=\"internal-link\">Tsunagari</a> event and the nexus crystal on <a href=\"#/search/Ikanajima Island\" class=\"internal-link\">Ikanajima</a>.</p><br><p><strong>Plot Significance:</strong> Represent the perversion of scientific discovery for destructive ends. Their destruction by Tajima is a key sacrificial act.</p>"
-        },
+            },
             {
                 "title": "PROTOCOL Network",
                 "content": "<p><strong>Developer:</strong> Gemma Drives (led by Suraj Narayan) for <a href=\"#/search/Mobex Corporation\" class=\"internal-link\">Mobex</a>.</p><br><p><strong>Nature:</strong> Highly adaptive, self-replicating, AI-driven network technology. Its \"Phased Resonance\" allows it to operate on/interface with frequencies beyond the standard EM spectrum, allowing <a href=\"#/search/Aoi\" class=\"internal-link\">Aoi</a> to regain comms in extreme situations.</p>"
