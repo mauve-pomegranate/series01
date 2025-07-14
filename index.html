@@ -45,6 +45,24 @@
             border: 2px solid #f59e0b;
             border-radius: 0.75rem;
         }
+
+        /* Rainbow Transition Effect */
+        #password-overlay.rainbow-bg {
+            animation: rainbow-cycle 2s linear;
+        }
+        @keyframes rainbow-cycle {
+            0%   { background-color: hsl(0, 100%, 50%); }
+            17%  { background-color: hsl(60, 100%, 50%); }
+            33%  { background-color: hsl(120, 100%, 50%); }
+            50%  { background-color: hsl(180, 100%, 50%); }
+            67%  { background-color: hsl(240, 100%, 50%); }
+            83%  { background-color: hsl(300, 100%, 50%); }
+            100% { background-color: hsl(360, 100%, 50%); }
+        }
+        #password-overlay.fade-out {
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -62,7 +80,10 @@
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <h1 class="text-xl font-bold text-gray-800">Into the Æther</h1>
-                    <input type="search" id="search-input" class="w-64 pl-4 pr-4 py-2 border rounded-full text-sm" placeholder="Search...">
+                    <div class="flex items-center space-x-4">
+                        <input type="search" id="search-input" class="w-64 pl-4 pr-4 py-2 border rounded-full text-sm" placeholder="Search...">
+                        <button id="logout-button" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">Logout</button>
+                    </div>
                 </div>
             </div>
         </header>
@@ -109,25 +130,45 @@
         const backToTopButton = document.getElementById('back-to-top');
         const navContainer = document.getElementById('navigation-container');
         const contentArea = document.getElementById('content-area');
+        const logoutButton = document.getElementById('logout-button');
         
         const PASSWORDS = { full: "03311985", view: "415semple" };
         
         function checkAuth() {
             if (sessionStorage.getItem('storyBibleAccessLevel')) {
                 mainContent.classList.remove('hidden');
+                passwordOverlay.style.display = 'none';
                 buildSearchIndex();
                 renderApp();
             } else {
                 passwordOverlay.style.display = 'flex';
+                mainContent.classList.add('hidden');
             }
         }
         
         function handleLogin() {
             if (passwordInput.value === PASSWORDS.full || passwordInput.value === PASSWORDS.view) {
                 sessionStorage.setItem('storyBibleAccessLevel', 'view');
-                passwordOverlay.style.display = 'none';
-                checkAuth();
+                
+                // Start rainbow transition
+                passwordOverlay.classList.add('rainbow-bg');
+                passwordOverlay.querySelector('div').style.display = 'none'; // Hide login box
+
+                setTimeout(() => {
+                    passwordOverlay.classList.add('fade-out');
+                    setTimeout(() => {
+                        checkAuth();
+                    }, 500); // Wait for fade out to complete
+                }, 2000); // Rainbow effect lasts for 2 seconds
+
+            } else {
+                window.location.href = "https://www.youtube.com/watch%3Fv%3DdQw4w9WgXcQ";
             }
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('storyBibleAccessLevel');
+            window.location.reload();
         }
 
         function renderApp() {
@@ -240,6 +281,7 @@
 
         submitPasswordBtn.addEventListener('click', handleLogin);
         passwordInput.addEventListener('keypress', e => e.key === 'Enter' && handleLogin());
+        logoutButton.addEventListener('click', handleLogout);
         window.addEventListener('scroll', () => { backToTopButton.classList.toggle('visible', window.scrollY > 300); });
         searchInput.addEventListener('input', () => executeSearch(searchInput.value));
 
