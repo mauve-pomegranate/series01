@@ -22,6 +22,7 @@
     <script src="data_locations.js" defer></script>
     <script src="data_synopsis.js" defer></script>
     <script src="data_themes.js" defer></script>
+    <script src="data_writing_craft.js" defer></script>
     <script src="data_glossary.js" defer></script>
     <script src="data_plotholes.js" defer></script>
     
@@ -46,7 +47,7 @@
             border-radius: 0.75rem;
         }
 
-        /* Wavy Rainbow Ombre Transition */
+        /* Login/Logout Effects */
         #password-overlay.rainbow-bg {
             background: linear-gradient(270deg, #ff7f7f, #ffbf7f, #ffff7f, #7fff7f, #7fbfff, #7f7fff, #ff7fff);
             background-size: 1400% 1400%;
@@ -61,6 +62,14 @@
             opacity: 0;
             transition: opacity 0.5s ease-out;
         }
+        #zoom-message {
+            transform: scale(0);
+            transition: transform 1s ease-out;
+        }
+        #logout-overlay {
+            opacity: 0;
+            transition: opacity 1s ease-in;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -72,6 +81,13 @@
             <button id="submit-password" class="w-full mt-4 bg-indigo-600 text-white py-2 rounded-lg">Unlock</button>
             <p id="error-message" class="text-red-500 mt-2 font-semibold hidden"></p>
         </div>
+        <div id="zoom-message-container" class="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <h1 id="zoom-message" class="text-white text-6xl font-bold" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.7);"></h1>
+        </div>
+    </div>
+
+    <div id="logout-overlay" class="fixed inset-0 bg-black flex items-center justify-center z-50" style="display: none;">
+        <h1 id="logout-message" class="text-white text-4xl font-bold animate-pulse"></h1>
     </div>
 
     <div id="main-content" class="hidden">
@@ -115,7 +131,8 @@
             "Environmental Phenomena": phenomenaData,
             "Magic, Metaphysics & Fringe Science": magicData,
             "Key Artifacts & Technology": artifactsData,
-            "Themes & Craft": themesData,
+            "Themes": themesData,
+            "Writing Craft": writingCraftData,
             "Glossary": glossaryData,
             "Critical Questions": plotholesData
         };
@@ -131,6 +148,12 @@
         const contentArea = document.getElementById('content-area');
         const logoutButton = document.getElementById('logout-button');
         const errorMessage = document.getElementById('error-message');
+        const zoomMessage = document.getElementById('zoom-message');
+        const logoutOverlay = document.getElementById('logout-overlay');
+        const logoutMessage = document.getElementById('logout-message');
+
+        const LOGIN_MESSAGES = ["ト ゥ  ル   パ", "プロジェクトさくら", "怨霊を展開する"];
+        const LOGOUT_MESSAGES = ["CONVERGENCE IMMINENT", "LOOK FOR THE GREEN EYES", "ÆTHERIC DISTURBANCES DETECTED"];
         
         const PASSWORDS = { full: "03311985", view: "415semple" };
         
@@ -151,26 +174,48 @@
             if (passwordInput.value === PASSWORDS.full || passwordInput.value === PASSWORDS.view) {
                 sessionStorage.setItem('storyBibleAccessLevel', 'view');
                 
-                // Start rainbow transition
+                // Set random message
+                zoomMessage.textContent = LOGIN_MESSAGES[Math.floor(Math.random() * LOGIN_MESSAGES.length)];
+
+                // Start transition
                 passwordOverlay.classList.add('rainbow-bg');
                 passwordOverlay.querySelector('div').style.display = 'none'; // Hide login box
+                
+                // Trigger zoom effect
+                setTimeout(() => {
+                    zoomMessage.style.transform = 'scale(1)';
+                }, 100);
 
+                // Fade out after 2 seconds
                 setTimeout(() => {
                     passwordOverlay.classList.add('fade-out');
                     setTimeout(() => {
                         checkAuth();
                     }, 500); // Wait for fade out to complete
-                }, 2000); // Rainbow effect lasts for 2 seconds
+                }, 2000); 
 
             } else {
                 errorMessage.textContent = "This is not for you";
                 errorMessage.classList.remove('hidden');
+                passwordInput.value = "";
             }
         }
 
         function handleLogout() {
-            sessionStorage.removeItem('storyBibleAccessLevel');
-            window.location.reload();
+            // Set random logout message
+            logoutMessage.textContent = LOGOUT_MESSAGES[Math.floor(Math.random() * LOGOUT_MESSAGES.length)];
+            
+            // Show and fade in overlay
+            logoutOverlay.style.display = 'flex';
+            setTimeout(() => {
+                logoutOverlay.style.opacity = '1';
+            }, 10);
+
+            // Wait 2 seconds then clear session and reload
+            setTimeout(() => {
+                sessionStorage.removeItem('storyBibleAccessLevel');
+                window.location.reload();
+            }, 2000);
         }
 
         function renderApp() {
