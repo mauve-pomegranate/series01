@@ -1,5 +1,5 @@
 const glossaryData = {
-    "Glossary": {
+    "Glossary of Terms": {
         items: [
             {
                 "title": "Glossary of Terms",
