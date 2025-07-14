@@ -1,5 +1,5 @@
 const overviewData = {
-    "Overview": {
+    "Series Overview": {
         items: [
             {
                 "title": "Series Logline",
