@@ -3,7 +3,7 @@ const overviewData = {
         items: [
             {
                 "title": "Series Logline",
-                "content": "<p>Across fractured realities and hidden worlds, a diverse group of individuals—an American expatriate, a half-kitsune investigator, a hardened operative, and resilient survivors of a broken America—must unravel ancient prophecies, confront corporate conspiracies, and battle cosmic entities to prevent the annihilation of all existence, forcing them to question the nature of identity, sacrifice, and the threads that bind family and fate.</p>"
+                "content": "<p>Across fractured realities and hidden worlds, a diverse group of individuals—an <a href=\"#/search/Alex 'Bowie' Shepard\" class=\"internal-link\">American expatriate</a>, a <a href=\"#/search/Mizuki / Hisoka\" class=\"internal-link\">half-kitsune investigator</a>, a <a href=\"#/search/Shikako ('Onryō')\" class=\"internal-link\">hardened operative</a>, and <a href=\"#/search/Carly Shepard\" class=\"internal-link\">resilient survivors of a broken America</a>—must unravel ancient prophecies, confront corporate conspiracies, and battle cosmic entities to prevent the annihilation of all existence, forcing them to question the nature of identity, sacrifice, and the threads that bind family and fate.</p>"
             }
         ]
     },
