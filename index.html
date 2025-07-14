@@ -148,26 +148,28 @@
                 sectionsList.className = 'nav-links';
 
                 Object.entries(sections).forEach(([sectionKey, sectionData]) => {
-                    const sectionDetails = document.createElement('details');
-                    const sectionSummary = document.createElement('summary');
-                    sectionSummary.className = 'text-sm font-semibold text-gray-500 uppercase';
-                    sectionSummary.textContent = sectionKey;
-                    
-                    const ul = document.createElement('ul');
-                    ul.className = 'space-y-1 mt-1 mb-4';
-                    sectionData.items.forEach(entry => {
-                        const li = document.createElement('li');
-                        const a = document.createElement('a');
-                        a.href = `#${generateId(entry.title)}`;
-                        a.textContent = entry.title;
-                        a.className = 'block px-3 py-1 text-sm text-gray-600 hover:bg-gray-200 rounded-md';
-                        li.appendChild(a);
-                        ul.appendChild(li);
-                    });
-                    
-                    sectionDetails.appendChild(sectionSummary);
-                    sectionDetails.appendChild(ul);
-                    sectionsList.appendChild(sectionDetails);
+                    if (sectionData && Array.isArray(sectionData.items)) {
+                        const sectionDetails = document.createElement('details');
+                        const sectionSummary = document.createElement('summary');
+                        sectionSummary.className = 'text-sm font-semibold text-gray-500 uppercase';
+                        sectionSummary.textContent = sectionKey;
+                        
+                        const ul = document.createElement('ul');
+                        ul.className = 'space-y-1 mt-1 mb-4';
+                        sectionData.items.forEach(entry => {
+                            const li = document.createElement('li');
+                            const a = document.createElement('a');
+                            a.href = `#${generateId(entry.title)}`;
+                            a.textContent = entry.title;
+                            a.className = 'block px-3 py-1 text-sm text-gray-600 hover:bg-gray-200 rounded-md';
+                            li.appendChild(a);
+                            ul.appendChild(li);
+                        });
+                        
+                        sectionDetails.appendChild(sectionSummary);
+                        sectionDetails.appendChild(ul);
+                        sectionsList.appendChild(sectionDetails);
+                    }
                 });
                 
                 categoryDetails.appendChild(sectionsList);
@@ -179,19 +181,21 @@
             contentArea.innerHTML = '';
             Object.entries(storyBibleData).forEach(([category, sections]) => {
                 Object.entries(sections).forEach(([sectionKey, sectionData]) => {
-                    const sectionElement = document.createElement('section');
-                    sectionElement.id = generateId(sectionKey);
-                    sectionElement.className = 'mb-12';
-                    const sectionTitle = document.createElement('h2');
-                    sectionTitle.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6';
-                    sectionTitle.textContent = sectionKey;
-                    sectionElement.appendChild(sectionTitle);
-                    
-                    const cardContainer = document.createElement('div');
-                    cardContainer.className = 'space-y-6';
-                    sectionData.items.forEach(entry => cardContainer.appendChild(createCard(entry)));
-                    sectionElement.appendChild(cardContainer);
-                    contentArea.appendChild(sectionElement);
+                     if (sectionData && Array.isArray(sectionData.items)) {
+                        const sectionElement = document.createElement('section');
+                        sectionElement.id = generateId(sectionKey);
+                        sectionElement.className = 'mb-12';
+                        const sectionTitle = document.createElement('h2');
+                        sectionTitle.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6';
+                        sectionTitle.textContent = sectionKey;
+                        sectionElement.appendChild(sectionTitle);
+                        
+                        const cardContainer = document.createElement('div');
+                        cardContainer.className = 'space-y-6';
+                        sectionData.items.forEach(entry => cardContainer.appendChild(createCard(entry)));
+                        sectionElement.appendChild(cardContainer);
+                        contentArea.appendChild(sectionElement);
+                    }
                 });
             });
         }
@@ -208,11 +212,13 @@
         function buildSearchIndex() {
             Object.values(storyBibleData).forEach(categoryData => {
                 Object.values(categoryData).forEach(sectionData => {
-                    sectionData.items.forEach(item => {
-                        if (item && item.title) {
-                            searchIndex.push({ title: item.title, id: generateId(item.title) });
-                        }
-                    });
+                    if (sectionData && Array.isArray(sectionData.items)) {
+                        sectionData.items.forEach(item => {
+                            if (item && item.title) {
+                                searchIndex.push({ title: item.title, id: generateId(item.title) });
+                            }
+                        });
+                    }
                 });
             });
         }
