@@ -138,7 +138,7 @@
             "Factions": factionsData,
             "Cosmology & Dimensions": cosmologyData,
             "Supernatural Beings & Entities": beingsData,
-            "Flora & Fauna": { "Flora": floraData.Flora, "Fauna": faunaData.Fauna },
+            "Flora & Fauna": { "Flora": floraData, "Fauna": faunaData },
             "Environmental Phenomena": phenomenaData,
             "Magic, Metaphysics & Fringe Science": magicData,
             "Key Artifacts & Technology": artifactsData,
@@ -352,7 +352,7 @@
         
         function executeSearch(query) {
              const lowerCaseQuery = query.toLowerCase().trim();
-             const result = searchIndex.find(item => item.title.toLowerCase() === lowerCaseQuery);
+             const result = searchIndex.find(item => item.title.toLowerCase().trim() === lowerCaseQuery);
              if (result) {
                 const targetCard = document.getElementById(result.id);
                 if(targetCard) {
@@ -370,8 +370,20 @@
         logoutButton.addEventListener('click', handleLogout);
         window.addEventListener('scroll', () => { backToTopButton.classList.toggle('visible', window.scrollY > 300); });
         searchInput.addEventListener('input', () => executeSearch(searchInput.value));
-
+        
+        // Handle hash-based linking on page load and on hash change
+        function handleHashChange() {
+            const hash = window.location.hash;
+            if (hash && hash.startsWith('#/search/')) {
+                const query = decodeURIComponent(hash.substring(9));
+                executeSearch(query);
+            }
+        }
+        window.addEventListener('hashchange', handleHashChange);
+        
         checkAuth();
+        handleHashChange(); // Check hash on initial load
+
     });
     </script>
 </body>
