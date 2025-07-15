@@ -11,7 +11,11 @@ const overviewData = {
         items: [
             {
                 "title": "Working Titles",
-                "content": "<ul><li>Book 1: Fate and Foxfire</li><li>Book 2: Family and Folklore</li><li>Book 3: Faith and Finality</li></ul>"
+                "content": `<ul>
+                    <li><a href="#book-1-fate-and-foxfire" class="internal-link">Book 1: Fate and Foxfire</a></li>
+                    <li><a href="#book-2-family-and-folklore" class="internal-link">Book 2: Family and Folklore</a></li>
+                    <li><a href="#book-3-faith-and-finality" class="internal-link">Book 3: Faith and Finality</a></li>
+                </ul>`
             }
         ]
     },
