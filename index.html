@@ -38,6 +38,7 @@
         #navigation-container summary::before { content: '►'; margin-right: 0.5rem; font-size: 0.6em; transition: transform 0.2s; }
         #navigation-container details[open] > summary::before { transform: rotate(90deg); }
         #navigation-container .nav-links { padding-left: 1rem; }
+        #navigation-container .nav-links-flat { padding-left: 0rem; } /* For non-nested lists */
         #back-to-top { position: fixed; bottom: 2rem; right: 2rem; background-color: #4f46e5; color: white; padding: 0.75rem; border-radius: 9999px; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
         #back-to-top.visible { opacity: 1; visibility: visible; }
         .search-highlight {
@@ -232,31 +233,49 @@
                 categorySummary.textContent = category;
                 categoryDetails.appendChild(categorySummary);
 
-                const sectionsList = document.createElement('div');
-                sectionsList.className = 'nav-links';
+                const sectionsList = document.createElement('ul');
+                sectionsList.className = 'nav-links-flat space-y-1';
 
                 Object.entries(sections).forEach(([sectionKey, sectionData]) => {
                     if (sectionData && Array.isArray(sectionData.items)) {
-                        const sectionDetails = document.createElement('details');
-                        const sectionSummary = document.createElement('summary');
-                        sectionSummary.className = 'text-sm font-semibold text-gray-500 uppercase';
-                        sectionSummary.textContent = sectionKey;
                         
-                        const ul = document.createElement('ul');
-                        ul.className = 'space-y-1 mt-1 mb-4';
-                        sectionData.items.forEach(entry => {
+                        const isRedundantSection = sectionData.items.length === 1 && sectionData.items[0].title === sectionKey;
+
+                        if(isRedundantSection) {
+                            // If the section is redundant, just add the direct link
+                            const entry = sectionData.items[0];
                             const li = document.createElement('li');
                             const a = document.createElement('a');
                             a.href = `#${generateId(entry.title)}`;
                             a.textContent = entry.title;
                             a.className = 'block px-3 py-1 text-sm text-gray-600 hover:bg-gray-200 rounded-md';
                             li.appendChild(a);
-                            ul.appendChild(li);
-                        });
-                        
-                        sectionDetails.appendChild(sectionSummary);
-                        sectionDetails.appendChild(ul);
-                        sectionsList.appendChild(sectionDetails);
+                            sectionsList.appendChild(li);
+                        } else {
+                            // Otherwise, build the full expandable section
+                            const li = document.createElement('li');
+                            const sectionDetails = document.createElement('details');
+                            const sectionSummary = document.createElement('summary');
+                            sectionSummary.className = 'text-sm font-semibold text-gray-500 uppercase';
+                            sectionSummary.textContent = sectionKey;
+                            
+                            const ul = document.createElement('ul');
+                            ul.className = 'nav-links space-y-1 mt-1';
+                            sectionData.items.forEach(entry => {
+                                const subLi = document.createElement('li');
+                                const a = document.createElement('a');
+                                a.href = `#${generateId(entry.title)}`;
+                                a.textContent = entry.title;
+                                a.className = 'block px-3 py-1 text-sm text-gray-600 hover:bg-gray-200 rounded-md';
+                                subLi.appendChild(a);
+                                ul.appendChild(subLi);
+                            });
+                            
+                            sectionDetails.appendChild(sectionSummary);
+                            sectionDetails.appendChild(ul);
+                            li.appendChild(sectionDetails);
+                            sectionsList.appendChild(li);
+                        }
                     }
                 });
                 
@@ -272,14 +291,21 @@
                      if (sectionData && Array.isArray(sectionData.items)) {
                         const sectionElement = document.createElement('section');
                         sectionElement.id = generateId(sectionKey);
-                        sectionElement.className = 'mb-12';
-                        const sectionTitle = document.createElement('h2');
-                        sectionTitle.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6';
-                        sectionTitle.textContent = sectionKey;
-                        sectionElement.appendChild(sectionTitle);
+                        
+                        // Check if the section title is redundant
+                        const isRedundantTitle = sectionData.items.length === 1 && sectionData.items[0].title === sectionKey;
+                        
+                        // Only add the section if it's NOT redundant. The card itself will have the title.
+                        if (!isRedundantTitle) {
+                            sectionElement.className = 'mb-12';
+                            const sectionTitle = document.createElement('h2');
+                            sectionTitle.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6';
+                            sectionTitle.textContent = sectionKey;
+                            sectionElement.appendChild(sectionTitle);
+                        }
                         
                         const cardContainer = document.createElement('div');
-                        cardContainer.className = 'space-y-6';
+                        cardContainer.className = isRedundantTitle ? 'space-y-0' : 'space-y-6';
                         sectionData.items.forEach(entry => cardContainer.appendChild(createCard(entry)));
                         sectionElement.appendChild(cardContainer);
                         contentArea.appendChild(sectionElement);
@@ -300,15 +326,17 @@
         function buildSearchIndex() {
             searchIndex.length = 0; // Clear index before building
             Object.values(storyBibleData).forEach(categoryData => {
-                Object.values(categoryData).forEach(sectionData => {
-                    if (sectionData && Array.isArray(sectionData.items)) {
-                        sectionData.items.forEach(item => {
-                            if (item && item.title) {
-                                searchIndex.push({ title: item.title, id: generateId(item.title) });
-                            }
-                        });
-                    }
-                });
+                if(categoryData) {
+                    Object.values(categoryData).forEach(sectionData => {
+                        if (sectionData && Array.isArray(sectionData.items)) {
+                            sectionData.items.forEach(item => {
+                                if (item && item.title) {
+                                    searchIndex.push({ title: item.title, id: generateId(item.title) });
+                                }
+                            });
+                        }
+                    });
+                }
             });
         }
         
