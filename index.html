@@ -21,7 +21,7 @@
     <script src="data_artifacts.js" defer></script>
     <script src="data_locations.js" defer></script>
     <script src="data_synopsis.js" defer></script>
-    <script src="data_timeline.js" defer></script> 
+    <script src="data_timeline.js" defer></script>
     <script src="data_themes.js" defer></script>
     <script src="data_writing_craft.js" defer></script>
     <script src="data_glossary.js" defer></script>
@@ -121,7 +121,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         const storyBibleData = {
             "Series Overview": overviewData,
-            "Timeline": timelineData,
             "Characters": charactersData,
             "Book Synopsis": synopsisData,
             "Key Locations": locationsData,
@@ -135,7 +134,8 @@
             "Themes": themesData,
             "Writing Craft": writingCraftData,
             "Glossary": glossaryData,
-            "Critical Questions": plotholesData
+            "Critical Questions": plotholesData,
+            "Timeline": timelineData
         };
 
         const searchIndex = [];
@@ -214,6 +214,11 @@
             navContainer.innerHTML = '';
             Object.entries(storyBibleData).forEach(([category, sections]) => {
                 const categoryDetails = document.createElement('details');
+                // Only open the first category by default, unless it's the timeline
+                if (category !== "Timeline" && Object.keys(storyBibleData)[0] === category) {
+                    categoryDetails.open = true;
+                }
+
                 const categorySummary = document.createElement('summary');
                 categorySummary.className = 'text-lg font-bold text-gray-700 mb-2';
                 categorySummary.textContent = category;
