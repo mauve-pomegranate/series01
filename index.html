@@ -205,7 +205,7 @@
             player = new YT.Player('player', {
                 height: '0',
                 width: '0',
-                videoId: 'dQw4w9WgXcQ', // Placeholder video ID from the URL
+                videoId: 'L_LUpnjgPso', // Video ID for the requested music
                 playerVars: {
                     'playsinline': 1,
                     'autoplay': 0,
@@ -219,11 +219,10 @@
         }
 
         function onPlayerReady(event) {
-            // Player is ready, but we wait for login to play.
+            // Player is ready
         }
 
         function onPlayerStateChange(event) {
-            // When video starts playing, set a timer to stop it after 15 seconds.
             if (event.data == YT.PlayerState.PLAYING) {
                 clearTimeout(stopTimer);
                 stopTimer = setTimeout(() => {
@@ -254,7 +253,7 @@
         function handleLogin() {
             errorMessage.classList.add('hidden'); 
             if (passwordInput.value === PASSWORDS.full || passwordInput.value === PASSWORDS.view) {
-                playLoginSound(); // Play the audio
+                playLoginSound(); 
                 sessionStorage.setItem('storyBibleAccessLevel', 'view');
                 zoomMessage.textContent = LOGIN_MESSAGES[Math.floor(Math.random() * LOGIN_MESSAGES.length)];
                 passwordOverlay.classList.add('rainbow-bg');
@@ -472,7 +471,7 @@
             if (hash && hash.startsWith('#/search/')) {
                 const query = decodeURIComponent(hash.substring(9));
                 executeSearch(query);
-                if (window.innerWidth < 1024) { // Close mobile nav after clicking a link
+                if (window.innerWidth < 1024 && mobileNav.classList.contains('open')) { 
                     toggleMobileMenu();
                 }
             }
