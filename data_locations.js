@@ -76,7 +76,7 @@ const locationsData = {
                 "content": "<p><strong>Significance:</strong> Region heavily affected by <a href=\"#/search/Ætheric Scarring (NAR)\" class=\"internal-link\">Ætheric scarring</a> due to the hidden particle accelerator facility. A key <a href=\"#/search/Ley Lines\" class=\"internal-link\">ley line</a> area.</p><br><p><strong>Features:</strong> Site of the massive, unstable <a href=\"#/search/NAR Particle Accelerator\" class=\"internal-link\">particle accelerator</a> (sister site to Ikanajima), <a href=\"#/search/Carly's Cabin & Local Towns\" class=\"internal-link\">Carly's cabin</a>, the <a href=\"#/search/\"Forest Witch\" (NAR)\" class=\"internal-link\">Forest Witch's</a> dwelling, and various cryptid manifestations.</p>"
             },
             {
-                "title": "Carly's Cabin & Local Towns",
+                "title": "Carly Shepard's Cabin & Local Towns",
                 "content": "<p>Showcase the harsh realities of NAR life: barter systems, resource scarcity, local superstitions, and the prevalence of <a href=\"#/search/Folk Magic (NAR)\" class=\"internal-link\">folk magic</a> for survival.</p>"
             },
             {
