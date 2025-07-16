@@ -76,40 +76,26 @@
             #desktop-nav { display: none; }
             #mobile-menu-button { display: flex; }
             #mobile-nav {
-                position: fixed;
-                top: 0;
-                left: 0;
-                bottom: 0;
-                width: 300px;
-                background-color: #f9fafb;
-                z-index: 40;
-                transform: translateX(-100%);
-                transition: transform 0.3s ease-in-out;
-                padding: 1.5rem;
-                overflow-y: auto;
+                position: fixed; top: 0; left: 0; bottom: 0; width: 300px;
+                background-color: #f9fafb; z-index: 40;
+                transform: translateX(-100%); transition: transform 0.3s ease-in-out;
+                padding: 1.5rem; overflow-y: auto;
             }
-            #mobile-nav.open {
-                transform: translateX(0);
-                box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            }
-            #nav-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-color: rgba(0,0,0,0.5);
-                z-index: 39;
-            }
+            #mobile-nav.open { transform: translateX(0); box-shadow: 0 0 15px rgba(0,0,0,0.2); }
+            #nav-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 39; }
             .timeline-container::after { left: 20px; }
             .timeline-item { width: 100%; padding-left: 70px; padding-right: 25px; }
             .timeline-item::before { left: 60px; border-width: 10px 10px 10px 0; border-color: transparent white transparent transparent; }
             .left::after, .right::after { left: 0; }
             .left, .right { left: 0; }
         }
+        
+        /* Invisible YouTube Player */
+        #player { position: absolute; top: -9999px; left: -9999px; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
+    <div id="player"></div>
 
     <div id="password-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50">
         <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-sm text-center">
@@ -165,7 +151,9 @@
     <a href="#" id="back-to-top" title="Back to top">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" /></svg>
     </a>
-
+    
+    <script src="https://www.youtube.com/iframe_api"></script>
+    
     <script id="app-logic">
     document.addEventListener('DOMContentLoaded', () => {
         const storyBibleData = {
@@ -210,6 +198,47 @@
         
         const PASSWORDS = { full: "03311985", view: "415semple" };
         
+        // --- YouTube Player Logic ---
+        let player;
+        let stopTimer;
+        window.onYouTubeIframeAPIReady = function() {
+            player = new YT.Player('player', {
+                height: '0',
+                width: '0',
+                videoId: 'dQw4w9WgXcQ', // Placeholder video ID from the URL
+                playerVars: {
+                    'playsinline': 1,
+                    'autoplay': 0,
+                    'controls': 0
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            // Player is ready, but we wait for login to play.
+        }
+
+        function onPlayerStateChange(event) {
+            // When video starts playing, set a timer to stop it after 15 seconds.
+            if (event.data == YT.PlayerState.PLAYING) {
+                clearTimeout(stopTimer);
+                stopTimer = setTimeout(() => {
+                    player.stopVideo();
+                }, 15000); 
+            }
+        }
+        
+        function playLoginSound() {
+            if (player && typeof player.playVideo === 'function') {
+                player.playVideo();
+            }
+        }
+        // --- End YouTube Player Logic ---
+
         function checkAuth() {
             if (sessionStorage.getItem('storyBibleAccessLevel')) {
                 mainContent.classList.remove('hidden');
@@ -225,6 +254,7 @@
         function handleLogin() {
             errorMessage.classList.add('hidden'); 
             if (passwordInput.value === PASSWORDS.full || passwordInput.value === PASSWORDS.view) {
+                playLoginSound(); // Play the audio
                 sessionStorage.setItem('storyBibleAccessLevel', 'view');
                 zoomMessage.textContent = LOGIN_MESSAGES[Math.floor(Math.random() * LOGIN_MESSAGES.length)];
                 passwordOverlay.classList.add('rainbow-bg');
@@ -258,8 +288,8 @@
         }
 
         function renderApp() {
-            renderNavigation(navContainer); // Render for desktop
-            renderNavigation(mobileNav); // Render for mobile
+            renderNavigation(navContainer); 
+            renderNavigation(mobileNav); 
             renderContentSections();
         }
 
@@ -431,7 +461,6 @@
         mobileMenuButton.addEventListener('click', toggleMobileMenu);
         navOverlay.addEventListener('click', toggleMobileMenu);
 
-
         submitPasswordBtn.addEventListener('click', handleLogin);
         passwordInput.addEventListener('keypress', e => e.key === 'Enter' && handleLogin());
         logoutButton.addEventListener('click', handleLogout);
@@ -443,6 +472,9 @@
             if (hash && hash.startsWith('#/search/')) {
                 const query = decodeURIComponent(hash.substring(9));
                 executeSearch(query);
+                if (window.innerWidth < 1024) { // Close mobile nav after clicking a link
+                    toggleMobileMenu();
+                }
             }
         }
         window.addEventListener('hashchange', handleHashChange);
