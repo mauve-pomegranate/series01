@@ -134,6 +134,7 @@
             "Series Overview": overviewData,
             "Characters": charactersData,
             "Book Synopsis": synopsisData,
+            "Timeline": timelineData,
             "Key Locations": locationsData,
             "Factions": factionsData,
             "Cosmology & Dimensions": cosmologyData,
@@ -297,15 +298,22 @@
         function renderContentSections() {
             contentArea.innerHTML = '';
             Object.entries(storyBibleData).forEach(([category, sections]) => {
+                // Special rendering for Timeline
+                if (category === "Timeline") {
+                    const timelineSection = document.createElement('section');
+                    timelineSection.id = generateId(category);
+                    contentArea.appendChild(timelineSection);
+                    renderTimeline(timelineSection, sections);
+                    return; // Skip normal rendering for timeline
+                }
+
                 Object.entries(sections).forEach(([sectionKey, sectionData]) => {
                      if (sectionData && Array.isArray(sectionData.items)) {
                         const sectionElement = document.createElement('section');
                         sectionElement.id = generateId(sectionKey);
                         
-                        // Check if the section title is redundant
                         const isRedundantTitle = sectionData.items.length === 1 && sectionData.items[0].title === sectionKey;
                         
-                        // Only add the section if it's NOT redundant. The card itself will have the title.
                         if (!isRedundantTitle) {
                             sectionElement.className = 'mb-12';
                             const sectionTitle = document.createElement('h2');
@@ -321,6 +329,39 @@
                         contentArea.appendChild(sectionElement);
                     }
                 });
+            });
+        }
+
+        function renderTimeline(container, timelineData) {
+            Object.entries(timelineData).forEach(([bookTitle, bookData]) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'timeline-wrapper';
+                
+                const titleElement = document.createElement('div');
+                titleElement.className = 'text-center mb-12';
+                titleElement.innerHTML = `<h2 class="text-3xl font-bold text-gray-900">${bookTitle}</h2>`;
+                wrapper.appendChild(titleElement);
+                
+                const timelineContainer = document.createElement('div');
+                timelineContainer.className = 'timeline-container';
+                
+                bookData.items.forEach((event, index) => {
+                    const item = document.createElement('div');
+                    const side = index % 2 === 0 ? 'left' : 'right';
+                    item.className = `timeline-item ${side}`;
+                    item.dataset.eventNum = event.event_num;
+                    
+                    item.innerHTML = `
+                        <div class="timeline-content">
+                            <h3 class="text-xl font-bold">${event.title}</h3>
+                            <div class="prose-custom mt-2">${event.description}</div>
+                        </div>
+                    `;
+                    timelineContainer.appendChild(item);
+                });
+
+                wrapper.appendChild(timelineContainer);
+                container.appendChild(wrapper);
             });
         }
         
