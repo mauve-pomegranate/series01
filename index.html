@@ -175,6 +175,17 @@
             "Critical Questions": plotholesData
         };
 
+        // Fix for duplicate navigation entries by making Timeline keys unique
+        // This iterates over the original keys and creates new, unique keys, then deletes the old ones.
+        for (const key in storyBibleData["Timeline"]) {
+            const newKey = `Timeline for ${key}`;
+            // Check to prevent re-running this logic if the script reloads.
+            if (!storyBibleData["Timeline"].hasOwnProperty(newKey)) {
+                storyBibleData["Timeline"][newKey] = storyBibleData["Timeline"][key];
+                delete storyBibleData["Timeline"][key];
+            }
+        }
+
         const searchIndex = [];
         const passwordOverlay = document.getElementById('password-overlay');
         const passwordInput = document.getElementById('password-input');
@@ -388,7 +399,9 @@
                 wrapper.className = 'timeline-wrapper';
                 const titleElement = document.createElement('div');
                 titleElement.className = 'text-center mb-12';
-                titleElement.innerHTML = `<h2 class="text-3xl font-bold text-gray-900">${bookTitle}</h2>`;
+                // Display the original book title without the "Timeline for" prefix for a cleaner heading
+                const displayTitle = bookTitle.startsWith("Timeline for ") ? bookTitle.substring(13) : bookTitle;
+                titleElement.innerHTML = `<h2 class="text-3xl font-bold text-gray-900">${displayTitle}</h2>`;
                 wrapper.appendChild(titleElement);
                 const timelineContainer = document.createElement('div');
                 timelineContainer.className = 'timeline-container';
