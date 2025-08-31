@@ -1,4 +1,160 @@
-<script id="app-logic">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Into the Æther</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <script src="data_overview.js" defer></script>
+    <script src="data_characters.js" defer></script>
+    <script src="data_cosmology.js" defer></script>
+    <script src="data_beings.js" defer></script>
+    <script src="data_flora.js" defer></script>
+    <script src="data_fauna.js" defer></script> 
+    <script src="data_phenomena.js" defer></script>
+    <script src="data_factions.js" defer></script>
+    <script src="data_magic.js" defer></script>
+    <script src="data_artifacts.js" defer></script>
+    <script src="data_locations.js" defer></script>
+    <script src="data_synopsis.js" defer></script>
+    <script src="data_timeline.js" defer></script>
+    <script src="data_themes.js" defer></script>
+    <script src="data_writing_craft.js" defer></script>
+    <script src="data_glossary.js" defer></script>
+    <script src="data_plotholes.js" defer></script>
+    
+    <style>
+        :root { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .prose-custom h3 { font-family: 'Inter', sans-serif; font-weight: 700; }
+        .card { background-color: #ffffff; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
+        summary { cursor: pointer; list-style: none; }
+        summary::-webkit-details-marker { display: none; }
+        #navigation-container summary { display: flex; align-items: center; padding: 0.5rem 0.75rem; border-radius: 0.375rem; }
+        #navigation-container summary:hover { background-color: #e5e7eb; }
+        #navigation-container summary::before { content: '►'; margin-right: 0.5rem; font-size: 0.6em; transition: transform 0.2s; }
+        #navigation-container details[open] > summary::before { transform: rotate(90deg); }
+        #navigation-container .nav-links { padding-left: 1rem; }
+        #navigation-container .nav-links-flat { padding-left: 0rem; }
+        #back-to-top { position: fixed; bottom: 2rem; right: 2rem; background-color: #4f46e5; color: white; padding: 0.75rem; border-radius: 9999px; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+        #back-to-top.visible { opacity: 1; visibility: visible; }
+        .search-highlight {
+            background-color: #fde68a;
+            transition: background-color 0.5s ease-in-out;
+            border: 2px solid #f59e0b;
+            border-radius: 0.75rem;
+        }
+        .prose-custom a, .prose-custom a:link, .prose-custom a:visited { color: #2563eb !important; text-decoration: underline !important; }
+        .prose-custom a:hover { color: #1d4ed8 !important; }
+
+        /* Timeline Styles */
+        .timeline-wrapper { width: 90%; max-width: 1200px; margin: 50px auto; }
+        .timeline-container { position: relative; }
+        .timeline-container::after { content: ''; position: absolute; width: 6px; background-color: #4f46e5; top: 0; bottom: 0; left: 50%; margin-left: -3px; border-radius: 3px; }
+        .timeline-item { padding: 10px 40px; position: relative; background-color: inherit; width: 50%; }
+        .timeline-item::after { content: attr(data-event-num); position: absolute; width: 40px; height: 40px; line-height: 40px; right: -20px; background-color: white; border: 4px solid #4f46e5; top: 25px; border-radius: 50%; z-index: 1; text-align: center; font-weight: bold; }
+        .left { left: 0; }
+        .right { left: 50%; }
+        .left::before { content: " "; height: 0; position: absolute; top: 32px; width: 0; z-index: 1; right: 30px; border: medium solid white; border-width: 10px 0 10px 10px; border-color: transparent transparent transparent white; }
+        .right::before { content: " "; height: 0; position: absolute; top: 32px; width: 0; z-index: 1; left: 30px; border: medium solid white; border-width: 10px 10px 10px 0; border-color: transparent white transparent transparent; }
+        .right::after { left: -20px; }
+        .timeline-content { padding: 20px 30px; background-color: white; position: relative; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
+
+        /* Login/Logout Effects */
+        #password-overlay.rainbow-bg { background: linear-gradient(270deg, #ff7f7f, #ffbf7f, #ffff7f, #7fff7f, #7fbfff, #7f7fff, #ff7fff); background-size: 1400% 1400%; animation: wavy-rainbow 10s ease infinite; }
+        @keyframes wavy-rainbow { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+        #password-overlay.fade-out { opacity: 0; transition: opacity 0.5s ease-out; }
+        #zoom-message { transform: scale(0); transition: transform 1s ease-out; }
+        #logout-overlay { opacity: 0; transition: opacity 1s ease-in; }
+        
+        /* Mobile Nav Styles */
+        @media (max-width: 1023px) {
+            #desktop-nav { display: none; }
+            #mobile-menu-button { display: flex; }
+            #mobile-nav {
+                position: fixed; top: 0; left: 0; bottom: 0; width: 300px;
+                background-color: #f9fafb; z-index: 40;
+                transform: translateX(-100%); transition: transform 0.3s ease-in-out;
+                padding: 1.5rem; overflow-y: auto;
+            }
+            #mobile-nav.open { transform: translateX(0); box-shadow: 0 0 15px rgba(0,0,0,0.2); }
+            #nav-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 39; }
+            .timeline-container::after { left: 20px; }
+            .timeline-item { width: 100%; padding-left: 70px; padding-right: 25px; }
+            .timeline-item::before { left: 60px; border-width: 10px 10px 10px 0; border-color: transparent white transparent transparent; }
+            .left::after, .right::after { left: 0; }
+            .left, .right { left: 0; }
+        }
+        
+        /* Invisible YouTube Player */
+        #player { position: absolute; top: -9999px; left: -9999px; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div id="player"></div>
+
+    <div id="password-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-sm text-center">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">Enter Access Code</h2>
+            <input type="password" id="password-input" class="w-full px-4 py-2 border rounded-lg">
+            <button id="submit-password" class="w-full mt-4 bg-indigo-600 text-white py-2 rounded-lg">Unlock</button>
+            <p id="error-message" class="text-red-500 mt-2 font-semibold hidden"></p>
+        </div>
+        <div id="zoom-message-container" class="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <h1 id="zoom-message" class="text-white text-6xl font-bold" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.7);"></h1>
+        </div>
+    </div>
+
+    <div id="logout-overlay" class="fixed inset-0 bg-black flex items-center justify-center z-50" style="display: none;">
+        <h1 id="logout-message" class="text-white text-4xl font-bold animate-pulse"></h1>
+    </div>
+
+    <div id="main-content" class="hidden">
+        <header class="bg-white shadow-md sticky top-0 z-30">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center">
+                        <button id="mobile-menu-button" class="hidden items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+                            <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                        </button>
+                        <h1 class="text-xl font-bold text-gray-800 ml-2 lg:ml-0">Into the Æther</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <input type="search" id="search-input" class="w-full md:w-64 pl-4 pr-4 py-2 border rounded-full text-sm" placeholder="Search...">
+                        <button id="logout-button" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div id="nav-overlay" class="hidden lg:hidden"></div>
+        <nav id="mobile-nav">
+            </nav>
+
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+                <nav id="desktop-nav" class="lg:col-span-3 mb-8 lg:mb-0">
+                    <div id="navigation-container" class="sticky top-24">
+                         </div>
+                </nav>
+                <main id="content-area" class="lg:col-span-9"></main>
+            </div>
+        </div>
+    </div>
+    
+    <a href="#" id="back-to-top" title="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" /></svg>
+    </a>
+    
+    <script src="https://www.youtube.com/iframe_api"></script>
+    
+    <script id="app-logic">
     document.addEventListener('DOMContentLoaded', () => {
         const storyBibleData = {
             "Series Overview": overviewData,
@@ -18,15 +174,6 @@
             "Glossary": glossaryData,
             "Critical Questions": plotholesData
         };
-
-        // Fix for duplicate navigation entries by making Timeline keys unique
-        for (const key in storyBibleData["Timeline"]) {
-            const newKey = `Timeline for ${key}`;
-            if (!storyBibleData["Timeline"].hasOwnProperty(newKey)) {
-                storyBibleData["Timeline"][newKey] = storyBibleData["Timeline"][key];
-                delete storyBibleData["Timeline"][key];
-            }
-        }
 
         const searchIndex = [];
         const passwordOverlay = document.getElementById('password-overlay');
@@ -241,9 +388,7 @@
                 wrapper.className = 'timeline-wrapper';
                 const titleElement = document.createElement('div');
                 titleElement.className = 'text-center mb-12';
-                // Display the original book title without the "Timeline for" prefix
-                const displayTitle = bookTitle.startsWith("Timeline for ") ? bookTitle.substring(13) : bookTitle;
-                titleElement.innerHTML = `<h2 class="text-3xl font-bold text-gray-900">${displayTitle}</h2>`;
+                titleElement.innerHTML = `<h2 class="text-3xl font-bold text-gray-900">${bookTitle}</h2>`;
                 wrapper.appendChild(titleElement);
                 const timelineContainer = document.createElement('div');
                 timelineContainer.className = 'timeline-container';
@@ -338,3 +483,5 @@
 
     });
     </script>
+</body>
+</html>
