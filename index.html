@@ -175,17 +175,6 @@
             "Critical Questions": plotholesData
         };
 
-        // Fix for duplicate navigation entries by making Timeline keys unique
-        // This iterates over the original keys and creates new, unique keys, then deletes the old ones.
-        for (const key in storyBibleData["Timeline"]) {
-            const newKey = `Timeline for ${key}`;
-            // Check to prevent re-running this logic if the script reloads.
-            if (!storyBibleData["Timeline"].hasOwnProperty(newKey)) {
-                storyBibleData["Timeline"][newKey] = storyBibleData["Timeline"][key];
-                delete storyBibleData["Timeline"][key];
-            }
-        }
-
         const searchIndex = [];
         const passwordOverlay = document.getElementById('password-overlay');
         const passwordInput = document.getElementById('password-input');
@@ -216,29 +205,18 @@
             player = new YT.Player('player', {
                 height: '0',
                 width: '0',
-                videoId: 'sA_D3sJ25sg', // Video ID for the new music
-                playerVars: {
-                    'playsinline': 1,
-                    'autoplay': 0,
-                    'controls': 0
-                },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
+                videoId: 'sA_D3sJ25sg',
+                playerVars: { 'playsinline': 1, 'autoplay': 0, 'controls': 0 },
+                events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
             });
         }
 
-        function onPlayerReady(event) {
-            // Player is ready
-        }
+        function onPlayerReady(event) { }
 
         function onPlayerStateChange(event) {
             if (event.data == YT.PlayerState.PLAYING) {
                 clearTimeout(stopTimer);
-                stopTimer = setTimeout(() => {
-                    player.stopVideo();
-                }, 15000); 
+                stopTimer = setTimeout(() => { player.stopVideo(); }, 15000); 
             }
         }
         
@@ -269,14 +247,10 @@
                 zoomMessage.textContent = LOGIN_MESSAGES[Math.floor(Math.random() * LOGIN_MESSAGES.length)];
                 passwordOverlay.classList.add('rainbow-bg');
                 passwordOverlay.querySelector('div').style.display = 'none'; 
-                setTimeout(() => {
-                    zoomMessage.style.transform = 'scale(1)';
-                }, 100);
+                setTimeout(() => { zoomMessage.style.transform = 'scale(1)'; }, 100);
                 setTimeout(() => {
                     passwordOverlay.classList.add('fade-out');
-                    setTimeout(() => {
-                        checkAuth();
-                    }, 500);
+                    setTimeout(() => { checkAuth(); }, 500);
                 }, 2000); 
             } else {
                 errorMessage.textContent = "This is not for you";
@@ -288,9 +262,7 @@
         function handleLogout() {
             logoutMessage.textContent = LOGOUT_MESSAGES[Math.floor(Math.random() * LOGOUT_MESSAGES.length)];
             logoutOverlay.style.display = 'flex';
-            setTimeout(() => {
-                logoutOverlay.style.opacity = '1';
-            }, 10);
+            setTimeout(() => { logoutOverlay.style.opacity = '1'; }, 10);
             setTimeout(() => {
                 sessionStorage.removeItem('storyBibleAccessLevel');
                 window.location.reload();
@@ -321,6 +293,21 @@
 
                 Object.entries(sections).forEach(([sectionKey, sectionData]) => {
                     if (sectionData && Array.isArray(sectionData.items)) {
+                        
+                        // *** FIX STARTS HERE ***
+                        // Special handling for the "Timeline" category to create unique links
+                        if (category === "Timeline") {
+                            const li = document.createElement('li');
+                            const a = document.createElement('a');
+                            a.href = `#${generateId("timeline-" + sectionKey)}`; // Unique href
+                            a.textContent = `${sectionKey}`; // Use original key for text
+                            a.className = 'block px-3 py-1 text-sm text-gray-600 hover:bg-gray-200 rounded-md';
+                            li.appendChild(a);
+                            sectionsList.appendChild(li);
+                            return; // Skip to the next item in the loop
+                        }
+                        // *** FIX ENDS HERE ***
+
                         const isRedundantSection = sectionData.items.length === 1 && sectionData.items[0].title === sectionKey;
                         if(isRedundantSection) {
                             const entry = sectionData.items[0];
@@ -363,13 +350,14 @@
         function renderContentSections() {
             contentArea.innerHTML = '';
             Object.entries(storyBibleData).forEach(([category, sections]) => {
+
+                // *** FIX STARTS HERE ***
+                // Special handling to render Timeline sections correctly
                 if (category === "Timeline") {
-                    const timelineSection = document.createElement('section');
-                    timelineSection.id = generateId(category);
-                    contentArea.appendChild(timelineSection);
-                    renderTimeline(timelineSection, sections);
-                    return;
+                    renderTimeline(contentArea, sections);
+                    return; // Continue to the next category
                 }
+                // *** FIX ENDS HERE ***
 
                 Object.entries(sections).forEach(([sectionKey, sectionData]) => {
                      if (sectionData && Array.isArray(sectionData.items)) {
@@ -395,14 +383,20 @@
 
         function renderTimeline(container, timelineData) {
             Object.entries(timelineData).forEach(([bookTitle, bookData]) => {
+                // *** FIX STARTS HERE ***
+                // Create a unique section for each book's timeline
+                const bookSection = document.createElement('section');
+                bookSection.id = generateId("timeline-" + bookTitle); // Unique ID matches nav link
+                bookSection.className = 'mb-12';
+                // *** FIX ENDS HERE ***
+
                 const wrapper = document.createElement('div');
                 wrapper.className = 'timeline-wrapper';
                 const titleElement = document.createElement('div');
                 titleElement.className = 'text-center mb-12';
-                // Display the original book title without the "Timeline for" prefix for a cleaner heading
-                const displayTitle = bookTitle.startsWith("Timeline for ") ? bookTitle.substring(13) : bookTitle;
-                titleElement.innerHTML = `<h2 class="text-3xl font-bold text-gray-900">${displayTitle}</h2>`;
+                titleElement.innerHTML = `<h2 class="text-3xl font-bold text-gray-900">Timeline: ${bookTitle}</h2>`; // Unique H2 Title
                 wrapper.appendChild(titleElement);
+
                 const timelineContainer = document.createElement('div');
                 timelineContainer.className = 'timeline-container';
                 bookData.items.forEach((event, index) => {
@@ -419,7 +413,8 @@
                     timelineContainer.appendChild(item);
                 });
                 wrapper.appendChild(timelineContainer);
-                container.appendChild(wrapper);
+                bookSection.appendChild(wrapper);
+                container.appendChild(bookSection); // Append the complete, unique section
             });
         }
         
