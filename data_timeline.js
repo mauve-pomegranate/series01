@@ -1,5 +1,5 @@
 const timelineData = {
-    "Book 1: Fate and Foxfire": {
+    "Timeline for Book 1: Fate and Foxfire": {
         items: [
             {
                 "title": "Yume's Disappearance",
@@ -38,7 +38,7 @@ const timelineData = {
             }
         ]
     },
-    "Book 2: Family and Folklore": {
+    "Timeline for Book 2: Family and Folklore": {
         items: [
             {
                 "title": "Carly's Search",
@@ -67,7 +67,7 @@ const timelineData = {
             }
         ]
     },
-    "Book 3: Faith and Finality": {
+    "Timeline for Book 3: Faith and Finality": {
         items: [
             {
                 "title": "Journey to Japan",
