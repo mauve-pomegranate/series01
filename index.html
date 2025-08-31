@@ -198,34 +198,24 @@
         
         const PASSWORDS = { full: "03311985", view: "415semple" };
         
-        // --- YouTube Player Logic ---
         let player;
         let stopTimer;
         window.onYouTubeIframeAPIReady = function() {
             player = new YT.Player('player', {
-                height: '0',
-                width: '0',
-                videoId: 'sA_D3sJ25sg',
+                height: '0', width: '0', videoId: 'sA_D3sJ25sg',
                 playerVars: { 'playsinline': 1, 'autoplay': 0, 'controls': 0 },
-                events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
+                events: { 'onReady': () => {}, 'onStateChange': (event) => {
+                    if (event.data == YT.PlayerState.PLAYING) {
+                        clearTimeout(stopTimer);
+                        stopTimer = setTimeout(() => { player.stopVideo(); }, 15000); 
+                    }
+                }}
             });
-        }
-
-        function onPlayerReady(event) { }
-
-        function onPlayerStateChange(event) {
-            if (event.data == YT.PlayerState.PLAYING) {
-                clearTimeout(stopTimer);
-                stopTimer = setTimeout(() => { player.stopVideo(); }, 15000); 
-            }
         }
         
         function playLoginSound() {
-            if (player && typeof player.playVideo === 'function') {
-                player.playVideo();
-            }
+            if (player && typeof player.playVideo === 'function') player.playVideo();
         }
-        // --- End YouTube Player Logic ---
 
         function checkAuth() {
             if (sessionStorage.getItem('storyBibleAccessLevel')) {
@@ -290,15 +280,16 @@
                 sectionsList.className = 'nav-links-flat space-y-1';
 
                 Object.entries(sections).forEach(([sectionKey, sectionData]) => {
-                    if (sectionData && Array.isArray(sectionData.items)) {
-                        const li = document.createElement('li');
-                        const a = document.createElement('a');
-                        a.href = `#${generateId(sectionKey)}`;
-                        a.textContent = sectionKey;
-                        a.className = 'block px-3 py-1 text-sm font-semibold text-gray-500 uppercase hover:bg-gray-200 rounded-md';
-                        li.appendChild(a);
-                        sectionsList.appendChild(li);
-                    }
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = `#${generateId(sectionKey)}`;
+                    
+                    // Display the key without the "Timeline: " prefix for a cleaner look in the nav
+                    a.textContent = sectionKey.replace("Timeline: ", ""); 
+
+                    a.className = 'block px-3 py-1 text-sm font-semibold text-gray-500 uppercase hover:bg-gray-200 rounded-md';
+                    li.appendChild(a);
+                    sectionsList.appendChild(li);
                 });
                 categoryDetails.appendChild(sectionsList);
                 container.appendChild(categoryDetails);
@@ -316,7 +307,7 @@
                         
                         const sectionTitle = document.createElement('h2');
                         sectionTitle.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6';
-                        sectionTitle.textContent = sectionKey.replace("Timeline for ", "Timeline: ");
+                        sectionTitle.textContent = sectionKey;
                         sectionElement.appendChild(sectionTitle);
 
                         if (category === "Timeline") {
@@ -358,6 +349,7 @@
         
         function createCard(entryData) {
             const card = document.createElement('div');
+            // Use the section key (the book title) for the ID, not the card title
             card.id = generateId(entryData.title);
             card.className = 'card p-6';
             const realWorldHtml = entryData.realWorldEquivalent ? `<div class="mt-4 pt-4 border-t"><h4 class="text-sm font-semibold">Inspirations</h4><div class="prose-custom">${entryData.realWorldEquivalent}</div></div>` : '';
@@ -397,7 +389,6 @@
         
         function generateId(text) { return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''); }
 
-        // Mobile Menu Logic
         function toggleMobileMenu() {
             const isOpen = mobileNav.classList.contains('open');
             mobileNav.classList.toggle('open');
