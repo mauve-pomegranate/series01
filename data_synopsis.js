@@ -1,5 +1,5 @@
 const synopsisData = {
-    "Book 1: Fate and Foxfire": {
+    "Synopsis: Book 1: Fate and Foxfire": {
         isAccordion: false,
         items: [
             {
@@ -8,7 +8,7 @@ const synopsisData = {
             }
         ]
     },
-    "Book 2: Family and Folklore": {
+    "Synopsis: Book 2: Family and Folklore": {
         isAccordion: false,
         items: [
             {
@@ -17,7 +17,7 @@ const synopsisData = {
             }
         ]
     },
-    "Book 3: Faith and Finality": {
+    "Synopsis: Book 3: Faith and Finality": {
         isAccordion: false,
         items: [
             {
