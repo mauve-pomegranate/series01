@@ -279,9 +279,7 @@
             container.innerHTML = '';
             Object.entries(storyBibleData).forEach(([category, sections]) => {
                 const categoryDetails = document.createElement('details');
-                if (container.id === 'navigation-container' && category !== "Timeline" && Object.keys(storyBibleData)[0] === category) {
-                    categoryDetails.open = true;
-                }
+                categoryDetails.open = container.id === 'navigation-container' && Object.keys(storyBibleData)[0] === category;
 
                 const categorySummary = document.createElement('summary');
                 categorySummary.className = 'text-lg font-bold text-gray-700 mb-2';
@@ -292,54 +290,19 @@
                 sectionsList.className = 'nav-links-flat space-y-1';
 
                 Object.entries(sections).forEach(([sectionKey, sectionData]) => {
-                    if (sectionData && Array.isArray(sectionData.items)) {
-                        
-                        // *** FIX STARTS HERE ***
-                        // Special handling for the "Timeline" category to create unique links
-                        if (category === "Timeline") {
-                            const li = document.createElement('li');
-                            const a = document.createElement('a');
-                            a.href = `#${generateId("timeline-" + sectionKey)}`; // Unique href
-                            a.textContent = `${sectionKey}`; // Use original key for text
-                            a.className = 'block px-3 py-1 text-sm text-gray-600 hover:bg-gray-200 rounded-md';
-                            li.appendChild(a);
-                            sectionsList.appendChild(li);
-                            return; // Skip to the next item in the loop
-                        }
-                        // *** FIX ENDS HERE ***
+                    // **REWRITTEN LOGIC**
+                    // This creates a unique ID prefix for timeline entries to avoid conflicts.
+                    const isTimeline = category === "Timeline";
+                    const idPrefix = isTimeline ? `timeline-` : '';
 
-                        const isRedundantSection = sectionData.items.length === 1 && sectionData.items[0].title === sectionKey;
-                        if(isRedundantSection) {
-                            const entry = sectionData.items[0];
-                            const li = document.createElement('li');
-                            const a = document.createElement('a');
-                            a.href = `#${generateId(entry.title)}`;
-                            a.textContent = entry.title;
-                            a.className = 'block px-3 py-1 text-sm text-gray-600 hover:bg-gray-200 rounded-md';
-                            li.appendChild(a);
-                            sectionsList.appendChild(li);
-                        } else {
-                            const li = document.createElement('li');
-                            const sectionDetails = document.createElement('details');
-                            const sectionSummary = document.createElement('summary');
-                            sectionSummary.className = 'text-sm font-semibold text-gray-500 uppercase';
-                            sectionSummary.textContent = sectionKey;
-                            const ul = document.createElement('ul');
-                            ul.className = 'nav-links space-y-1 mt-1';
-                            sectionData.items.forEach(entry => {
-                                const subLi = document.createElement('li');
-                                const a = document.createElement('a');
-                                a.href = `#${generateId(entry.title)}`;
-                                a.textContent = entry.title;
-                                a.className = 'block px-3 py-1 text-sm text-gray-600 hover:bg-gray-200 rounded-md';
-                                subLi.appendChild(a);
-                                ul.appendChild(subLi);
-                            });
-                            sectionDetails.appendChild(sectionSummary);
-                            sectionDetails.appendChild(ul);
-                            li.appendChild(sectionDetails);
-                            sectionsList.appendChild(li);
-                        }
+                    if (sectionData && Array.isArray(sectionData.items)) {
+                        const li = document.createElement('li');
+                        const a = document.createElement('a');
+                        a.href = `#${generateId(idPrefix + sectionKey)}`;
+                        a.textContent = sectionKey;
+                        a.className = 'block px-3 py-1 text-sm font-semibold text-gray-500 uppercase hover:bg-gray-200 rounded-md';
+                        li.appendChild(a);
+                        sectionsList.appendChild(li);
                     }
                 });
                 categoryDetails.appendChild(sectionsList);
@@ -350,29 +313,27 @@
         function renderContentSections() {
             contentArea.innerHTML = '';
             Object.entries(storyBibleData).forEach(([category, sections]) => {
-
-                // *** FIX STARTS HERE ***
-                // Special handling to render Timeline sections correctly
-                if (category === "Timeline") {
-                    renderTimeline(contentArea, sections);
-                    return; // Continue to the next category
-                }
-                // *** FIX ENDS HERE ***
-
                 Object.entries(sections).forEach(([sectionKey, sectionData]) => {
-                     if (sectionData && Array.isArray(sectionData.items)) {
+                    // **REWRITTEN LOGIC**
+                    // This creates a unique ID prefix for timeline sections to avoid conflicts.
+                    const isTimeline = category === "Timeline";
+                    const idPrefix = isTimeline ? `timeline-` : '';
+
+                    if (isTimeline) {
+                        // Directly render the timeline section with its unique ID
+                        renderTimeline(contentArea, sectionKey, sectionData, idPrefix);
+                    } else if (sectionData && Array.isArray(sectionData.items)) {
                         const sectionElement = document.createElement('section');
-                        sectionElement.id = generateId(sectionKey);
-                        const isRedundantTitle = sectionData.items.length === 1 && sectionData.items[0].title === sectionKey;
-                        if (!isRedundantTitle) {
-                            sectionElement.className = 'mb-12';
-                            const sectionTitle = document.createElement('h2');
-                            sectionTitle.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6';
-                            sectionTitle.textContent = sectionKey;
-                            sectionElement.appendChild(sectionTitle);
-                        }
+                        sectionElement.id = generateId(idPrefix + sectionKey);
+                        sectionElement.className = 'mb-12';
+                        
+                        const sectionTitle = document.createElement('h2');
+                        sectionTitle.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6';
+                        sectionTitle.textContent = sectionKey;
+                        sectionElement.appendChild(sectionTitle);
+
                         const cardContainer = document.createElement('div');
-                        cardContainer.className = isRedundantTitle ? 'space-y-0' : 'space-y-6';
+                        cardContainer.className = 'space-y-6';
                         sectionData.items.forEach(entry => cardContainer.appendChild(createCard(entry)));
                         sectionElement.appendChild(cardContainer);
                         contentArea.appendChild(sectionElement);
@@ -381,41 +342,38 @@
             });
         }
 
-        function renderTimeline(container, timelineData) {
-            Object.entries(timelineData).forEach(([bookTitle, bookData]) => {
-                // *** FIX STARTS HERE ***
-                // Create a unique section for each book's timeline
-                const bookSection = document.createElement('section');
-                bookSection.id = generateId("timeline-" + bookTitle); // Unique ID matches nav link
-                bookSection.className = 'mb-12';
-                // *** FIX ENDS HERE ***
+        function renderTimeline(container, bookTitle, bookData, idPrefix) {
+            // **REWRITTEN LOGIC**
+            // This function now renders a single timeline book section with a guaranteed unique ID.
+            const bookSection = document.createElement('section');
+            bookSection.id = generateId(idPrefix + bookTitle); // e.g., id="timeline-book-1-fate-and-foxfire"
+            bookSection.className = 'mb-12';
 
-                const wrapper = document.createElement('div');
-                wrapper.className = 'timeline-wrapper';
-                const titleElement = document.createElement('div');
-                titleElement.className = 'text-center mb-12';
-                titleElement.innerHTML = `<h2 class="text-3xl font-bold text-gray-900">Timeline: ${bookTitle}</h2>`; // Unique H2 Title
-                wrapper.appendChild(titleElement);
+            const wrapper = document.createElement('div');
+            wrapper.className = 'timeline-wrapper';
+            
+            const titleElement = document.createElement('div');
+            titleElement.className = 'text-center mb-12';
+            titleElement.innerHTML = `<h2 class="text-3xl font-bold text-gray-900">Timeline: ${bookTitle}</h2>`;
+            wrapper.appendChild(titleElement);
 
-                const timelineContainer = document.createElement('div');
-                timelineContainer.className = 'timeline-container';
-                bookData.items.forEach((event, index) => {
-                    const item = document.createElement('div');
-                    const side = index % 2 === 0 ? 'left' : 'right';
-                    item.className = `timeline-item ${side}`;
-                    item.dataset.eventNum = event.event_num;
-                    item.innerHTML = `
-                        <div class="timeline-content">
-                            <h3 class="text-xl font-bold">${event.title}</h3>
-                            <div class="prose-custom mt-2">${event.description}</div>
-                        </div>
-                    `;
-                    timelineContainer.appendChild(item);
-                });
-                wrapper.appendChild(timelineContainer);
-                bookSection.appendChild(wrapper);
-                container.appendChild(bookSection); // Append the complete, unique section
+            const timelineContainer = document.createElement('div');
+            timelineContainer.className = 'timeline-container';
+            bookData.items.forEach((event, index) => {
+                const item = document.createElement('div');
+                item.className = `timeline-item ${index % 2 === 0 ? 'left' : 'right'}`;
+                item.dataset.eventNum = event.event_num;
+                item.innerHTML = `
+                    <div class="timeline-content">
+                        <h3 class="text-xl font-bold">${event.title}</h3>
+                        <div class="prose-custom mt-2">${event.description}</div>
+                    </div>
+                `;
+                timelineContainer.appendChild(item);
             });
+            wrapper.appendChild(timelineContainer);
+            bookSection.appendChild(wrapper);
+            container.appendChild(bookSection);
         }
         
         function createCard(entryData) {
