@@ -290,15 +290,10 @@
                 sectionsList.className = 'nav-links-flat space-y-1';
 
                 Object.entries(sections).forEach(([sectionKey, sectionData]) => {
-                    // **REWRITTEN LOGIC**
-                    // This creates a unique ID prefix for timeline entries to avoid conflicts.
-                    const isTimeline = category === "Timeline";
-                    const idPrefix = isTimeline ? `timeline-` : '';
-
                     if (sectionData && Array.isArray(sectionData.items)) {
                         const li = document.createElement('li');
                         const a = document.createElement('a');
-                        a.href = `#${generateId(idPrefix + sectionKey)}`;
+                        a.href = `#${generateId(sectionKey)}`;
                         a.textContent = sectionKey;
                         a.className = 'block px-3 py-1 text-sm font-semibold text-gray-500 uppercase hover:bg-gray-200 rounded-md';
                         li.appendChild(a);
@@ -314,48 +309,34 @@
             contentArea.innerHTML = '';
             Object.entries(storyBibleData).forEach(([category, sections]) => {
                 Object.entries(sections).forEach(([sectionKey, sectionData]) => {
-                    // **REWRITTEN LOGIC**
-                    // This creates a unique ID prefix for timeline sections to avoid conflicts.
-                    const isTimeline = category === "Timeline";
-                    const idPrefix = isTimeline ? `timeline-` : '';
-
-                    if (isTimeline) {
-                        // Directly render the timeline section with its unique ID
-                        renderTimeline(contentArea, sectionKey, sectionData, idPrefix);
-                    } else if (sectionData && Array.isArray(sectionData.items)) {
+                    if (sectionData && Array.isArray(sectionData.items)) {
                         const sectionElement = document.createElement('section');
-                        sectionElement.id = generateId(idPrefix + sectionKey);
+                        sectionElement.id = generateId(sectionKey);
                         sectionElement.className = 'mb-12';
                         
                         const sectionTitle = document.createElement('h2');
                         sectionTitle.className = 'text-3xl font-bold text-gray-900 border-b-2 border-indigo-200 pb-2 mb-6';
-                        sectionTitle.textContent = sectionKey;
+                        sectionTitle.textContent = sectionKey.replace("Timeline for ", "Timeline: ");
                         sectionElement.appendChild(sectionTitle);
 
-                        const cardContainer = document.createElement('div');
-                        cardContainer.className = 'space-y-6';
-                        sectionData.items.forEach(entry => cardContainer.appendChild(createCard(entry)));
-                        sectionElement.appendChild(cardContainer);
+                        if (category === "Timeline") {
+                            const timelineContent = createTimeline(sectionData);
+                            sectionElement.appendChild(timelineContent);
+                        } else {
+                            const cardContainer = document.createElement('div');
+                            cardContainer.className = 'space-y-6';
+                            sectionData.items.forEach(entry => cardContainer.appendChild(createCard(entry)));
+                            sectionElement.appendChild(cardContainer);
+                        }
                         contentArea.appendChild(sectionElement);
                     }
                 });
             });
         }
 
-        function renderTimeline(container, bookTitle, bookData, idPrefix) {
-            // **REWRITTEN LOGIC**
-            // This function now renders a single timeline book section with a guaranteed unique ID.
-            const bookSection = document.createElement('section');
-            bookSection.id = generateId(idPrefix + bookTitle); // e.g., id="timeline-book-1-fate-and-foxfire"
-            bookSection.className = 'mb-12';
-
+        function createTimeline(bookData) {
             const wrapper = document.createElement('div');
             wrapper.className = 'timeline-wrapper';
-            
-            const titleElement = document.createElement('div');
-            titleElement.className = 'text-center mb-12';
-            titleElement.innerHTML = `<h2 class="text-3xl font-bold text-gray-900">Timeline: ${bookTitle}</h2>`;
-            wrapper.appendChild(titleElement);
 
             const timelineContainer = document.createElement('div');
             timelineContainer.className = 'timeline-container';
@@ -372,8 +353,7 @@
                 timelineContainer.appendChild(item);
             });
             wrapper.appendChild(timelineContainer);
-            bookSection.appendChild(wrapper);
-            container.appendChild(bookSection);
+            return wrapper;
         }
         
         function createCard(entryData) {
