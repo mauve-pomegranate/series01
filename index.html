@@ -279,14 +279,11 @@
                 const sectionsList = document.createElement('ul');
                 sectionsList.className = 'nav-links-flat space-y-1';
 
-                Object.entries(sections).forEach(([sectionKey, sectionData]) => {
+                Object.keys(sections).forEach(sectionKey => {
                     const li = document.createElement('li');
                     const a = document.createElement('a');
                     a.href = `#${generateId(sectionKey)}`;
-                    
-                    // Display the key without the "Timeline: " prefix for a cleaner look in the nav
-                    a.textContent = sectionKey.replace("Timeline: ", ""); 
-
+                    a.textContent = sectionKey.replace("Timeline: ", "").replace("Synopsis: ", ""); 
                     a.className = 'block px-3 py-1 text-sm font-semibold text-gray-500 uppercase hover:bg-gray-200 rounded-md';
                     li.appendChild(a);
                     sectionsList.appendChild(li);
@@ -300,7 +297,7 @@
             contentArea.innerHTML = '';
             Object.entries(storyBibleData).forEach(([category, sections]) => {
                 Object.entries(sections).forEach(([sectionKey, sectionData]) => {
-                    if (sectionData && Array.isArray(sectionData.items)) {
+                    if (sectionData.items && sectionData.items.length > 0) {
                         const sectionElement = document.createElement('section');
                         sectionElement.id = generateId(sectionKey);
                         sectionElement.className = 'mb-12';
@@ -316,7 +313,7 @@
                         } else {
                             const cardContainer = document.createElement('div');
                             cardContainer.className = 'space-y-6';
-                            sectionData.items.forEach(entry => cardContainer.appendChild(createCard(entry)));
+                            sectionData.items.forEach(entry => cardContainer.appendChild(createCard(entry, sectionKey)));
                             sectionElement.appendChild(cardContainer);
                         }
                         contentArea.appendChild(sectionElement);
@@ -328,7 +325,6 @@
         function createTimeline(bookData) {
             const wrapper = document.createElement('div');
             wrapper.className = 'timeline-wrapper';
-
             const timelineContainer = document.createElement('div');
             timelineContainer.className = 'timeline-container';
             bookData.items.forEach((event, index) => {
@@ -347,9 +343,9 @@
             return wrapper;
         }
         
-        function createCard(entryData) {
+        function createCard(entryData, sectionKey) {
             const card = document.createElement('div');
-            // Use the section key (the book title) for the ID, not the card title
+            // The ID of the card itself is the item's title, not the section key.
             card.id = generateId(entryData.title);
             card.className = 'card p-6';
             const realWorldHtml = entryData.realWorldEquivalent ? `<div class="mt-4 pt-4 border-t"><h4 class="text-sm font-semibold">Inspirations</h4><div class="prose-custom">${entryData.realWorldEquivalent}</div></div>` : '';
@@ -360,17 +356,15 @@
         function buildSearchIndex() {
             searchIndex.length = 0;
             Object.values(storyBibleData).forEach(categoryData => {
-                if(categoryData) {
-                    Object.values(categoryData).forEach(sectionData => {
-                        if (sectionData && Array.isArray(sectionData.items)) {
-                            sectionData.items.forEach(item => {
-                                if (item && item.title) {
-                                    searchIndex.push({ title: item.title, id: generateId(item.title) });
-                                }
-                            });
-                        }
-                    });
-                }
+                Object.values(categoryData).forEach(sectionData => {
+                    if (sectionData && Array.isArray(sectionData.items)) {
+                        sectionData.items.forEach(item => {
+                            if (item && item.title) {
+                                searchIndex.push({ title: item.title, id: generateId(item.title) });
+                            }
+                        });
+                    }
+                });
             });
         }
         
